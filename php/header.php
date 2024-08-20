@@ -1,7 +1,10 @@
 <?php
 include 'php/dbconn.php';
 session_start();
-if(!isset($_SESSION['username'])){
+
+if(!isset($_SESSION['userid']) && !isset($_SESSION['fid'])){
+    header('location: firm-login');
+} elseif(!isset($_SESSION['userid']) && isset($_SESSION['fid'])){
     header('location: login');
 }
 $error_msg =  '';
@@ -26,7 +29,7 @@ $pageTitle = '';
     <body class="sb-nav-fixed">
         <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
             <!-- Navbar Brand-->
-            <a class="navbar-brand ps-3" href="index.html">Document Automation</a>
+            <a class="navbar-brand ps-3" href="index">Document Automation</a>
             <!-- Sidebar Toggle-->
             <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
             <!-- Navbar Search-->
@@ -41,9 +44,10 @@ $pageTitle = '';
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="#">Profile Settings</a></li>
+                        <li><a class="dropdown-item" href="edit-profile?id=<?php echo $_SESSION['userid'];?>">Profile Settings</a></li>
                         <li><a class="dropdown-item" href="#">Activity Log</a></li>
                         <li><hr class="dropdown-divider" /></li>
+                        <li><a class="dropdown-item" href="switch-user">Switch User</a></li>
                         <li><a class="dropdown-item" href="logout">Logout</a></li>
                     </ul>
                 </li>

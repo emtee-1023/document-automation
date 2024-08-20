@@ -1,16 +1,19 @@
 <?php include 'php/header.php';?>
 
 <?php
+$owner = $_SESSION['userid'];
+$firm = $_SESSION['fid'];
+
 if(isset($_GET['status'])&& isset($_GET['courtid'])){
     $status = $_GET['status']; //1=open 2=pending 3=closed
     $courtid = $_GET['courtid'];
-    $owner = $_SESSION['userid'];
+
     // Use a prepared statement to avoid SQL injection
-    $stmt = $conn->prepare("SELECT CourtName FROM courts WHERE added_by = ? AND courtid = ?");
+    $stmt = $conn->prepare("SELECT CourtName FROM courts WHERE firmid = ? AND courtid = ?");
     if (!$stmt) {
         die('Prepare failed: ' . $conn->error);
     }
-    $stmt->bind_param("ii",$owner,$courtid);
+    $stmt->bind_param("ii",$firm,$courtid);
     $stmt->execute();
     $res = $stmt->get_result();
     $row = $res->fetch_assoc();

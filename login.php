@@ -4,46 +4,55 @@ session_start();
 
 $error_msg = '';
 
-if (isset($_POST['login'])) {
-    $email = $_POST['email'];
-    $pass = $_POST['password'];
+if(!isset($_GET['userid'])){
+    header('location: choose-user');
+} 
+else {
+    $user=$_GET['userid'];
 
-    // Prepare a statement
-    if ($stmt = mysqli_prepare($conn, "SELECT * FROM users WHERE email = ?")) {
-        // Bind parameters
-        mysqli_stmt_bind_param($stmt, "s", $email);
+    if (isset($_POST['login'])) {
+        //$email = $_POST['email'];
+        $pass = $_POST['password'];
 
-        // Execute the statement
-        mysqli_stmt_execute($stmt);
+        // Prepare a statement
+        if ($stmt = mysqli_prepare($conn, "SELECT * FROM users WHERE userid = ?")) {
+            // Bind parameters
+            mysqli_stmt_bind_param($stmt, "s", $user);
 
-        // Get the result
-        $res = mysqli_stmt_get_result($stmt);
+            // Execute the statement
+            mysqli_stmt_execute($stmt);
 
-        // Check if a user was found
-        if ($row = mysqli_fetch_assoc($res)) {
-            // User found, now you can verify the password
-            if ($pass == $row['Password']) {
-                // Password is correct, proceed with login
-                $_SESSION['userid']=$row['UserID'];
-                $_SESSION['username']=$row['FullName'];
-                $_SESSION['pfp']=$row['Photo'];
-                $_SESSION['user_type']=$row['User_type'];                
-                header('location: index');
+            // Get the result
+            $res = mysqli_stmt_get_result($stmt);
+
+            // Check if a user was found
+            if ($row = mysqli_fetch_assoc($res)) {
+                // User found, now you can verify the password
+                if ($pass == $row['Password']) {
+                    // Password is correct, proceed with login
+                    $_SESSION['userid']=$row['UserID'];
+                    $_SESSION['fname']=$row['FName'];
+                    $_SESSION['lname']=$row['LName'];
+                    $_SESSION['pfp']=$row['Photo'];
+                    $_SESSION['user_type']=$row['User_type'];                
+                    header('location: index');
+                } else {
+                    // Incorrect password
+                    $error_msg = 'invalid password';
+                }
             } else {
-                // Incorrect password
-                $error_msg = 'invalid credentials';
+                // No user found with that email
+                $error_msg = 'invalid password';
             }
-        } else {
-            // No user found with that email
-            $error_msg = 'invalid credentials';
-        }
 
-        // Close the statement
-        mysqli_stmt_close($stmt);
-    } else {
-        // Error preparing the statement
-        echo "Error preparing the SQL statement.";
+            // Close the statement
+            mysqli_stmt_close($stmt);
+        } else {
+            // Error preparing the statement
+            echo "Error preparing the SQL statement.";
+        }
     }
+
 }
 
 ?>
@@ -56,7 +65,7 @@ if (isset($_POST['login'])) {
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="description" content="" />
         <meta name="author" content="" />
-        <title>Login - SB Admin</title>
+        <title>Login - DocAuto</title>
         <link href="css/styles.css" rel="stylesheet" />
         <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
     </head>
@@ -79,14 +88,37 @@ if (isset($_POST['login'])) {
                                     ?>
                                         
                                 </div>
+
+                                <?php
+                                if ($stmt = mysqli_prepare($conn, "SELECT * FROM users WHERE userid = ?")) {
+                                    // Bind parameters
+                                    mysqli_stmt_bind_param($stmt, "s", $user);
+                            
+                                    // Execute the statement
+                                    mysqli_stmt_execute($stmt);
+                            
+                                    // Get the result
+                                    $res = mysqli_stmt_get_result($stmt);
+
+                                    $row=mysqli_fetch_assoc($res);
+
+                                    $username = $row['FName'].' '.$row['LName'];
+                                
+                                    // Close the statement
+                                    mysqli_stmt_close($stmt);
+                                } else {
+                                    // Error preparing the statement
+                                    echo "Error preparing the SQL statement.";
+                                }
+                                
+                                ?>
                                 <div class="card shadow-lg border-0 rounded-lg mt-5">
-                                    <div class="card-header"><h3 class="text-center font-weight-light my-4">Login</h3></div>
+                                    <div class="card-header">
+                                        <h3 class="text-center font-weight-light my-4">Welcome Back <?php echo $username;?></h3>
+                                        <p class="text-center">Enter Password to sign in</p>
+                                    </div>
                                     <div class="card-body">
                                         <form method="post" action="">
-                                            <div class="form-floating mb-3">
-                                                <input class="form-control" id="inputEmail" type="email" placeholder="email address" name="email"/>
-                                                <label for="inputEmail">Email address</label>
-                                            </div>
                                             <div class="form-floating mb-3">
                                                 <input class="form-control" id="inputPassword" type="password" placeholder="Password" name="password"/>
                                                 <label for="inputPassword">Password</label>
@@ -102,7 +134,7 @@ if (isset($_POST['login'])) {
                                         </form>
                                     </div>
                                     <div class="card-footer text-center py-3">
-                                        <div class="small"><a href="register.html">Need an account? Sign up!</a></div>
+                                        <!-- <div class="small"><a href="register.html">Need an account? Sign up!</a></div> -->
                                     </div>
                                 </div>
                             </div>

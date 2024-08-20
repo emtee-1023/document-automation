@@ -18,6 +18,8 @@
             <tbody>
             <?php
                 $owner = $_SESSION['userid'];
+                $firmid = $_SESSION['fid'];
+
                 // Use a prepared statement to avoid SQL injection
                 $stmt = $conn->prepare("SELECT 
                             c1.courtid, 
@@ -31,12 +33,12 @@
                             cases c2 
                         ON 
                             c1.courtid = c2.Courtid 
-                        WHERE 
-                            c1.added_by = ? 
+                        WHERE
+                            c1.firmid = ?
                         GROUP BY 
                             c1.courtid, 
                             c1.courtname");
-                $stmt->bind_param("i", $owner);
+                $stmt->bind_param("i", $firmid);
                 $stmt->execute();
                 $res = $stmt->get_result();
 

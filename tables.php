@@ -6,6 +6,7 @@ include 'php/header.php';
             <?php require 'php/sidebar.php'?>
             <div id="layoutSidenav_content">
                 <main>
+
                     <div class="container-fluid px-4">
                         <h1 class="mt-4">Available Templates</h1>
                         <ol class="breadcrumb mb-4">
@@ -19,6 +20,14 @@ include 'php/header.php';
                                 .
                             </div>
                         </div> -->
+                        <!-- <div class="mb-4">
+                            <iframe class="float-right" src="assets/files/submitted/1723140891.pdf" width="50%" height="500px"></iframe>
+                        </div> -->
+
+                        <!-- <object data="assets/files/submitted/test.docx" type="application/msword" style="width:50%; height:500px;">
+                            <p>Your browser does not support the <code>object</code> tag. <a href="YOUR_DOCUMENT_URL">Download the document</a>.</p>
+                        </object> -->
+
                         <div class="card mb-4">
                             <div class="card-header">
                                 <i class="fas fa-table me-1"></i>

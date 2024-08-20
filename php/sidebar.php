@@ -8,31 +8,79 @@
                                 Dashboard
                             </a>
                             <div class="sb-sidenav-menu-heading">Utilities</div>
-                            <a class="nav-link" href="courts">
+                            <?php
+                            if($_SESSION['user_type']!='client'){
+                                echo '
+                                <a class="nav-link" href="courts">
                                 <div class="sb-nav-link-icon"><i class="fa-solid fa-gavel"></i></div>
                                 Courts
-                            </a>
-                            <a class="nav-link" href="clients">
-                                <div class="sb-nav-link-icon"><i class="fa-solid fa-users"></i></div>
-                                Clients
-                            </a>
+                                </a>
+                                <a class="nav-link" href="clients">
+                                    <div class="sb-nav-link-icon"><i class="fa-solid fa-users"></i></div>
+                                    Clients
+                                </a>
+                                ';
+                            }
+                            ?>
+                            
                             <a class="nav-link" href="cases">
                                 <div class="sb-nav-link-icon"><i class="fa-solid fa-briefcase"></i></div>
                                 Cases
                             </a>
-                            <div class="sb-sidenav-menu-heading">Data</div>
-                            <a class="nav-link" href="tables">
-                                <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
-                                Available Templates
+                            <a class="nav-link" href="case-docs">
+                                <div class="sb-nav-link-icon"><i class="fa-regular fa-folder-open"></i></div>
+                                Case Documents
                             </a>
-                            <a class="nav-link" href="tables">
-                                <div class="sb-nav-link-icon"><i class="fa-solid fa-file"></i></div>
-                                Created Documents
+
+                            <?php
+                            if($_SESSION['user_type']!='client'){
+                                echo '<a class="nav-link" href="bill-clients">
+                                <div class="sb-nav-link-icon"><i class="fa-solid fa-money-check-dollar"></i></i></div>
+                                Invoice Clients
                             </a>
+                            <a class="nav-link" href="calendar">
+                                <div class="sb-nav-link-icon"><i class="fa-solid fa-calendar"></i></i></div>
+                                Calendar
+                            </a>';
+                            } else {
+                                echo '<a class="nav-link" href="bill-clients">
+                                <div class="sb-nav-link-icon"><i class="fa-solid fa-money-check-dollar"></i></i></div>
+                                Client Invoices
+                            </a>';
+
+                            }
+                            ?>
+                            
+                            <?php
+                            if($_SESSION['user_type']!='client'){
+                                echo '
+                                <div class="sb-sidenav-menu-heading">Doc-Automation</div>
+                            <a class="nav-link" href="tables">
+                                <div class="sb-nav-link-icon"><i class="fa-solid fa-print"></i></div>
+                                Generate Document
+                            </a>';
+                            }
+                            ?>
+                            
+                            <?php
+                            if($_SESSION['user_type']=='admin' || $_SESSION['user_type']=='super admin'){
+                                echo
+                                '
+                                <div class="sb-sidenav-menu-heading">Firm</div>
+                                <a class="nav-link" href="firm-settings">
+                                    <div class="sb-nav-link-icon"><i class="fa-solid fa-gear"></i></div>
+                                    Firm Settings
+                                </a>
+                                <a class="nav-link" href="firm-users">
+                                    <div class="sb-nav-link-icon"><i class="fa-solid fa-address-card"></i></i></div>
+                                    Manage Firm Users                            
+                                </a>
+                                ';
+                            }
+                            ?>
                         </div>
                     </div>
-                    <div class="sb-sidenav-footer bg-dark">
-                        <div class="small">Logged in as: <?php echo $_SESSION['username'];?></div>
+                    <div class="sb-sidenav-footer bg-dark">    
                     </div>
                 </nav>
             </div>
