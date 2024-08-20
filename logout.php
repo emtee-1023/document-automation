@@ -6,6 +6,6 @@ session_start();
 session_destroy();
 
 // Redirect to login page or home page
-header("Location: login");
+header("Location: firm-login");
 exit();
 ?>
