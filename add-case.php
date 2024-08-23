@@ -11,6 +11,9 @@ $error_msg = '';
 $success_msg = '';
 $redirect = '';
 
+$user = $_SESSION['userid'];
+$firm = $_SESSION['fid'];
+
 if (isset($_POST['submit'])) {
     $caseNumber = $_POST['CaseNumber'];
     $caseName = $_POST['CaseName'];
@@ -20,8 +23,7 @@ if (isset($_POST['submit'])) {
     $openDate = $_POST['OpenDate'];
     $closeDate = $_POST['CloseDate'];
     $courtId = $_POST['CourtName'];
-    $user = $_SESSION['userid'];
-    $firm = $_SESSION['fid'];
+    
 
     // Check if case number already exists
     $checkStmt = mysqli_prepare($conn, "SELECT COUNT(*) FROM cases WHERE casenumber = ? AND firmid = ?");
