@@ -4,6 +4,7 @@
 if(isset($_GET['clientid'])){
     $clientid = $_GET['clientid'];
     $owner =  $_SESSION['userid'];
+    $firm = $_SESSION['fid'];
 
     // Use a prepared statement to avoid SQL injection
     //motifications for client -- email
@@ -13,10 +14,10 @@ if(isset($_GET['clientid'])){
                             FROM 
                                 clients
                             WHERE 
-                                clientid = ? and belong_to = ?
+                                clientid = ? and firmid = ?
     ");
 
-    $stmt->bind_param("ii",$clientid,$owner);
+    $stmt->bind_param("ii",$clientid,$firm);
     $stmt->execute();
     $res = $stmt->get_result();
     $row = $res->fetch_assoc();

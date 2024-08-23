@@ -10,12 +10,13 @@
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (isset($_POST['save-invoice'])) {
             // Retrieve form data
-            $InvoiceNumber = "Inv/".date('Y')."/".round(microtime(true)*1000);
-            $CreatedOn = date('d/m/Y');
-            $LastUpdate = date('d/m/Y');
+            $InvoiceNumber = "Inv/" . date('Y') . "/" . round(microtime(true) * 1000);
+            $CreatedOn = date('Y-m-d'); // Correct date format
             $caseID = $_POST['CaseID'];
             $clientID = $_POST['ClientID'];
             $userid = $_SESSION['userid'];
+            $firmID = $_SESSION['fid'];
+            $filePath = 'x'; // Dummy file path
             $serviceIDs = $_POST['ServiceID'];
             $quantities = $_POST['Quantity'];
 
@@ -25,12 +26,11 @@
             try {
                 // Insert the invoice into the invoices table
                 $stmt = $conn->prepare("
-                    INSERT INTO invoices (InvoiceNumber, Created_on, Last_update, File, CaseID, ClientID, UserID, FirmID)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                    INSERT INTO invoices (InvoiceNumber, CreatedOn, ExpiresAt, FilePath, Status, CaseID, ClientID, UserID, FirmID)
+                    VALUES (?, ?, DATE_ADD(?, INTERVAL 30 DAY), ?, 'pending', ?, ?, ?, ?)
                 ");
-                $dummyFile = 'x'; // Dummy file value
-                $firmID = 1; // Dummy firm ID
-                $stmt->bind_param("ssssiiii", $InvoiceNumber, $CreatedOn, $LastUpdate, $dummyFile, $caseID, $clientID, $userid, $firmID);
+                $expiresAt = date('Y-m-d', strtotime('+30 days')); // Set expiration to 30 days from now
+                $stmt->bind_param("ssssiisii", $InvoiceNumber, $CreatedOn, $expiresAt, $filePath, $caseID, $clientID, $userid, $firmID);
                 $stmt->execute();
 
                 // Get the last inserted invoice ID
@@ -73,18 +73,15 @@
             // Increment item count when 'Add Another Item' is clicked
             $_SESSION['item_count']++;
         }
-    } else {
-        // Initialize form data if not POST request
-        $formData = $_SESSION['form_data'] ?? [
-            'CaseID' => '',
-            'ClientID' => '',
-            'ServiceID' => [],
-            'Quantity' => []
-        ];
-        $itemCount = $_SESSION['item_count'] ?? 1;
     }
 
-    // Get the item count
+    // Initialize form data if not POST request or reset item count if not set
+    $formData = $_SESSION['form_data'] ?? [
+        'CaseID' => '',
+        'ClientID' => '',
+        'ServiceID' => [],
+        'Quantity' => []
+    ];
     $itemCount = $_SESSION['item_count'] ?? 1;
 ?>
 

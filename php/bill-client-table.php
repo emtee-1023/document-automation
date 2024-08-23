@@ -5,6 +5,7 @@ $error_msg = '';
 if(isset($_GET['clientid'])){
     $clientid = $_GET['clientid'];
     $owner =  $_SESSION['userid'];
+    $firm = $_SESSION['fid'];
 
     // Use a prepared statement to avoid SQL injection
     $stmt = $conn->prepare("SELECT 
@@ -12,10 +13,10 @@ if(isset($_GET['clientid'])){
                             FROM 
                                 clients
                             WHERE 
-                                clientid = ? and belong_to = ?
+                                clientid = ? and firmid = ?
     ");
 
-    $stmt->bind_param("ii",$clientid,$owner);
+    $stmt->bind_param("ii",$clientid,$firm);
     $stmt->execute();
     $res = $stmt->get_result();
     $row = $res->fetch_assoc();
@@ -70,6 +71,7 @@ if(isset($_GET['clientid'])){
             <tbody>
             <?php
             $owner = $_SESSION['userid'];
+            $firm = $_SESSION['fid'];
             // Use a prepared statement to avoid SQL injection
             $stmt = $conn->prepare("SELECT 
                                         i.*, 
@@ -79,10 +81,11 @@ if(isset($_GET['clientid'])){
                                     JOIN 
                                         cases c ON c.caseid = i.caseid
                                     WHERE 
-                                        c.userid = ? 
+                                        c.firmid = ? 
                                         AND c.clientid = ?
+                                        AND i.status = 'pending';
                     ");
-            $stmt->bind_param("ii",$owner,$clientid);
+            $stmt->bind_param("ii",$firm,$clientid);
             $stmt->execute();
             $res = $stmt->get_result();
 
@@ -90,8 +93,8 @@ if(isset($_GET['clientid'])){
                 echo '<tr>
                         <td>'.$row['casename'].'</td>
                         <td>'.$row['InvoiceNumber'].'</td>
-                        <td>'.$row['Created_on'].'</td>
-                        <td><a href="edit-doc?id='.$row['InvoiceID'].'" class="btn btn-primary btn-sm">Mark as Cleared</a></td>
+                        <td>'.$row['CreatedAt'].'</td>
+                        <td><a href="clear-invoice?invid='.$row['InvoiceID'].'&clid='.$clientid.'" class="btn btn-primary btn-sm">Mark as Cleared</a></td>
                         <td><a href="fpff" class="btn btn-success btn-sm">Download Invoice</a></td>
                         <td><a href="?fileid='.$row['InvoiceID'].'" class="btn btn-success btn-sm">Email Invoice</a></td>
                                                     

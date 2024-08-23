@@ -61,12 +61,12 @@ if (isset($_POST['submit'])) {
                 $success_msg = 'User added successfully!';
             } else {
                 // Error preparing the statement
-                echo 'Error preparing the SQL statement.';
+                $error_msg = 'Error preparing the SQL statement.';
             }
         }
     } else {
         // Error preparing the check statement
-        echo 'Error preparing the SQL statement to check for duplicates.';
+        $error_msg = 'Error preparing the SQL statement to check for duplicates.';
     }
 
 

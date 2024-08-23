@@ -19,6 +19,7 @@
             <tbody>
             <?php
                 $owner = $_SESSION['userid'];
+                $firm = $_SESSION['fid'];
                 // Use a prepared statement to avoid SQL injection
                 $stmt = $conn->prepare("SELECT 
                                             cl.*, 
@@ -31,13 +32,13 @@
                                         JOIN 
                                             invoices i ON cl.clientid = i.clientid
                                         WHERE 
-                                            cl.belong_to = ? AND i.Status = 'pending'
+                                            cl.firmid = ? AND i.Status = 'pending'
                                         GROUP BY 
                                             cl.clientid, c.caseid
 
                         ");
                         $owner = 1;
-                $stmt->bind_param("i",$owner);
+                $stmt->bind_param("i",$firm);
                 $stmt->execute();
                 $res = $stmt->get_result();
 

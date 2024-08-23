@@ -11,13 +11,14 @@
                             <?php
                             if($_SESSION['user_type']!='client'){
                                 echo '
-                                <a class="nav-link" href="courts">
-                                <div class="sb-nav-link-icon"><i class="fa-solid fa-gavel"></i></div>
-                                Courts
-                                </a>
                                 <a class="nav-link" href="clients">
                                     <div class="sb-nav-link-icon"><i class="fa-solid fa-users"></i></div>
                                     Clients
+                                </a>
+
+                                <a class="nav-link" href="courts">
+                                    <div class="sb-nav-link-icon"><i class="fa-solid fa-gavel"></i></div>
+                                    Courts
                                 </a>
                                 ';
                             }

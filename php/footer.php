@@ -1,8 +1,6 @@
-<footer class="py-3 bg-light mt-auto">
+<footer class="py-3  mt-auto">
     <div class="container-fluid px-3">
-        <div class="d-flex align-items-center justify-content-between small">
-            <div class="text-muted">Copyright &copy; Document Automation <?php echo date('Y')?></div>
-        </div>
+       
     </div>
 </footer>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>

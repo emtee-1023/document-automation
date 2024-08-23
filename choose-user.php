@@ -17,14 +17,6 @@ $success_msg = '';
         <title>Firm Login - DocAuto</title>
         <link href="css/styles.css" rel="stylesheet" />
         <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
-        <style>
-            /* Apply margin-left: 120px for medium screens and up */
-            @media (min-width: 768px) {
-                .custom-margin {
-                    margin-left: 120px;
-                }
-            }
-        </style>
     </head>
     <body class="bg-light">
         <div id="layoutAuthentication">
@@ -35,13 +27,12 @@ $success_msg = '';
                             <div class="row g-5">
                                     <div class="d-flex flex-column justify-content-center align-items-center my-0">
                                         <div class="w-100 d-flex flex-column gap-4 flex-md-row align-items-center">
-                                            <div class="flex-grow-1 d-flex flex-row justify-content-center custom-margin"><img src="assets/img/submitted/<?php echo $_SESSION['flogo']?>" class="img-fluid" alt="Company Logo" style="height: 100px;"></div>
-                                            <div><a href="logout" class="btn btn-secondary ms-auto"><i class="fa-solid fa-user-xmark"></i> Sign Out</a></div>
-                                            
+                                            <div class="flex-grow-1 d-flex flex-row justify-content-center"><img src="assets/img/submitted/<?php echo $_SESSION['flogo']?>" class="img-fluid" alt="Company Logo" style="height: 100px;"></div>
                                         </div>
                                         <div class="text-center">
                                             <p class="my-2">Signed in Under <strong><?php echo $_SESSION['firmname'];?></strong></p>
-                                            <p class="my-0"><strong>Choose</strong> a User to continue</p>
+                                            <p class="mt-0 mb-2"><strong>Choose</strong> a User to continue</p>
+                                            <p><a href="logout" class="small mb-0">logout</a></p>
                                         </div>
                                         
                                     </div>
