@@ -57,7 +57,7 @@ if (isset($_POST['submit'])) {
         // Move the uploaded file
         if (move_uploaded_file($fileTmpPath, $dest_path)) {
             // Handle file space optimization
-            $oldFileQuery = "SELECT File FROM case_docs WHERE CaseID = ? ORDER BY Created_on DESC LIMIT 1 OFFSET 1";
+            $oldFileQuery = "SELECT FilePath FROM case_docs WHERE CaseID = ? ORDER BY CreatedAt DESC LIMIT 1 OFFSET 1";
             $stmt = mysqli_prepare($conn, $oldFileQuery);
             mysqli_stmt_bind_param($stmt, "i", $CaseID);
             mysqli_stmt_execute($stmt);
@@ -70,9 +70,9 @@ if (isset($_POST['submit'])) {
             }
 
             // Insert new record into the database
-            $insertStmt = mysqli_prepare($conn, "INSERT INTO case_docs (DocName, CaseID, File, Extension, DraftingCost, Created_on) VALUES (?, ?, ?, ?, ?, ?)");
+            $insertStmt = mysqli_prepare($conn, "INSERT INTO case_docs (DocName, CaseID, FilePath, Extension, CreatedAt) VALUES (?, ?, ?, ?, ?)");
             if ($insertStmt) {
-                mysqli_stmt_bind_param($insertStmt, "sissis", $DocumentName, $CaseID, $newFileName, $Extension, $DraftingCost, $uploadTime);
+                mysqli_stmt_bind_param($insertStmt, "sisss", $DocumentName, $CaseID, $newFileName, $Extension, $uploadTime);
                 mysqli_stmt_execute($insertStmt);
                 mysqli_stmt_close($insertStmt);
                 $success_msg = 'Document uploaded successfully!';
