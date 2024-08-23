@@ -10,7 +10,7 @@ if(!isset($_SESSION['userid']) && !isset($_SESSION['fid'])){
 $success_msg = '';
 $error_msg = '';
 
-$option = 'Choose a court';
+$option = 'Choose a case';
 $option2 = '';
 $optionvalue = '';
 
@@ -138,16 +138,21 @@ if (isset($_POST['submit'])) {
                                             $user = $_SESSION['userid'];
                                             $firm = $_SESSION['fid'];
 
-                                            $stmt = $conn->prepare("SELECT CONCAT(c.casenumber,' - ',c.casename) AS case FROM cases c WHERE firmid = ?");
+                                            // Prepare the SQL statement
+                                            $stmt = $conn->prepare("SELECT CaseID, CONCAT(casenumber, ' - ', casename) AS identifier FROM cases WHERE firmid = ?");
                                             $stmt->bind_param("i", $firm); // "i" specifies the variable type as integer
                                             $stmt->execute();
                                             $caseResult = $stmt->get_result();
-                                            if ($caseResult) {
-                                                while ($row = mysqli_fetch_assoc($caseResult)) {
-                                                    echo '<option value="' . htmlspecialchars($row['CaseID']) . '">' . htmlspecialchars($row['case']) . '</option>';
-                                                }
+
+                                            // Fetch results and generate options
+                                            while ($row = $caseResult->fetch_assoc()) {
+                                                echo '<option value="' . htmlspecialchars($row['CaseID']) . '">' . htmlspecialchars($row['identifier']) . '</option>';
                                             }
+
+                                            // Close the statement
+                                            $stmt->close();
                                             ?>
+
                                         </select>
                                         <label for="inputCaseID">Case Name</label>
                                     </div>
