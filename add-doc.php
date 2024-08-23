@@ -137,7 +137,8 @@ if (isset($_POST['submit'])) {
                                             <?php
                                             $user = $_SESSION['userid'];
                                             $firm = $_SESSION['fid'];
-                                            $stmt = $conn->prepare("SELECT CONCAT(c.casenumber,' - ',c.casename) AS case FROM cases WHERE firmid = ?");
+
+                                            $stmt = $conn->prepare("SELECT CONCAT(c.casenumber,' - ',c.casename) AS case FROM cases c WHERE firmid = ?");
                                             $stmt->bind_param("i", $firm); // "i" specifies the variable type as integer
                                             $stmt->execute();
                                             $caseResult = $stmt->get_result();
