@@ -21,11 +21,12 @@ if (isset($_POST['submit'])) {
     $ClientType = $_POST['ClientType'];
     $Prefix = $_POST['Prefix'];
     $user = $_SESSION['userid'];
+    $firm = $_SESSION['fid'];
 
     // Prepare and execute the insert statement
-    $stmt = mysqli_prepare($conn, "INSERT INTO clients (ClientType, Prefix, FName, MName, LName, Email, Phone, Address, Belong_to) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt = mysqli_prepare($conn, "INSERT INTO clients (ClientType, Prefix, FName, MName, LName, Email, Phone, Address, userid, firmid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
     if ($stmt) {
-        mysqli_stmt_bind_param($stmt, "sssssssss", $ClientType, $Prefix, $FName, $MName, $LName, $Email, $Phone, $Address, $user);
+        mysqli_stmt_bind_param($stmt, "sssssssss", $ClientType, $Prefix, $FName, $MName, $LName, $Email, $Phone, $Address, $user, $firm);
         mysqli_stmt_execute($stmt);
         mysqli_stmt_close($stmt);
         $success_msg = 'Client added successfully!';
