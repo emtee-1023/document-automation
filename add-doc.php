@@ -135,11 +135,15 @@ if (isset($_POST['submit'])) {
                                         <select class="form-select" id="inputCaseID" name="CaseID">
                                             <option value="<?php echo $optionvalue?>" disabled selected><?php echo $option.' - '.$option2?></option>
                                             <?php
-                                            $caseQuery = "SELECT CaseID, CaseNumber, CaseName FROM cases";
-                                            $caseResult = mysqli_query($conn, $caseQuery);
+                                            $user = $_SESSION['userid'];
+                                            $firm = $_SESSION['fid'];
+                                            $stmt = $conn->prepare("SELECT CONCAT(c.casenumber,' - ',c.casename) AS case FROM cases WHERE firmid = ?");
+                                            $stmt->bind_param("i", $firm); // "i" specifies the variable type as integer
+                                            $stmt->execute();
+                                            $caseResult = $stmt->get_result();
                                             if ($caseResult) {
                                                 while ($row = mysqli_fetch_assoc($caseResult)) {
-                                                    echo '<option value="' . htmlspecialchars($row['CaseID']) . '">' . htmlspecialchars($row['CaseNumber']) . ' - '. htmlspecialchars($row['CaseName']) . '</option>';
+                                                    echo '<option value="' . htmlspecialchars($row['CaseID']) . '">' . htmlspecialchars($row['case']) . '</option>';
                                                 }
                                             }
                                             ?>
