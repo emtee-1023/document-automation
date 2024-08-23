@@ -36,7 +36,7 @@ if (isset($_POST['submit'])) {
             $error_msg = 'Case number already exists within this firm. If you have issues accessing it, contact administrator';
         } else {
             // Prepare and execute the insert statement
-            $stmt = mysqli_prepare($conn, "INSERT INTO cases (casenumber, casename, clientid, casedescription, casestatus, opendate, closedate, courtid, userid, firmid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?)");
+            $stmt = mysqli_prepare($conn, "INSERT INTO cases (casenumber, casename, clientid, casedescription, casestatus, opendate, closedate, courtid, userid, firmid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
             if ($stmt) {
                 mysqli_stmt_bind_param($stmt, "sssssssiii", $caseNumber, $caseName, $clientId, $caseDescription, $caseStatus, $openDate, $closeDate, $courtId, $user, $firm);
                 mysqli_stmt_execute($stmt);
