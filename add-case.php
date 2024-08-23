@@ -118,6 +118,7 @@ if (isset($_POST['submit'])) {
                                             <option value="" disabled selected>Choose Client</option>
                                             <?php
                                             $user = $_SESSION['userid'];
+                                            $firm = $_SESSION['fid'];
                                             // Prepare SQL query with parameterized statement
                                             $stmt = $conn->prepare("SELECT clientid, CONCAT(c.prefix,' ',c.fname,' ',c.lname) as clientname FROM clients c WHERE firmid = ?");
                                             $stmt->bind_param("i", $firm); // "i" specifies the variable type as integer
