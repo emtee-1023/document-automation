@@ -19,7 +19,7 @@ $pageTitle = '';
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="description" content="" />
         <meta name="author" content="" />
-        <title><?php echo $pageTitle;?></title>
+        <title><?php  $pageTitle;?></title>
         <link rel="stylesheet" href="https://cdn.datatables.net/2.1.3/css/dataTables.dataTables.css" />  
         <script src="https://cdn.datatables.net/2.1.3/js/dataTables.js"></script>
         <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />

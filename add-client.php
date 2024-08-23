@@ -31,7 +31,7 @@ if (isset($_POST['submit'])) {
         $success_msg = 'Client added successfully!';
     } else {
         // Error preparing the statement
-       echo 'Error preparing the SQL statement.';
+       $error_msg = 'Error preparing the SQL statement.';
     }
 }
 ?>
