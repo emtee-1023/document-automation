@@ -23,12 +23,15 @@ if (isset($_POST['submit'])) {
     $openDate = $_POST['OpenDate'];
     $closeDate = $_POST['CloseDate'];
     $courtId = $_POST['CourtName'];
+
+    $user = $_SESSION['userid'];
+    $firm = $_SESSION['fid'];
     
 
     // Check if case number already exists
     $checkStmt = mysqli_prepare($conn, "SELECT COUNT(*) FROM cases WHERE casenumber = ? AND firmid = ?");
     if ($checkStmt) {
-        mysqli_stmt_bind_param($checkStmt, "si", $caseName, $firm);
+        mysqli_stmt_bind_param($checkStmt, "si", $caseNumber, $firm);
         mysqli_stmt_execute($checkStmt);
         mysqli_stmt_bind_result($checkStmt, $count);
         mysqli_stmt_fetch($checkStmt);
@@ -38,6 +41,8 @@ if (isset($_POST['submit'])) {
             // Case name exists
             $error_msg = 'Case number already exists within this firm. If you have issues accessing it, contact administrator';
         } else {
+            $user = $_SESSION['userid'];
+            $firm = $_SESSION['fid'];
             // Prepare and execute the insert statement
             $stmt = mysqli_prepare($conn, "INSERT INTO cases (casenumber, casename, clientid, casedescription, casestatus, opendate, closedate, courtid, userid, firmid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
             if ($stmt) {
