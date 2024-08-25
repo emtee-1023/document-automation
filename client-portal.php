@@ -29,7 +29,7 @@ if (isset($_POST['login'])) {
                 $_SESSION['lname']=$row['LName'];
                 $_SESSION['email']=$row['Email'];
                 $_SESSION['photo']=$row['Photo'];
-                $_SESSION['user_type']=$row['User_type'];                
+                $_SESSION['user_type']='client';                
                 header('location: cases');
             } else {
                 // Incorrect password
