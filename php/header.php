@@ -19,7 +19,7 @@ $pageTitle = '';
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="description" content="" />
         <meta name="author" content="" />
-        <title><?php  $pageTitle;?></title>
+        <title><?php echo $pageTitle;?></title>
         <link rel="stylesheet" href="https://cdn.datatables.net/2.1.3/css/dataTables.dataTables.css" />  
         <script src="https://cdn.datatables.net/2.1.3/js/dataTables.js"></script>
         <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
@@ -29,7 +29,7 @@ $pageTitle = '';
     <body class="sb-nav-fixed">
         <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
             <!-- Navbar Brand-->
-            <a class="navbar-brand ps-3" href="index">Document Automation</a>
+            <a class="navbar-brand ps-3" href="index">E-Drafting</a>
             <!-- Sidebar Toggle-->
             <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
             <!-- Navbar Search-->
@@ -44,7 +44,7 @@ $pageTitle = '';
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="edit-profile?id=<?php  $_SESSION['userid'];?>">Profile Settings</a></li>
+                        <li><a class="dropdown-item" href="edit-profile?id=<?php echo $_SESSION['userid'];?>">Profile Settings</a></li>
                         <li><a class="dropdown-item" href="#">Activity Log</a></li>
                         <li><hr class="dropdown-divider" /></li>
                         <li><a class="dropdown-item" href="switch-user">Switch User</a></li>
