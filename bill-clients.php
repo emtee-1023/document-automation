@@ -70,6 +70,7 @@ if($_SESSION['user_type']=='client'){
                             </div>
                         </div>
                     <?php include $table;?>
+                    <?php if(isset($_GET['clientid'])){ include 'php/cleared-invoices-table.php';}?>
                     </div>
                 </main>
                 <?php include 'php/footer.php';?>

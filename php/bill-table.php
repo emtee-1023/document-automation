@@ -32,7 +32,7 @@
                                         JOIN 
                                             invoices i ON cl.clientid = i.clientid
                                         WHERE 
-                                            cl.firmid = ? AND i.Status = 'pending'
+                                            cl.firmid = ?
                                         GROUP BY 
                                             cl.clientid, c.caseid
 
@@ -50,8 +50,7 @@
                             <td>'.$row['Email'].'</td>
                             <td>'.$row['Phone'].'</td>
                             <td>'.$row['Address'].'</td>
-                            <td><a href="?clientid='.$row['ClientID'].'" class="">'.$row['invoiceCount'].'</a></td>
-                                                        
+                            <td><a href="?clientid='.$row['ClientID'].'" class="">'.$row['invoiceCount'].'</a></td>                                                        
                         </tr>';
                 }
             ?>

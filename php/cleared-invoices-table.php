@@ -52,10 +52,11 @@ if(isset($_GET['clientid'])){
     ?>
 </div>
 
+
 <div class="card mb-4">
     <div class="card-header">
         <i class="fas fa-table me-1"></i>
-        <?php echo $pending_title;?>
+        <?php echo $cleared_title;?>
     </div>
     <div class="card-body">
         <table id="datatablesSimple">
@@ -64,7 +65,7 @@ if(isset($_GET['clientid'])){
                     <th>Case Name</th>
                     <th>Invoice Number</th>
                     <th>Created On</th>
-                    <th>Mark Cleared</th>
+                    <th>Mark Pending</th>
                     <th>Download Invoice</th>
                     <th>Email Invoice</th>
                     <th>Delete Invoice</th>
@@ -85,7 +86,7 @@ if(isset($_GET['clientid'])){
                                     WHERE 
                                         c.firmid = ? 
                                         AND c.clientid = ?
-                                        AND i.status = 'pending';
+                                        AND i.status = 'cleared';
                     ");
             $stmt->bind_param("ii",$firm,$clientid);
             $stmt->execute();
@@ -96,15 +97,17 @@ if(isset($_GET['clientid'])){
                         <td>'.$row['casename'].'</td>
                         <td>'.$row['InvoiceNumber'].'</td>
                         <td>'.$row['CreatedAt'].'</td>
-                        <td><a href="clear-invoice?invid='.$row['InvoiceID'].'&clid='.$clientid.'" class="btn btn-primary btn-sm">Mark as Cleared</a></td>
+                        <td><a href="pending-invoice?invid='.$row['InvoiceID'].'&clid='.$clientid.'" class="btn btn-primary btn-sm">Mark as Pending</a></td>
                         <td><a href="invoice?invoiceid='.$row['InvoiceID'].'" class="btn btn-success btn-sm">Download Invoice</a></td>
                         <td><a href="?fileid='.$row['InvoiceID'].'" class="btn btn-success btn-sm">Email Invoice</a></td>
-                        <td><a href="delete?invoiceid='.$row['InvoiceID'].'&clientid='.$_GET['clientid'].'" class="btn btn-danger btn-sm">Delete Invoice</a></td>
-                                                    
+                        <td><a href="delete?invoiceid='.$row['InvoiceID'].'&clientid='.$_GET['clientid'].'" class="btn btn-danger btn-sm">Delete Invoice</a></td>          
                     </tr>';
             }
             ?>
+
             </tbody>
         </table>
     </div>
+
+    
 </div>

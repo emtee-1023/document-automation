@@ -4,7 +4,7 @@ include 'php/header.php';
 if (isset($_GET['invid']) && isset($_GET['clid'])) {
     $invoiceid = $_GET['invid'];
     $clientid = $_GET['clid'];
-    $cleared = 'cleared';
+    $pending = 'pending';
 
     // Debugging: Check if variables are set correctly
     if (empty($invoiceid) || empty($clientid)) {
@@ -15,7 +15,7 @@ if (isset($_GET['invid']) && isset($_GET['clid'])) {
     // Prepare the SQL statement
     $stmt = mysqli_prepare($conn, "UPDATE invoices SET Status = ? WHERE invoiceid = ?");
     if ($stmt) {
-        mysqli_stmt_bind_param($stmt, "si", $cleared, $invoiceid);
+        mysqli_stmt_bind_param($stmt, "si", $pending, $invoiceid);
         if (mysqli_stmt_execute($stmt)) {
             // Success
             mysqli_stmt_close($stmt);
@@ -38,6 +38,7 @@ if (isset($_GET['invid']) && isset($_GET['clid'])) {
     exit();
 }
 ?>
+
 <div class="row justify-content-end">
                 <?php 
                 if($error_msg!=''){
