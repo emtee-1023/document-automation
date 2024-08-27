@@ -3,6 +3,28 @@
 <?php
 $error_msg = '';
 $success_msg = '';
+$formData = []; // Initialize form data array
+$today = date('Y-m-d');
+
+
+// Check if caseid is set in the GET method
+if (isset($_GET['caseid'])) {
+    $caseid = $_GET['caseid'];
+    
+    // Query to get the client and case details based on caseid
+    $query = $conn->prepare("SELECT c.CaseID, cl.ClientID, c.CaseName, cl.Prefix, cl.FName, cl.LName, cl.Email, cl.Phone, cl.Address
+                             FROM cases c
+                             JOIN clients cl ON c.ClientID = cl.ClientID
+                             WHERE c.CaseID = ?");
+    $query->bind_param("i", $caseid);
+    $query->execute();
+    $result = $query->get_result();
+
+    if ($result->num_rows > 0) {
+        $formData = $result->fetch_assoc(); // Populate formData array with results
+    }
+}
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_POST['save-invoice'])) {
         // Start transaction
@@ -17,7 +39,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $userID = $_SESSION['userid'];  
             $firmID = $_SESSION['fid'];  
             $invoiceNumber = generateInvoiceNumber();  // Custom function to generate invoice number
-            
 
             $insertInvoiceQuery = "INSERT INTO invoices (InvoiceNumber, CreatedAt, ExpiresAt, Status, CaseID, ClientID, UserID, FirmID) 
                                    VALUES ('$invoiceNumber', '$createdAt', '$expiresAt', 'pending', '$caseID', '$clientID', '$userID', '$firmID')";
@@ -36,7 +57,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             mysqli_commit($conn);
 
             // Redirect or display a success message
-            $success_msg = "invoice generated successfuly";
+            $success_msg = "Invoice generated successfully";
+            header('location: bill-clients?caseid='.$caseID);
+            exit();
         } catch (Exception $e) {
             // Rollback transaction on error
             mysqli_rollback($conn);
@@ -55,7 +78,6 @@ function generateInvoiceNumber() {
 }
 ?>
 
-
 <div id="layoutSidenav">
     <?php include 'php/sidebar.php';?>
     <div id="layoutSidenav_content">
@@ -68,62 +90,53 @@ function generateInvoiceNumber() {
                 </ol>
                 <div class="row justify-content-end">
                 <?php 
-                if($error_msg!=''){
-                    echo
-                    '
-                    <div class="alert alert-danger" role="alert">
-                        '.$error_msg.'
-                    </div>
-                    ';}
-                ?>
-                <?php 
-                if($success_msg!=''){
-                    echo
-                    '
-                    <div class="alert alert-success" role="alert">
-                        '.$success_msg.'
-                    </div>
-                    ';}
+                if($error_msg != ''){
+                    echo '<div class="alert alert-danger" role="alert">'.$error_msg.'</div>';
+                }
+                if($success_msg != ''){
+                    echo '<div class="alert alert-success" role="alert">'.$success_msg.'</div>';
+                }
                 ?>
                     <form method="post" action="">
                         <!-- Select Case and Select Client on the same row -->
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <div class="form-floating">
-                                    <select class="form-select" id="inputClientID" name="ClientID" aria-label="client" required>
-                                        <option value="" disabled selected>Choose Client</option>
-                                        <?php
-                                        $firm = $_SESSION['fid'];
-                                        $clientQuery = "SELECT ClientID, concat(prefix,' ',fname,' ',mname,' ',lname) as ClientName FROM clients where FirmID = $firm";
-                                        $clientResult = mysqli_query($conn, $clientQuery);
-                                        if ($clientResult) {
-                                            while ($row = mysqli_fetch_assoc($clientResult)) {
-                                                $selected = ($row['ClientID'] == $formData['ClientID']) ? 'selected' : '';
-                                                echo '<option value="' . htmlspecialchars($row['ClientID']) . '">' . htmlspecialchars($row['ClientName']) . '</option>';
-                                            }
+                                <select class="form-select" id="inputClientID" name="ClientID" aria-label="client" required>
+                                    <option value="" disabled <?php echo empty($formData['ClientID']) ? 'selected' : ''; ?>>Choose Client</option>
+                                    <?php
+                                    $firm = $_SESSION['fid'];
+                                    $clientQuery = "SELECT ClientID, CONCAT(prefix,' ',fname,' ',mname,' ',lname) AS ClientName FROM clients WHERE FirmID = $firm";
+                                    $clientResult = mysqli_query($conn, $clientQuery);
+                                    if ($clientResult) {
+                                        while ($row = mysqli_fetch_assoc($clientResult)) {
+                                            $selected = (isset($formData['ClientID']) && $row['ClientID'] == $formData['ClientID']) ? 'selected' : '';
+                                            echo '<option value="' . htmlspecialchars($row['ClientID']) . '" ' . $selected . '>' . htmlspecialchars($row['ClientName']) . '</option>';
                                         }
-                                        ?>
-                                    </select>
-                                    <label for="inputClientID">Choose Client</label>
+                                    }
+                                    ?>
+                                </select>
+                                <label for="inputClientID">Choose Client</label>
                                 </div>
                             </div>
 
                             <div class="col-md-6">
                                 <div class="form-floating">
-                                    <select class="form-select" id="inputCaseID" name="CaseID">
-                                        <option value="" disabled selected>Choose Case</option>
-                                        <?php
-                                        $firm = $_SESSION['fid'];
-                                        $caseQuery = "SELECT CaseID, CONCAT('(',CaseNumber,')  -  ',CaseName) as matter FROM cases where FirmID =  $firm";
-                                        $caseResult = mysqli_query($conn, $caseQuery);
-                                        if ($caseResult) {
-                                            while ($row = mysqli_fetch_assoc($caseResult)) {
-                                                echo '<option value="' . htmlspecialchars($row['CaseID']) . '">' . htmlspecialchars($row['matter']) . '</option>';
-                                            }
+                                <select class="form-select" id="inputCaseID" name="CaseID">
+                                    <option value="" disabled <?php echo empty($formData['CaseID']) ? 'selected' : ''; ?>>Choose Case</option>
+                                    <?php
+                                    $firm = $_SESSION['fid'];
+                                    $caseQuery = "SELECT CaseID, CONCAT('(',CaseNumber,')  -  ',CaseName) AS matter FROM cases WHERE FirmID = $firm";
+                                    $caseResult = mysqli_query($conn, $caseQuery);
+                                    if ($caseResult) {
+                                        while ($row = mysqli_fetch_assoc($caseResult)) {
+                                            $selected = (isset($formData['CaseID']) && $row['CaseID'] == $formData['CaseID']) ? 'selected' : '';
+                                            echo '<option value="' . htmlspecialchars($row['CaseID']) . '" ' . $selected . '>' . htmlspecialchars($row['matter']) . '</option>';
                                         }
-                                        ?>
-                                    </select>
-                                    <label for="inputCaseID">Choose Case</label>
+                                    }
+                                    ?>
+                                </select>
+                                <label for="inputCaseID">Choose Case</label>
                                 </div>
                             </div>
                         </div>
@@ -132,19 +145,20 @@ function generateInvoiceNumber() {
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <div class="form-floating">
-                                    <input type="date" class="form-control" id="inputCreatedAt" name="CreatedAt" required>
+                                    <input type="date" class="form-control" id="inputCreatedAt" name="CreatedAt" 
+                                        value="<?php echo isset($formData['CreatedAt']) ? htmlspecialchars($formData['CreatedAt']) : $today; ?>" required>
                                     <label for="inputCreatedAt">Date Created</label>
                                 </div>
                             </div>
 
                             <div class="col-md-6">
                                 <div class="form-floating">
-                                    <input type="date" class="form-control" id="inputExpiresAt" name="ExpiresAt" required>
+                                    <input type="date" class="form-control" id="inputExpiresAt" name="ExpiresAt" 
+                                        value="<?php echo isset($formData['ExpiresAt']) ? htmlspecialchars($formData['ExpiresAt']) : ''; ?>">
                                     <label for="inputExpiresAt">Expiry Date</label>
                                 </div>
                             </div>
                         </div>
-
 
                         <h2>Invoice Items</h2>
 
@@ -177,8 +191,8 @@ function generateInvoiceNumber() {
                             <button type="submit" class="btn btn-primary" name="save-invoice">Save Invoice</button>
                         </div>
                     </form>
- 
                 </div>
+            </div>
             </div>
         </main>
         <?php include 'php/footer.php';?>

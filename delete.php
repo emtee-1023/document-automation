@@ -7,7 +7,7 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 //Deleting invoices
-if (isset($_GET['invoiceid']) && isset($_get['clientid'])) {
+if (isset($_GET['invoiceid']) && isset($_GET['clientid'])) {
     // Sanitize the file parameter
     $invoiceid = intval($_GET['invoiceid']); // Convert to integer for security
     $clientid = intval($_GET['clientid']); // Convert to integer for security
@@ -36,13 +36,7 @@ if (isset($_GET['invoiceid']) && isset($_get['clientid'])) {
     if ($row = $res->fetch_assoc()) {
         // The file exists in the database
         $fileName = $row['FilePath'];
-        $filepath = 'assets/files/submitted/' . $fileName;
-
-        // Check if file exists in the filesystem
-        if (file_exists($filepath)) {
-            // Delete the file
-            if (unlink($filepath)) {
-                $success_msg = "File deleted successfully.";
+        $filepath = 'assets/files/submitted/' . $fileName;    
 
                 // Start a transaction
                 $conn->begin_transaction();
@@ -62,7 +56,7 @@ if (isset($_GET['invoiceid']) && isset($_get['clientid'])) {
                     $conn->commit();
 
                     $success_msg = "Invoice and related items deleted successfully.";
-                    header('location: bill-clients?clientid='.$clientid);
+                    header('Location: bill-clients?clientid=' . urlencode($clientid));
                     exit();
                 } catch (Exception $e) {
                     // If there's an error, roll back the transaction
@@ -74,13 +68,6 @@ if (isset($_GET['invoiceid']) && isset($_get['clientid'])) {
                 // Close the statements
                 $stmt1->close();
                 $stmt2->close();
-
-            } else {
-                $error_msg = "Error deleting the file.";
-            }
-        } else {
-            $error_msg = "File does not exist.";
-        }
     } else {
         // No matching record found or the file doesn't belong to the user
         $rror_msg = "File does not exist.";

@@ -20,24 +20,26 @@
             <?php
                 $owner = $_SESSION['userid'];
                 $firm = $_SESSION['fid'];
+                $caseid = 
                 // Use a prepared statement to avoid SQL injection
                 $stmt = $conn->prepare("SELECT 
-                                            cl.*, 
+                                            c.CaseID,
                                             c.CaseName, 
+                                            cl.*, 
                                             COUNT(i.invoiceid) AS invoiceCount
                                         FROM 
-                                            clients cl
+                                            cases c
                                         JOIN 
-                                            cases c ON cl.clientid = c.clientid
-                                        JOIN 
-                                            invoices i ON cl.clientid = i.clientid
+                                            clients cl ON cl.clientid = c.clientid
+                                        LEFT JOIN 
+                                            invoices i ON c.caseid = i.caseid
                                         WHERE 
                                             cl.firmid = ?
                                         GROUP BY 
-                                            cl.clientid, c.caseid
+                                            c.CaseID
+
 
                         ");
-                        $owner = 1;
                 $stmt->bind_param("i",$firm);
                 $stmt->execute();
                 $res = $stmt->get_result();
@@ -50,7 +52,7 @@
                             <td>'.$row['Email'].'</td>
                             <td>'.$row['Phone'].'</td>
                             <td>'.$row['Address'].'</td>
-                            <td><a href="?clientid='.$row['ClientID'].'" class="">'.$row['invoiceCount'].'</a></td>                                                        
+                            <td><a href="?caseid='.$row['CaseID'].'" class="">'.$row['invoiceCount'].'</a></td>                                                        
                         </tr>';
                 }
             ?>
