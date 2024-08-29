@@ -38,8 +38,9 @@ if(isset($_GET['status'])){
                 <tr>
                     <th>Case Number</th>
                     <th>Case Name</th>
-                    <th>Client Name</th>
                     <th>Case Description</th>
+                    <th>Client Name</th>
+                    <th>Advocate in Charge</th>
                     <th>Case Status</th>
                     <th>Open Date</th>
                     <th>Close Date</th>
@@ -51,12 +52,13 @@ if(isset($_GET['status'])){
             <tbody>
             <?php
             $owner = $_SESSION['userid'];
-            $owner = 1;
+            $firm = $_SESSION['fid'];
 
             // Use a prepared statement to avoid SQL injection
             $stmt = $conn->prepare("SELECT
                                         c1.*,
                                         CONCAT(c2.prefix, ' ', c2.fname, ' ', c2.lname) as ClientName,
+                                        CONCAT(u.fname,' ',u.lname) as advocatename,
                                         c3.courtname as CourtName
                                     FROM 
                                         cases c1
@@ -64,9 +66,11 @@ if(isset($_GET['status'])){
                                         clients c2 ON c1.clientid = c2.clientid
                                     JOIN
                                         courts c3 ON c1.courtid = c3.courtid
+                                    JOIN 
+                                        users u on u.userid = c1.userid
                                     WHERE 
-                                        c1.userid = ? $cond");
-            $stmt->bind_param("i", $owner);
+                                        c1.firmid = ?");
+            $stmt->bind_param("i", $firm);
             $stmt->execute();
             $res = $stmt->get_result();
 
@@ -94,8 +98,9 @@ if(isset($_GET['status'])){
                 echo '<tr>
                         <td>'.$row['CaseNumber'].'</td>
                         <td>'.$row['CaseName'].'</td>
-                        <td>'.$row['ClientName'].'</td>
                         <td>'.$row['CaseDescription'].'</td>
+                        <td>'.$row['ClientName'].'</td>
+                        <td>'.$row['advocatename'].'</td>
                         <td>'.$row['CaseStatus'].'</td>
                         <td>'.$row['OpenDate'].'</td>
                         <td>'.$row['CloseDate'].'</td>

@@ -23,6 +23,7 @@ if (isset($_POST['submit'])) {
     $openDate = $_POST['OpenDate'];
     $closeDate = $_POST['CloseDate'];
     $courtId = $_POST['CourtName'];
+    $advocate = $_POST['AdvocateAssigned'];
 
     $user = $_SESSION['userid'];
     $firm = $_SESSION['fid'];
@@ -46,7 +47,7 @@ if (isset($_POST['submit'])) {
             // Prepare and execute the insert statement
             $stmt = mysqli_prepare($conn, "INSERT INTO cases (casenumber, casename, clientid, casedescription, casestatus, opendate, closedate, courtid, userid, firmid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
             if ($stmt) {
-                mysqli_stmt_bind_param($stmt, "sssssssiii", $caseNumber, $caseName, $clientId, $caseDescription, $caseStatus, $openDate, $closeDate, $courtId, $user, $firm);
+                mysqli_stmt_bind_param($stmt, "sssssssiii", $caseNumber, $caseName, $clientId, $caseDescription, $caseStatus, $openDate, $closeDate, $courtId, $advocate, $firm);
                 mysqli_stmt_execute($stmt);
                 mysqli_stmt_close($stmt);
                 $success_msg = 'Case created successfully!';
@@ -142,6 +143,34 @@ if (isset($_POST['submit'])) {
                                             ?>
                                         </select>
                                         <label for="inputClientName">Client Name</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Advocate Assigned-->
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <select class="form-select" id="inputAdvocate" name="AdvocateAssigned" aria-label="AdvocateAssigned">
+                                            <option value="" disabled selected>Choose Advocate</option>
+                                            <?php
+                                            $user = $_SESSION['userid'];
+                                            $firm = $_SESSION['fid'];
+                                            // Prepare SQL query with parameterized statement
+                                            $stmt = $conn->prepare("SELECT userid, CONCAT(fname,' ',lname) as advocatename FROM users WHERE firmid = ? AND User_type = 'advocate'");
+                                            $stmt->bind_param("i", $firm); // "i" specifies the variable type as integer
+                                            $stmt->execute();
+                                            $result = $stmt->get_result();
+
+                                            // Fetch and display options
+                                            while ($row = $result->fetch_assoc()) {
+                                                echo '<option value="' . htmlspecialchars($row["userid"]) . '">' . htmlspecialchars($row["advocatename"]) . '</option>';
+                                            }
+
+                                            $stmt->close();
+                                            ?>
+                                        </select>
+                                        <label for="inputClientName">Advocate in Charge</label>
                                     </div>
                                 </div>
                             </div>

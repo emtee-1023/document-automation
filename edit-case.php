@@ -29,12 +29,13 @@ $CaseStatus = '';
 $OpenDate = '';
 $CloseDate = '';
 $CourtName = '';
+$AdvocateName = '';
 
 // Fetch existing case details
-if ($stmt = mysqli_prepare($conn, "SELECT casenumber, casename, clientid, casedescription, casestatus, opendate, closedate, courtid FROM cases WHERE caseid = ? AND userid = ?")) {
-    mysqli_stmt_bind_param($stmt, "ii", $case_id, $user);
+if ($stmt = mysqli_prepare($conn, "SELECT casenumber, casename, clientid, casedescription, casestatus, opendate, closedate, courtid, userid FROM cases WHERE caseid = ?")) {
+    mysqli_stmt_bind_param($stmt, "i", $case_id);
     mysqli_stmt_execute($stmt);
-    mysqli_stmt_bind_result($stmt, $CaseNumber, $CaseName, $ClientName, $CaseDescription, $CaseStatus, $OpenDate, $CloseDate, $CourtName);
+    mysqli_stmt_bind_result($stmt, $CaseNumber, $CaseName, $ClientName, $CaseDescription, $CaseStatus, $OpenDate, $CloseDate, $CourtName, $AdvocateName);
     mysqli_stmt_fetch($stmt);
     mysqli_stmt_close($stmt);
 } else {
@@ -51,11 +52,12 @@ if (isset($_POST['submit'])) {
     $OpenDate = $_POST['OpenDate'];
     $CloseDate = $_POST['CloseDate'];
     $CourtName = $_POST['CourtName'];
+    $AdvocateName = $_POST['AdvocateAssigned'];
 
     // Check if the new case number already exists (excluding the current case)
     $checkStmt = mysqli_prepare($conn, "SELECT COUNT(*) FROM cases WHERE casenumber = ? AND caseid != ? AND firmid = ?");
     if ($checkStmt) {
-        mysqli_stmt_bind_param($checkStmt, "sii", $CaseNumber, $case_id, $user);
+        mysqli_stmt_bind_param($checkStmt, "sii", $CaseNumber, $case_id, $firm);
         mysqli_stmt_execute($checkStmt);
         mysqli_stmt_bind_result($checkStmt, $count);
         mysqli_stmt_fetch($checkStmt);
@@ -67,7 +69,7 @@ if (isset($_POST['submit'])) {
             // Update case details
             $stmt = mysqli_prepare($conn, "UPDATE cases SET casenumber = ?, casename = ?, clientid = ?, casedescription = ?, casestatus = ?, opendate = ?, closedate = ?, courtid = ?, userid = ?, firmid = ? WHERE caseid = ? AND userid = ?");
             if ($stmt) {
-                mysqli_stmt_bind_param($stmt, "sssssssiiiii", $CaseNumber, $CaseName, $ClientName, $CaseDescription, $CaseStatus, $OpenDate, $CloseDate, $CourtName, $user, $firm, $case_id, $user);
+                mysqli_stmt_bind_param($stmt, "sssssssiiiii", $CaseNumber, $CaseName, $ClientName, $CaseDescription, $CaseStatus, $OpenDate, $CloseDate, $CourtName, $AdvocateName, $firm, $case_id, $user);
                 mysqli_stmt_execute($stmt);
                 mysqli_stmt_close($stmt);
                 $success_msg = 'Case Details updated successfully!';
@@ -80,6 +82,7 @@ if (isset($_POST['submit'])) {
                 $OpenDate = $OpenDate;
                 $CloseDate = $CloseDate;
                 $CourtName = $CourtName;
+                $AdvocateName = $AdvocateName;
 
             } else {
                 $error_msg = 'Error preparing the SQL statement for update.';
@@ -168,6 +171,34 @@ if (isset($_POST['submit'])) {
                                             ?>
                                         </select>
                                         <label for="inputClientName">Client Name</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Advocate Assigned-->
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <select class="form-select" id="inputAdvocate" name="AdvocateAssigned" aria-label="AdvocateAssigned">
+                                            <option value="" disabled selected>Choose Advocate</option>
+                                            <?php
+                                            $user = $_SESSION['userid'];
+                                            $firm = $_SESSION['fid'];
+                                            // Prepare SQL query with parameterized statement
+                                            $stmt = $conn->prepare("SELECT userid, CONCAT(fname,' ',lname) as advocatename FROM users WHERE firmid = ? AND User_type = 'advocate'");
+                                            $stmt->bind_param("i", $firm); // "i" specifies the variable type as integer
+                                            $stmt->execute();
+                                            $result = $stmt->get_result();
+
+                                            while ($row = $result->fetch_assoc()) {
+                                                $selected = ($row["userid"] == $AdvocateName) ? 'selected' : '';
+                                                echo '<option value="' . htmlspecialchars($row["userid"]) . '" ' . $selected . '>' . htmlspecialchars($row["advocatename"]) . '</option>';
+                                            }
+
+                                            $stmt->close();
+                                            ?>
+                                        </select>
+                                        <label for="inputClientName">Advocate in Charge</label>
                                     </div>
                                 </div>
                             </div>
