@@ -51,6 +51,25 @@ if (isset($_POST['submit'])) {
                 mysqli_stmt_bind_param($insertStmt, "sssss", $FirmName, $FirmMail, $Address, $hashedPassword, $newPhoto);
                 if (mysqli_stmt_execute($insertStmt)) {
                     $success_msg = 'Firm added successfully!';
+
+                // Get Firm ID
+                $checkIDStmt = mysqli_prepare($conn, "SELECT firmid FROM firms WHERE Email = ?");
+                if ($checkIDStmt) {
+                    mysqli_stmt_bind_param($checkIDStmt, "s", $FirmMail);
+                    mysqli_stmt_execute($checkIDStmt);
+                    mysqli_stmt_bind_result($checkIDStmt, $firmid);
+                    mysqli_stmt_fetch($checkIDStmt);
+                    mysqli_stmt_close($checkIDStmt);
+                } else {
+                    die("Error preparing SELECT statement: " . mysqli_error($conn));
+                }
+
+                // Prepare and execute the INSERT statement
+                $stmt = mysqli_prepare($conn, "INSERT INTO users (FName, LName, Email, Password, User_type, FirmID) VALUES (?, ?, ?, ?, ?, ?)");
+                if ($stmt) {
+                    mysqli_stmt_bind_param($stmt, "sssssi", 'Administrator', '', $FirmMail, $hashedPassword, 'admin', $firmid);
+                    mysqli_stmt_execute($stmt);
+                    mysqli_stmt_close($stmt);
                 } else {
                     $error_msg = 'Error executing the SQL statement.';
                 }
