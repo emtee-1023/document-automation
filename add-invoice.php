@@ -73,6 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 }
 
+
 function generateInvoiceNumber() {
     return 'INV-' . strtoupper(uniqid());
 }

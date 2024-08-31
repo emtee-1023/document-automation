@@ -10,5 +10,47 @@
         <script src="assets/demo/chart-bar-demo.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
         <script src="js/datatables-simple-demo.js"></script>
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+
+        <script>
+            $(document).ready(function() {
+            // Show notification details in modal
+            $('#notificationModal').on('show.bs.modal', function (event) {
+                var button = $(event.relatedTarget); // Button that triggered the modal
+                var notifId = button.data('id'); // Extract info from data-* attributes
+
+                // AJAX request to fetch notification details
+                $.ajax({
+                    url: 'php/notification-details', // PHP script to fetch details
+                    type: 'GET',
+                    dataType: 'json',
+                    data: { id: notifId },
+                    success: function(response) {
+                        $('#notifSubject').text(response.subject || 'No subject');
+                        $('#notifText').text(response.text || 'No text');
+                        
+                        // Update the notification as read
+                        $.ajax({
+                            url: 'php/notification-details', // PHP script to update the notification status
+                            type: 'GET',
+                            data: { notifid: notifId }
+                        });
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error fetching notification details:', status, error);
+                    }
+                });
+            });
+
+                // Refresh the page when the modal is closed
+                $('#notificationModal').on('hidden.bs.modal', function () {
+                    // Reload the page
+                    location.reload();
+                });
+            });
+
+        </script>
+
     </body>
 </html>

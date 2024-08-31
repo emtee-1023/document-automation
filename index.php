@@ -1,5 +1,7 @@
 <?php include 'php/header.php';?>
 
+<?php include 'notifications.php';?>
+
 <div id="layoutSidenav">
             <?php include 'php/sidebar.php';?>
             <div id="layoutSidenav_content">

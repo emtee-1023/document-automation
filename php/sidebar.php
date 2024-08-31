@@ -39,9 +39,9 @@
                                 <div class="sb-nav-link-icon"><i class="fa-solid fa-money-check-dollar"></i></i></div>
                                 Invoice Clients
                             </a>
-                            <a class="nav-link" href="calendar">
-                                <div class="sb-nav-link-icon"><i class="fa-solid fa-calendar"></i></i></div>
-                                Calendar
+                            <a class="nav-link" href="reminders">
+                                <div class="sb-nav-link-icon"><i class="fa-regular fa-calendar"></i></i></div>
+                                Reminders
                             </a>';
                             } else {
                                 echo '<a class="nav-link" href="bill-clients">
@@ -51,6 +51,10 @@
 
                             }
                             ?>
+                            <a class="nav-link" href="tasks">
+                                <div class="sb-nav-link-icon"><i class="fa-solid fa-list-check"></i></div>
+                                Task Manager
+                            </a>
                             
                             <?php
                             if($_SESSION['user_type']!='client'){

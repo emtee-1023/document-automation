@@ -72,10 +72,52 @@ if (isset($_GET['invoiceid']) && isset($_GET['clientid'])) {
         // No matching record found or the file doesn't belong to the user
         $rror_msg = "File does not exist.";
     }
+} 
+
+//Deleting tasks
+else if (isset($_GET['taskid']) && isset($_GET['assignee'])) {
+    // Sanitize the file parameter
+    $taskid = intval($_GET['taskid']); // Convert to integer for security
+    $assignee = intval($_GET['assignee']); // Convert to integer for security
+    
+    $user = $_SESSION['userid'];
+    $firm = $_SESSION['fid'];
+
+    // Prepare the statement to delete from task_assignments
+    $stmt1 = $conn->prepare("DELETE FROM task_assignments WHERE UserID = ?");
+    $stmt1->bind_param("i", $assignee);
+    $stmt1->execute();
+
+    $success_msg = "Task Assignment Deleted Successfuly";
+    header('Location: tasks');
+    exit();
+
+    $stmt1->close();
+
+}
+//Deleting reminders
+else if (isset($_GET['reminderid'])) {
+    // Sanitize the file parameter
+    $reminderid = intval($_GET['reminderid']); // Convert to integer for security
+    
+    $user = $_SESSION['userid'];
+    $firm = $_SESSION['fid'];
+
+    // Prepare the statement to delete from reminders
+    $stmt1 = $conn->prepare("DELETE FROM reminders WHERE reminderid = ?");
+    $stmt1->bind_param("i", $reminderid);
+    $stmt1->execute();
+
+    $success_msg = "Reminder Deleted Successfuly";
+    header('Location: reminders');
+    exit();
+
+    $stmt1->close();
+
 } else {
     // No file parameter passed, unauthorized access
     $error_msg = "Unauthorized access.";
-    header('location: bill-clients');
+    header('location: index');
     exit();
 }  
 
