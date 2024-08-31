@@ -2,19 +2,18 @@
 
 <?php include 'notifications.php';?>
 
-
 <?php
     if (isset($_GET['caseid'])){
         $caseid = $_GET['caseid'];
-        $owner = $_SESSION['userid'];
+        $client = $_SESSION['clientid'];
         $firm = $_SESSION['fid'];
         
         // Use a prepared statement to avoid SQL injection
-        $stmt = $conn->prepare("SELECT * FROM cases c WHERE userid = ? AND caseid = ?");
+        $stmt = $conn->prepare("SELECT * FROM cases c WHERE clientid = ? AND caseid = ?");
         if (!$stmt) {
             die('Prepare failed: ' . $conn->error);
         }
-        $stmt->bind_param("ii",$owner,$caseid);
+        $stmt->bind_param("ii",$client,$caseid);
         $stmt->execute();
         $res = $stmt->get_result();
         $row = $res->fetch_assoc();
@@ -28,8 +27,7 @@
         $nav_path = "cases"; 
         $nav_current = $casename;
         $subt = "Showing all uploaded case documents under <strong>case: ".$casename."</strong>";
-        $button = "Upload doc to case";
-        $button_path = "add-doc?caseid=".$caseid;
+       
 
     } else {
         $title = "Case Documents";
@@ -37,12 +35,7 @@
         $nav_path = "index"; 
         $nav_current = "Cases";
         $subt = "Displaying all case Documents";
-        $button = "Upload Document";
-        $button_path = "add-doc";
-    }
-
-    if($_SESSION['user_type']=='client'){
-        $button = '';
+        
     }
 ?>
 
@@ -61,9 +54,6 @@
                         </ol>
                         <div class="row justify-content-end">
                             <div class="col-xl-3 col-md-6">
-                                <div class="mt-4 mb-5 float-end">
-                                    <a href="<?php echo $button_path?>" class="btn btn-secondary"><i class="fa-solid fa-file"></i> <?php echo $button?></a>
-                                </div>
                             </div>
                         </div>
                     <?php include 'php/docs-table.php';?>

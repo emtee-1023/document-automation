@@ -1,5 +1,8 @@
 <?php include 'php/header.php';?>
 
+<?php include 'notifications.php';?>
+
+
 <?php
 if ($_SESSION['user_type'] != 'admin' && $_SESSION['user_type'] != 'super admin') {
     header('location: 401');

@@ -1,5 +1,8 @@
 <?php include 'php/header.php';?>
 
+<?php include 'notifications.php';?>
+
+
 <?php
 if (!isset($_SESSION['userid']) && !isset($_SESSION['fid'])) {
     header('location: firm-login');

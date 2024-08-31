@@ -2,11 +2,10 @@
 
 <?php include 'notifications.php';?>
 
-
 <?php
 if(isset($_GET['caseid'])){
     $caseid = $_GET['caseid'];
-    $owner = $_SESSION['userid'];
+    $client = $_SESSION['clientid'];
     $firm = $_SESSION['fid'];
 
     // Use a prepared statement to avoid SQL injection
@@ -18,10 +17,10 @@ if(isset($_GET['caseid'])){
                             JOIN
                                 clients cl ON c.ClientID = cl.ClientID
                             WHERE 
-                                c.CaseID = ? AND c.FirmID = ?
+                                c.CaseID = ?
     ");
 
-    $stmt->bind_param("ii", $caseid, $firm);
+    $stmt->bind_param("i", $caseid);
     $stmt->execute();
     $res = $stmt->get_result();
     $row = $res->fetch_assoc();
@@ -33,8 +32,7 @@ if(isset($_GET['caseid'])){
     $nav_path = "bill-clients"; 
     $nav_current = "Case ".$casename;
     $subt = "Showing pending invoices for case: ".$casename;
-    $btn = '<a href="add-invoice?caseid='.$caseid.'" class="btn btn-secondary"><i class="fa-solid fa-receipt"></i> Create New Invoice</a>';
-    $table = "php/bill-client-table.php";  
+    $table = "php/case-invoices-table.php";  
 }else {
     $title = "Case Invoices";
     $casename = "Cases";
@@ -42,12 +40,7 @@ if(isset($_GET['caseid'])){
     $nav_path = "index";
     $nav_current = "Billing";
     $subt = "Showing cases with pending invoices";
-    $btn = '<a href="add-invoice" class="btn btn-secondary"><i class="fa-solid fa-receipt"></i> Create New Invoice</a>';
-    $table = "php/bill-table.php";
-}
-
-if($_SESSION['user_type']=='client'){
-    $btn = '<a href="add-invoice" class="btn btn-secondary"><i class="fa-solid fa-receipt"></i> Upload Proof Of Payment</a>';
+    $table = "php/invoices-table.php";
 }
 
 ?>
@@ -67,9 +60,7 @@ if($_SESSION['user_type']=='client'){
                 </ol>
                 <div class="row justify-content-end">
                     <div class="col-xl-3 col-md-6">
-                        <div class="mt-4 mb-5 float-end">
-                            <?php echo $btn;?>
-                        </div>
+                        
                     </div>
                 </div>
                 <?php include $table;?>

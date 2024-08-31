@@ -2,9 +2,8 @@
 
 <?php include 'notifications.php';?>
 
-
 <?php
-$owner = $_SESSION['userid'];
+$client = $_SESSION['clientid'];
 $firm = $_SESSION['fid'];
 
 if(isset($_GET['status'])&& isset($_GET['courtid'])){
@@ -82,15 +81,6 @@ if(isset($_GET['status'])&& isset($_GET['courtid'])){
                         <div class="row justify-content-end">
                             <div class="col-xl-3 col-md-6">
                                 <div class="mt-4 mb-5 float-end">
-                                    <?php
-                                    if($_SESSION['user_type']!="client"){
-                                        echo '
-                                        <a href="add-case" class="btn btn-secondary"><i class="fa-solid fa-briefcase"></i> Create New Case</a>
-                                        
-                                        ';
-                                    }
-                                    ?>
-                                    
                                 </div>
                             </div>
                         </div>

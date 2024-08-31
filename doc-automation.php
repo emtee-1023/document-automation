@@ -1,6 +1,7 @@
-<?php
-include 'php/header.php';
-?>
+<?php include 'php/header.php';?>
+
+<?php include 'notifications.php';?>
+
 
         <div id="layoutSidenav">
             <?php require 'php/sidebar.php'?>

@@ -8,22 +8,17 @@
                                 Dashboard
                             </a>
                             <div class="sb-sidenav-menu-heading">Utilities</div>
-                            <?php
-                            if($_SESSION['user_type']!='client'){
-                                echo '
-                                <a class="nav-link" href="clients">
-                                    <div class="sb-nav-link-icon"><i class="fa-solid fa-users"></i></div>
-                                    Clients
-                                </a>
-
-                                <a class="nav-link" href="courts">
-                                    <div class="sb-nav-link-icon"><i class="fa-solid fa-gavel"></i></div>
-                                    Courts
-                                </a>
-                                ';
-                            }
-                            ?>
                             
+                            <a class="nav-link" href="clients">
+                                <div class="sb-nav-link-icon"><i class="fa-solid fa-users"></i></div>
+                                Clients
+                            </a>
+
+                            <a class="nav-link" href="courts">
+                                <div class="sb-nav-link-icon"><i class="fa-solid fa-gavel"></i></div>
+                                Courts
+                            </a>
+                                
                             <a class="nav-link" href="cases">
                                 <div class="sb-nav-link-icon"><i class="fa-solid fa-briefcase"></i></div>
                                 Cases
@@ -33,39 +28,25 @@
                                 Case Documents
                             </a>
 
-                            <?php
-                            if($_SESSION['user_type']!='client'){
-                                echo '<a class="nav-link" href="bill-clients">
+                           '<a class="nav-link" href="bill-clients">
                                 <div class="sb-nav-link-icon"><i class="fa-solid fa-money-check-dollar"></i></i></div>
                                 Invoice Clients
                             </a>
                             <a class="nav-link" href="reminders">
                                 <div class="sb-nav-link-icon"><i class="fa-regular fa-calendar"></i></i></div>
                                 Reminders
-                            </a>';
-                            } else {
-                                echo '<a class="nav-link" href="bill-clients">
-                                <div class="sb-nav-link-icon"><i class="fa-solid fa-money-check-dollar"></i></i></div>
-                                Client Invoices
-                            </a>';
-
-                            }
-                            ?>
+                            </a>
+                           
                             <a class="nav-link" href="tasks">
                                 <div class="sb-nav-link-icon"><i class="fa-solid fa-list-check"></i></div>
                                 Task Manager
                             </a>
                             
-                            <?php
-                            if($_SESSION['user_type']!='client'){
-                                echo '
-                                <div class="sb-sidenav-menu-heading">Doc-Automation</div>
-                            <a class="nav-link" href="tables">
+                            <div class="sb-sidenav-menu-heading">Doc-Automation</div>
+                            <a class="nav-link" href="doc-automation">
                                 <div class="sb-nav-link-icon"><i class="fa-solid fa-print"></i></div>
                                 Generate Document
-                            </a>';
-                            }
-                            ?>
+                            </a>
                             
                             <?php
                             if($_SESSION['user_type']=='admin' || $_SESSION['user_type']=='super admin'){

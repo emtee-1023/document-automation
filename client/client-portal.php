@@ -5,13 +5,13 @@ session_start();
 $error_msg = '';
 
 if (isset($_POST['login'])) {
-    $firm_email = $_POST['email'];
-    $firm_pass = $_POST['password'];
+    $client_email = $_POST['email'];
+    $client_pass = $_POST['password'];
 
     // Prepare a statement
-    if ($stmt = mysqli_prepare($conn, "SELECT * FROM firms WHERE firmmail = ?")) {
+    if ($stmt = mysqli_prepare($conn, "SELECT * FROM clients WHERE email = ?")) {
         // Bind parameters
-        mysqli_stmt_bind_param($stmt, "s", $firm_email);
+        mysqli_stmt_bind_param($stmt, "s", $client_email);
 
         // Execute the statement
         mysqli_stmt_execute($stmt);
@@ -22,16 +22,18 @@ if (isset($_POST['login'])) {
         // Check if a user was found
         if ($row = mysqli_fetch_assoc($res)) {
             // User found, now you can verify the password
-            if ($firm_pass == $row['FirmPass']) {
+            if ($client_pass == $row['PortalPass']) {
                 // Password is correct, proceed with login
+                $_SESSION['clientid']=$row['ClientID'];
+                $_SESSION['userid'] = $row['ClientID'];
+                $_SESSION['fname']=$row['FName'];
+                $_SESSION['mname']=$row['MName'];
+                $_SESSION['lname']=$row['LName'];
+                $_SESSION['email']=$row['Email'];
+
                 $_SESSION['fid']=$row['FirmID'];
-                $_SESSION['firmname']=$row['FirmName'];
-                $_SESSION['fmail']=$row['FirmMail'];
-                $_SESSION['fpass']=$row['FirmPass'];
-                $_SESSION['faddress']=$row['FirmAddress'];
-                $_SESSION['flogo']=$row['FirmLogo']; 
-                $_SESSION['fstatus']=$row['FirmStatus'];                 
-                header('location: choose-user');
+                
+                header('location: index');
             } else {
                 // Incorrect password
                 $error_msg = 'invalid credentials';
@@ -45,7 +47,7 @@ if (isset($_POST['login'])) {
         mysqli_stmt_close($stmt);
     } else {
         // Error preparing the statement
-        echo "Error preparing the SQL statement.";
+        $error_msg = "Error preparing the SQL statement.";
     }
 }
 
@@ -59,7 +61,7 @@ if (isset($_POST['login'])) {
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="description" content="" />
         <meta name="author" content="" />
-        <title>Firm Login - DocAuto</title>
+        <title>Client Login - DocAuto</title>
         <link href="css/styles.css" rel="stylesheet" />
         <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
     </head>
@@ -83,12 +85,12 @@ if (isset($_POST['login'])) {
                                         
                                 </div>
                                 <div class="card shadow-lg border-0 rounded-lg mt-5">
-                                    <div class="card-header"><h3 class="text-center font-weight-light my-4">Login to Firm</h3></div>
+                                    <div class="card-header"><h3 class="text-center font-weight-light my-4">Login to Client Portal</h3></div>
                                     <div class="card-body">
                                         <form method="post" action="">
                                             <div class="form-floating mb-3">
                                                 <input class="form-control" id="inputEmail" type="email" placeholder="email address" name="email"/>
-                                                <label for="inputEmail">Firm Email address</label>
+                                                <label for="inputEmail">Email address</label>
                                             </div>
                                             <div class="form-floating mb-3">
                                                 <input class="form-control" id="inputPassword" type="password" placeholder="Password" name="password"/>
@@ -105,7 +107,7 @@ if (isset($_POST['login'])) {
                                         </form>
                                     </div>
                                     <div class="card-footer text-center py-3">
-                                        <div class="small"><a href="client/client-portal">proceed to client portal</a></div>
+                                        <div class="small"><a href="firm-login">Login as Firm</a></div>
                                     </div>
                                 </div>
                             </div>
