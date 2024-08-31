@@ -165,7 +165,9 @@ if (isset($_POST['submit'])) {
                                                     <select class="form-select" id="inputUserType" name="User_type" aria-label="User Type">
                                                         <option value="" disabled selected>Select User Type</option>
                                                         <option value="admin">Admin</option>
-                                                        <option value="standard user">Standard User</option>
+                                                        <option value="advocate">Advocate</option>
+                                                        <option value="clerk">Clerk</option>
+                                                        <option value="intern">Intern</option>
                                                     </select>
                                                     <label for="inputUserType">User Type</label>
                                                 </div>
