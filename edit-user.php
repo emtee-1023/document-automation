@@ -153,7 +153,9 @@ if (isset($_POST['submit'])) {
                                                     <select class="form-select" id="inputUserType" name="User_type" aria-label="User Type">
                                                         <option value="" disabled>Select user type</option>
                                                         <option value="admin" <?php if($User_type == 'admin') echo 'selected'; ?>>Admin</option>
-                                                        <option value="standard user" <?php if($User_type == 'standard user') echo 'selected'; ?>>Standard User</option>
+                                                        <option value="advocate" <?php if($User_type == 'advocate') echo 'selected'; ?>>Advocate</option>
+                                                        <option value="clerk" <?php if($User_type == 'clerk') echo 'selected'; ?>>Clerk</option>
+                                                        <option value="intern" <?php if($User_type == 'intern') echo 'selected'; ?>>Intern</option>
                                                     </select>
                                                     <label for="inputUserType">User Type</label>
                                                 </div>
