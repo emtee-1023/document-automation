@@ -22,7 +22,8 @@ if (isset($_POST['login'])) {
         // Check if a user was found
         if ($row = mysqli_fetch_assoc($res)) {
             // User found, now you can verify the password
-            if ($firm_pass == $row['FirmPass']) {
+            
+            if (password_verify($firm_pass, $row['FirmPass'])) {
                 // Password is correct, proceed with login
                 $_SESSION['fid']=$row['FirmID'];
                 $_SESSION['firmname']=$row['FirmName'];
@@ -105,6 +106,7 @@ if (isset($_POST['login'])) {
                                         </form>
                                     </div>
                                     <div class="card-footer text-center py-3">
+                                        <div class="small mb-3"><a href="new-firm">Create New Firm Account</a></div>
                                         <div class="small"><a href="client/client-portal">proceed to client portal</a></div>
                                     </div>
                                 </div>

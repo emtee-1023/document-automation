@@ -28,7 +28,7 @@ else {
             // Check if a user was found
             if ($row = mysqli_fetch_assoc($res)) {
                 // User found, now you can verify the password
-                if ($pass == $row['Password']) {
+                if (password_verify($pass, $row['Password'])) {
                     // Password is correct, proceed with login
                     $_SESSION['userid']=$row['UserID'];
                     $_SESSION['fname']=$row['FName'];
