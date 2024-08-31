@@ -33,8 +33,8 @@
                                 <div class="card bg-secondary text-white mb-4">
                                     <div class="card-body">Total Registered Clients: 
                                         <?php
-                                        $owner = $_SESSION['userid'];
-                                        $res = mysqli_query($conn,"select * from clients where userid=$owner");
+                                        $firm = $_SESSION['fid'];
+                                        $res = mysqli_query($conn,"select * from clients where firmid = $firm");
                                         $count = mysqli_num_rows($res);
                                         echo $count;
                                         ?></div>
@@ -48,8 +48,8 @@
                                 <div class="card bg-secondary text-white mb-4">
                                     <div class="card-body">Total Courts:
                                         <?php
-                                        $owner = $_SESSION['userid'];
-                                        $res = mysqli_query($conn,"select * from courts where userid=$owner");
+                                        $firm = $_SESSION['fid'];
+                                        $res = mysqli_query($conn,"select * from courts where firmid=$firm");
                                         $count = mysqli_num_rows($res);
                                         echo $count;
                                         ?>
@@ -64,8 +64,8 @@
                                 <div class="card bg-secondary text-white mb-4">
                                     <div class="card-body">Total Active Cases: 
                                         <?php
-                                        $owner = $_SESSION['userid'];
-                                        $res = mysqli_query($conn,"select * from cases where UserID=$owner and casestatus='open'");
+                                        $firm = $_SESSION['fid'];
+                                        $res = mysqli_query($conn,"select * from cases where firmid = $firm and casestatus='open'");
                                         $count = mysqli_num_rows($res);
                                         echo $count;
                                         ?>
@@ -80,8 +80,8 @@
                                 <div class="card bg-secondary text-white mb-4">
                                     <div class="card-body">Total Closed Cases: 
                                         <?php
-                                        $owner = $_SESSION['userid'];
-                                        $res = mysqli_query($conn,"select * from cases where UserID=$owner and casestatus='closed'");
+                                        $firm = $_SESSION['fid'];
+                                        $res = mysqli_query($conn,"select * from cases where firmid = $firm and casestatus='closed'");
                                         $count = mysqli_num_rows($res);
                                         echo $count;
                                         ?></div>
