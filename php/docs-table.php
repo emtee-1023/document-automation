@@ -135,14 +135,14 @@ if (isset($_GET['fileid'])) {
             // Use a prepared statement to avoid SQL injection
             $stmt = $conn->prepare("SELECT 
                                         cd.*,
-                                        c.casenumber as casenumber,
-                                        c.casename as casename
+                                        c.casenumber,
+                                        c.casename
                                     FROM 
                                         case_docs cd
                                     JOIN 
                                         cases c ON cd.caseid = c.caseid
                                     WHERE 
-                                        cd.firmid = ? $cond
+                                        c.firmid = ? $cond
                     ");
             $stmt->bind_param("i",$firm);
             $stmt->execute();
