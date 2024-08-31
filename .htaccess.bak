@@ -12,12 +12,3 @@ RewriteCond %{REQUEST_FILENAME}\.php -f
 
 # Here we actually show the page with the .php extension
 RewriteRule ^(.*)$ $1.php [NC,L]
-
-
-
-
-
-
-
-
-
