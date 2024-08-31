@@ -45,44 +45,50 @@ if (isset($_POST['submit'])) {
             // Hash the password
             $hashedPassword = password_hash($NewPassword, PASSWORD_DEFAULT);
 
-            // Prepare insert statement
+            // Prepare insert statement for firms
             $insertStmt = mysqli_prepare($conn, "INSERT INTO firms (FirmName, FirmMail, Address, FirmPass, FirmLogo) VALUES (?, ?, ?, ?, ?)");
             if ($insertStmt) {
                 mysqli_stmt_bind_param($insertStmt, "sssss", $FirmName, $FirmMail, $Address, $hashedPassword, $newPhoto);
                 if (mysqli_stmt_execute($insertStmt)) {
-                    $success_msg = 'Firm added successfully!';
+                    // Get Firm ID
+                    $checkIDStmt = mysqli_prepare($conn, "SELECT firmid FROM firms WHERE FirmMail = ?");
+                    if ($checkIDStmt) {
+                        mysqli_stmt_bind_param($checkIDStmt, "s", $FirmMail);
+                        mysqli_stmt_execute($checkIDStmt);
+                        mysqli_stmt_bind_result($checkIDStmt, $firmid);
+                        mysqli_stmt_fetch($checkIDStmt);
+                        mysqli_stmt_close($checkIDStmt);
+                    } else {
+                        die("Error preparing SELECT statement: " . mysqli_error($conn));
+                    }
 
-                // Get Firm ID
-                $checkIDStmt = mysqli_prepare($conn, "SELECT firmid FROM firms WHERE Email = ?");
-                if ($checkIDStmt) {
-                    mysqli_stmt_bind_param($checkIDStmt, "s", $FirmMail);
-                    mysqli_stmt_execute($checkIDStmt);
-                    mysqli_stmt_bind_result($checkIDStmt, $firmid);
-                    mysqli_stmt_fetch($checkIDStmt);
-                    mysqli_stmt_close($checkIDStmt);
-                } else {
-                    die("Error preparing SELECT statement: " . mysqli_error($conn));
-                }
+                    // Prepare and execute the INSERT statement for users
+                    $userStmt = mysqli_prepare($conn, "INSERT INTO users (FName, LName, Email, Password, User_type, FirmID) VALUES (?, ?, ?, ?, ?, ?)");
+                    if ($userStmt) {
+                        // Use variables here
+                        $firstName = 'Administrator';
+                        $lastName = '';
+                        $userType = 'admin';
+                        mysqli_stmt_bind_param($userStmt, "sssssi", $firstName, $lastName, $FirmMail, $hashedPassword, $userType, $firmid);
+                        mysqli_stmt_execute($userStmt);
+                        mysqli_stmt_close($userStmt);
 
-                // Prepare and execute the INSERT statement
-                $stmt = mysqli_prepare($conn, "INSERT INTO users (FName, LName, Email, Password, User_type, FirmID) VALUES (?, ?, ?, ?, ?, ?)");
-                if ($stmt) {
-                    mysqli_stmt_bind_param($stmt, "sssssi", 'Administrator', '', $FirmMail, $hashedPassword, 'admin', $firmid);
-                    mysqli_stmt_execute($stmt);
-                    mysqli_stmt_close($stmt);
+                        $success_msg = 'Firm added successfully!';
+                    } else {
+                        $error_msg = 'Error preparing the SQL statement for users.';
+                    }
                 } else {
-                    $error_msg = 'Error executing the SQL statement.';
+                    $error_msg = 'Error executing the SQL statement for firms.';
                 }
                 mysqli_stmt_close($insertStmt);
             } else {
-                $error_msg = 'Error preparing the SQL statement.';
+                $error_msg = 'Error preparing the SQL statement for firms.';
             }
         }
     }
 }
-}
-
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -104,12 +110,22 @@ if (isset($_POST['submit'])) {
                         <div class="row justify-content-center">
                             <div class="col-md-7">
                                 <div class="mt-3">
-                                    <?php 
+                                <?php 
                                     if($error_msg!=''){
                                         echo
                                         '
                                         <div class="alert alert-danger" role="alert">
                                             '.$error_msg.'
+                                        </div>
+                                        ';}
+                                    ?>
+
+                                    <?php 
+                                    if($success_msg!=''){
+                                        echo
+                                        '
+                                        <div class="alert alert-success" role="alert">
+                                            '.$success_msg.'
                                         </div>
                                         ';}
                                     ?>
