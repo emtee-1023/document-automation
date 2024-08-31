@@ -31,6 +31,21 @@
                         <div class="row">
                             <div class="col-xl-3 col-md-6">
                                 <div class="card bg-secondary text-white mb-4">
+                                    <div class="card-body">Total Registered Clients: 
+                                        <?php
+                                        $owner = $_SESSION['userid'];
+                                        $res = mysqli_query($conn,"select * from clients where userid=$owner");
+                                        $count = mysqli_num_rows($res);
+                                        echo $count;
+                                        ?></div>
+                                    <div class="card-footer d-flex align-items-center justify-content-between">
+                                        <a class="small text-white stretched-link" href="clients">View All Clients</a>
+                                        <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-3 col-md-6">
+                                <div class="card bg-secondary text-white mb-4">
                                     <div class="card-body">Total Courts:
                                         <?php
                                         $owner = $_SESSION['userid'];
@@ -41,21 +56,6 @@
                                     </div>
                                     <div class="card-footer d-flex align-items-center justify-content-between">
                                         <a class="small text-white stretched-link" href="courts">Add New Court</a>
-                                        <div class="small text-white"><i class="fas fa-angle-right"></i></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-xl-3 col-md-6">
-                                <div class="card bg-secondary text-white mb-4">
-                                    <div class="card-body">Total Registered Clients: 
-                                        <?php
-                                        $owner = $_SESSION['userid'];
-                                        $res = mysqli_query($conn,"select * from clients where userid=$owner");
-                                        $count = mysqli_num_rows($res);
-                                        echo $count;
-                                        ?></div>
-                                    <div class="card-footer d-flex align-items-center justify-content-between">
-                                        <a class="small text-white stretched-link" href="clients">View All Clients</a>
                                         <div class="small text-white"><i class="fas fa-angle-right"></i></div>
                                     </div>
                                 </div>
