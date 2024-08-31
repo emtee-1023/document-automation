@@ -86,7 +86,7 @@ if (isset($_GET['fileid'])) {
         }
     } else {
         // No matching record found or the file doesn't belong to the user
-        $rror_msg = "No matching record found.";
+        $error_msg = "No matching record found.";
     }
 }
 
@@ -142,9 +142,9 @@ if (isset($_GET['fileid'])) {
                                     JOIN 
                                         cases c ON cd.caseid = c.caseid
                                     WHERE 
-                                        c.userid = ? $cond
+                                        cd.firmid = ? $cond
                     ");
-            $stmt->bind_param("i",$owner);
+            $stmt->bind_param("i",$firm);
             $stmt->execute();
             $res = $stmt->get_result();
 
