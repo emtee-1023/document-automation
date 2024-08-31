@@ -52,10 +52,12 @@ if (isset($_POST['submit'])) {
             // Email exists
             $error_msg = 'Email already exists.';
         } else {
+            //hash the password
+            $hashedPass = password_hash($Password, PASSWORD_DEFAULT);
             // Prepare and execute the insert statement
             $stmt = mysqli_prepare($conn, "INSERT INTO users (FName, LName, Email, Password, Photo, User_type,FirmID) VALUES (?, ?, ?, ?, ?, ?,?)");
             if ($stmt) {
-                mysqli_stmt_bind_param($stmt, "ssssssi", $FName, $LName, $Email, $Password, $Pfp, $User_type,$firm);
+                mysqli_stmt_bind_param($stmt, "ssssssi", $FName, $LName, $Email, $hashedPass, $Pfp, $User_type,$firm);
                 mysqli_stmt_execute($stmt);
                 mysqli_stmt_close($stmt);
                 $success_msg = 'User added successfully!';
