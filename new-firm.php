@@ -146,7 +146,7 @@ if (isset($_POST['submit'])) {
                                                 <div class="col-md-12">
                                                     <div class="form-floating">
                                                         <textarea class="form-control" name="Address" id="inputAddress" placeholder="Enter Firm's Physical Address" style="height: 120px;"></textarea>
-                                                        <label for="inputAddress">Physical Address</label>
+                                                        <label for="inputAddress">Address</label>
                                                     </div>
                                                 </div>
                                             </div>
