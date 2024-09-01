@@ -10,11 +10,11 @@
         $firm = $_SESSION['fid'];
         
         // Use a prepared statement to avoid SQL injection
-        $stmt = $conn->prepare("SELECT * FROM cases c WHERE userid = ? AND caseid = ?");
+        $stmt = $conn->prepare("SELECT * FROM cases c WHERE firmid = ? AND caseid = ?");
         if (!$stmt) {
             die('Prepare failed: ' . $conn->error);
         }
-        $stmt->bind_param("ii",$owner,$caseid);
+        $stmt->bind_param("ii",$firm,$caseid);
         $stmt->execute();
         $res = $stmt->get_result();
         $row = $res->fetch_assoc();

@@ -9,19 +9,18 @@ if(isset($_GET['caseid'])){
     $caseid = $_GET['caseid'];
 
     // Use a prepared statement to avoid SQL injection
-    $stmt = $conn->prepare("SELECT * FROM cases c WHERE userid = ? AND caseid = ?");
+    $stmt = $conn->prepare("SELECT * FROM cases c WHERE firmid = ? AND caseid = ?");
     if (!$stmt) {
         die('Prepare failed: ' . $conn->error);
     }
-    $stmt->bind_param("ii",$owner,$caseid);
+    $stmt->bind_param("ii",$firm,$caseid);
     $stmt->execute();
     $res = $stmt->get_result();
     $row = $res->fetch_assoc();
 
     $casenumber = $row['CaseNumber'];
     $casename = $row['CaseName'];
-    $case_id = $row['CaseID'];
-    $cond = " AND c.caseid = $case_id";
+    $cond = " AND cd.caseid = $caseid";
 
     $table_title = "Showing case documents under <strong>Case: ".$casenumber."</strong>";
 } else {
@@ -142,7 +141,7 @@ if (isset($_GET['fileid'])) {
                                     JOIN 
                                         cases c ON cd.caseid = c.caseid
                                     WHERE 
-                                        c.firmid = ? $cond
+                                        cd.firmid = ? $cond
                     ");
             $stmt->bind_param("i",$firm);
             $stmt->execute();

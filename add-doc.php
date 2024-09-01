@@ -15,6 +15,8 @@ $option2 = '';
 $optionvalue = '';
 
 
+
+
 if(isset($_GET['caseid'])){
     $caseid = $_GET['caseid'];
 
@@ -40,6 +42,9 @@ if (isset($_POST['submit'])) {
     $CaseID = $_POST['CaseID'];
     $DraftingCost = $_POST['DraftingCost'];
     $uploadTime = date('d-m-Y H:i:s');
+
+    $user = $_SESSION['userid'];
+    $firm = $_SESSION['fid'];
 
     // Handle file upload
     if (isset($_FILES['Document']) && $_FILES['Document']['error'] === UPLOAD_ERR_OK) {
@@ -70,9 +75,9 @@ if (isset($_POST['submit'])) {
             }
 
             // Insert new record into the database
-            $insertStmt = mysqli_prepare($conn, "INSERT INTO case_docs (DocName, CaseID, FilePath, Extension, CreatedAt) VALUES (?, ?, ?, ?, ?)");
+            $insertStmt = mysqli_prepare($conn, "INSERT INTO case_docs (DocName, CaseID, FilePath, Extension, CreatedAt, FirmID, UserID) VALUES (?, ?, ?, ?, ?, ?, ?)");
             if ($insertStmt) {
-                mysqli_stmt_bind_param($insertStmt, "sisss", $DocumentName, $CaseID, $newFileName, $Extension, $uploadTime);
+                mysqli_stmt_bind_param($insertStmt, "sisssii", $DocumentName, $CaseID, $newFileName, $Extension, $uploadTime, $firm, $user);
                 mysqli_stmt_execute($insertStmt);
                 mysqli_stmt_close($insertStmt);
                 $success_msg = 'Document uploaded successfully!';

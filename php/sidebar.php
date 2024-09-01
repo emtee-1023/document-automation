@@ -28,7 +28,7 @@
                                 Case Documents
                             </a>
 
-                           '<a class="nav-link" href="bill-clients">
+                            <a class="nav-link" href="bill-clients">
                                 <div class="sb-nav-link-icon"><i class="fa-solid fa-money-check-dollar"></i></i></div>
                                 Invoice Clients
                             </a>

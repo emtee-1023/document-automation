@@ -83,8 +83,8 @@ if(isset($_GET['status'])){
                                                 JOIN 
                                                     cases c ON cd.caseid = c.caseid
                                                 WHERE 
-                                                    c.userid = ? AND cd.caseid = ?");
-                $stmtDocCount->bind_param("ii", $owner, $row['CaseID']);
+                                                    cd.firmid = ? AND cd.caseid = ?");
+                $stmtDocCount->bind_param("ii", $firm, $row['CaseID']);
                 $stmtDocCount->execute();
                 $documentCountResult = $stmtDocCount->get_result();
 

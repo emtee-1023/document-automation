@@ -18,7 +18,7 @@ $firm = $_SESSION['fid'];
 if (isset($_POST['submit'])) {
     $caseid = $_POST['Case'];
     $clientid = $_POST['Client'];
-    $nexthearing = $_POST['nextHearing'];
+    $nextdate = $_POST['nextDate'];
     $bringup = $_POST['bringupDate'];
     $link = $_POST['Link'];
     $notes = $_POST['Notes'];
@@ -35,7 +35,7 @@ if (isset($_POST['submit'])) {
     $message = 
     "
     Case: ".$casename."
-    Next Hearing: ".$nexthearing."
+    Next Hearing: ".$nextdate."
     Bringup Date: ".$bringup."
     Meeting Link (for Online Hearings): ".$link."
     Notes: 
@@ -43,13 +43,13 @@ if (isset($_POST['submit'])) {
     ;
 
     // Prepare and execute the insertion of assignments
-    $stmt_reminder = mysqli_prepare($conn, "INSERT INTO reminders (CaseID, clientid, nexthearing, bringupdate, meetinglink, notes, userid, firmid) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt_reminder = mysqli_prepare($conn, "INSERT INTO reminders (CaseID, clientid, nextdate, bringupdate, meetinglink, notes, userid, firmid) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
     $stmt_notification = mysqli_prepare($conn, "INSERT INTO notifications (NotifSubject, NotifText, UserID, ClientID) VALUES (?, ?, ?, ?)");
 
     if ($stmt_reminder && $stmt_notification) {
         
         // Insert into reminders
-        mysqli_stmt_bind_param($stmt_reminder, "iissssii", $caseid, $clientid, $nexthearing, $bringup, $link, $notes, $user, $firm);
+        mysqli_stmt_bind_param($stmt_reminder, "iissssii", $caseid, $clientid, $nextdate, $bringup, $link, $notes, $user, $firm);
         mysqli_stmt_execute($stmt_reminder);
 
         // Insert into notifications
@@ -158,8 +158,8 @@ if (isset($_POST['submit'])) {
                             <div class="row ">
                                 <div class="col-md-6">
                                     <div class="form-floating mb-3">
-                                        <input class="form-control" id="nextHearing" type="datetime-local" name="nextHearing" required/>
-                                        <label for="nextHearing">Next Hearing</label>
+                                        <input class="form-control" id="nextDate" type="datetime-local" name="nextDate" required/>
+                                        <label for="nextDate">Next Date</label>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
@@ -174,7 +174,7 @@ if (isset($_POST['submit'])) {
                             <div class="row ">
                                 <div class="col-md-12">
                                     <div class="form-floating mb-3">
-                                        <input class="form-control" id="Link" type="text" name="Link" required/>
+                                        <input class="form-control" id="Link" type="text" name="Link"/>
                                         <label for="Link">Meeting Link (online)</label>
                                     </div>
                                 </div>
