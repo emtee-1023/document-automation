@@ -107,7 +107,7 @@ if (isset($_POST['login'])) {
                                     </div>
                                     <div class="card-footer text-center py-3">
                                         <div class="small mb-3"><a href="new-firm">Create New Firm Account</a></div>
-                                        <div class="small"><a href="client/client-portal">proceed to client portal</a></div>
+                                        <div class="small"><a href="https://client.lucror.co.ke/client-portal">proceed to client portal</a></div>
                                     </div>
                                 </div>
                             </div>
