@@ -151,7 +151,7 @@ if (isset($_POST['submit'])) {
                             <div class="row mb-3">
                                 <div class="col-md-6">
                                     <div class="form-floating">
-                                        <select class="form-select" id="inputAdvocate" name="AdvocateAssigned" aria-label="AdvocateAssigned">
+                                        <select class="form-select" id="inputAdvocate" name="AdvocateAssigned" aria-label="AdvocateAssigned" required>
                                             <option value="" disabled selected>Choose Advocate</option>
                                             <?php
                                             $user = $_SESSION['userid'];
