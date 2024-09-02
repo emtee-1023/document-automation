@@ -64,8 +64,8 @@ if(isset($_GET['caseid'])){
                     <th>Invoice Number</th>
                     <th>Created On</th>
                     <th>Mark Cleared</th>
+                    <th>View Invoice</th>
                     <th>Download Invoice</th>
-                    <th>Email Invoice</th>
                     <th>Delete Invoice</th>
                 </tr>
             </thead>
@@ -79,11 +79,11 @@ if(isset($_GET['caseid'])){
                                         i.*, 
                                         c.CaseName
                                     FROM 
-                                        invoices i
+                                        invoice_uploads i
                                     JOIN 
                                         cases c ON c.CaseID = i.CaseID
                                     WHERE 
-                                        c.FirmID = ? 
+                                        i.FirmID = ? 
                                         AND i.CaseID = ?
                                         AND i.Status = 'pending'
                     ");
@@ -95,10 +95,10 @@ if(isset($_GET['caseid'])){
                 echo '<tr>
                         <td>'.$row['CaseName'].'</td>
                         <td>'.$row['InvoiceNumber'].'</td>
-                        <td>'.$row['CreatedAt'].'</td>
+                        <td>'.$row['UploadedAt'].'</td>
                         <td><a href="clear-invoice?invid='.$row['InvoiceID'].'&caseid='.$caseid.'" class="btn btn-primary btn-sm">Mark as Cleared</a></td>
-                        <td><a href="invoice?invoiceid='.$row['InvoiceID'].'" class="btn btn-success btn-sm">Download Invoice</a></td>
-                        <td><a href="?fileid='.$row['InvoiceID'].'" class="btn btn-success btn-sm">Email Invoice</a></td>
+                        <td><a href="assets/files/submitted/'.$row['FileName'].'" target = "_blank" class="btn btn-success btn-sm">View Invoice</a></td>
+                        <td><a href="download?invoiceid='.$row['InvoiceID'].'" class="btn btn-success btn-sm">Download Invoice</a></td>
                         <td><a href="delete?invoiceid='.$row['InvoiceID'].'&caseid='.$caseid.'" class="btn btn-danger btn-sm">Delete Invoice</a></td>
                     </tr>';
             }

@@ -20,7 +20,7 @@
 
                 // Use a prepared statement to avoid SQL injection
                 $stmt = $conn->prepare("SELECT 
-                            r.reminderid, r.nexthearing, r.bringupdate,
+                            r.reminderid, r.nextdate, r.bringupdate,
                             CONCAT(c1.fname,' ',c1.mname,' ',c1.lname) as client,
                             c2.casename
                         FROM 
@@ -43,7 +43,7 @@
                 while ($row = $res->fetch_assoc()) {
                     echo '<tr>
                             <td>'.$row['casename'].'</td>
-                            <td>'.$row['nexthearing'].'</td>
+                            <td>'.$row['nextdate'].'</td>
                             <td>'.$row['bringupdate'].'</td>
                             <td><a href="#" class="">View Reminder</a ></td>
                         </tr>';

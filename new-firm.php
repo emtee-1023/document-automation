@@ -74,6 +74,8 @@ if (isset($_POST['submit'])) {
                         mysqli_stmt_close($userStmt);
 
                         $success_msg = 'Firm added successfully!';
+                        header('location: https://payment.intasend.com/pay/4d0add4c-7272-407f-b47c-94af8e547822/');
+                        exit();
                     } else {
                         $error_msg = 'Error preparing the SQL statement for users.';
                     }

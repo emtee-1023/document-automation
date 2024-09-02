@@ -63,7 +63,7 @@ if(isset($_GET['caseid'])){
                 <tr>
                     <th>Case Name</th>
                     <th>Invoice Number</th>
-                    <th>Created On</th>
+                    <th>Uploaded On</th>
                     <th>Download Invoice</th>
                 </tr>
             </thead>
@@ -77,7 +77,7 @@ if(isset($_GET['caseid'])){
                                             i.*, 
                                             c.CaseName
                                         FROM 
-                                            invoices i
+                                            invoice_uploads i
                                         JOIN 
                                             cases c ON c.CaseID = i.CaseID
                                         WHERE 
@@ -94,7 +94,9 @@ if(isset($_GET['caseid'])){
                         echo '<tr>
                                 <td>'.$row['CaseName'].'</td>
                                 <td>'.$row['InvoiceNumber'].'</td>
-                                <td>'.$row['CreatedAt'].'</td>
+                                <td>'.$row['UploadedAt'].'</td>
+                                <td><a href = "../assets/files/submitted/'.$row['FileName'].'" target="_blank" class="btn btn-primary btn-sm">View Invoice</a></td>
+
                                 <td><a href="invoice?invoiceid='.$row['InvoiceID'].'" class="btn btn-success btn-sm">Download Invoice</a></td>
                             </tr>';
                     }

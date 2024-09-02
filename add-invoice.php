@@ -88,9 +88,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     // Close statements and connection
     $stmtUpload->close();
-    $stmtNotif->close();
-    $conn->close();
-       
+    $stmtNotif->close();       
     }
 }
 

@@ -32,9 +32,9 @@
                                         JOIN 
                                             clients cl ON cl.clientid = c.clientid
                                         LEFT JOIN 
-                                            invoices i ON c.caseid = i.caseid
+                                            invoice_uploads i ON c.caseid = i.caseid
                                         WHERE 
-                                            cl.firmid = ?
+                                            i.firmid = ?
                                         GROUP BY 
                                             c.CaseID
 

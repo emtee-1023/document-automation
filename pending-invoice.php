@@ -1,25 +1,26 @@
 <?php
-include 'php/header.php';
+include 'php/dbconn.php';
+session_start();
 
-if (isset($_GET['invid']) && isset($_GET['clid'])) {
+if (isset($_GET['invid']) && isset($_GET['caseid'])) {
     $invoiceid = $_GET['invid'];
-    $clientid = $_GET['clid'];
+    $caseid = $_GET['caseid'];
     $pending = 'pending';
 
     // Debugging: Check if variables are set correctly
-    if (empty($invoiceid) || empty($clientid)) {
+    if (empty($invoiceid) || empty($caseid)) {
         $error_msg = "Error: Invoice ID or Client ID is missing.";
         exit();
     }
     
     // Prepare the SQL statement
-    $stmt = mysqli_prepare($conn, "UPDATE invoices SET Status = ? WHERE invoiceid = ?");
+    $stmt = mysqli_prepare($conn, "UPDATE invoice_uploads SET Status = ? WHERE invoiceid = ?");
     if ($stmt) {
         mysqli_stmt_bind_param($stmt, "si", $pending, $invoiceid);
         if (mysqli_stmt_execute($stmt)) {
             // Success
             mysqli_stmt_close($stmt);
-            header('Location: bill-clients?clientid=' . $clientid);
+            header('Location: bill-clients?caseid=' . $caseid);
             exit();
         } else {
             // Error executing the statement

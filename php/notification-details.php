@@ -1,5 +1,6 @@
 <?php
 include 'dbconn.php';
+session_start();
 
 header('Content-Type: application/json');
 
@@ -40,10 +41,24 @@ if (isset($_GET['notifid'])) {
 
 if (isset($_GET['action']) && $_GET['action'] === 'fetch_notifications') {
     // Fetch notifications list
-    $sql = "SELECT NotifID, NotifSubject, NotifText FROM notifications WHERE IsRead = 0";
-    $stmt = $conn->prepare($sql);
-    $stmt->execute();
-    $results = $stmt->get_result();
+    $user = $_SESSION['userid'];
+    $sql = "SELECT
+                NotifID,
+                NotifSubject,
+                NotifText 
+            FROM 
+                notifications 
+            WHERE 
+                UserID = ? 
+            AND 
+                IsRead = 0 
+            AND 
+                (SendAt <= NOW() OR SendAt IS NULL)";
+
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("i", $user); // Bind the UserID parameter
+            $stmt->execute();
+            $results = $stmt->get_result();
 
     if ($results->num_rows > 0) {
         while ($row = $results->fetch_assoc()) {
@@ -71,8 +86,19 @@ if (isset($_GET['action']) && $_GET['action'] === 'fetch_notifications') {
 
 if (isset($_GET['action']) && $_GET['action'] === 'get_unread_count') {
     // Fetch unread notifications count
-    $sql = "SELECT COUNT(*) as unread_count FROM notifications WHERE IsRead = 0";
+    $user = $_SESSION['userid'];
+    $sql = "SELECT 
+                COUNT(*) as unread_count 
+            FROM
+                notifications 
+            WHERE 
+                UserID = ? 
+            AND 
+                IsRead = 0 
+            AND 
+                (SendAt <= NOW() OR SendAt IS NULL)";
     $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $user); // Bind the UserID parameter
     $stmt->execute();
     $stmt->bind_result($unread_count);
     $stmt->fetch();

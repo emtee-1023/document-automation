@@ -57,8 +57,8 @@ if(isset($_GET['caseid'])){
         <i class="fas fa-table me-1"></i>
         <?php echo $cleared_title;?>
     </div>
-    <div class="card-body">
-        <table id="datatablesSimple">
+    <div class="table-responsive">
+        <table class="table">
             <thead>
                 <tr>
                     <th>Case Name</th>
@@ -66,43 +66,41 @@ if(isset($_GET['caseid'])){
                     <th>Created On</th>
                     <th>Mark Pending</th>
                     <th>Download Invoice</th>
-                    <th>Email Invoice</th>
                     <th>Delete Invoice</th>
                 </tr>
             </thead>
             <tbody>
-            <?php
-            $owner = $_SESSION['userid'];
-            $firm = $_SESSION['fid'];
-            // Use a prepared statement to avoid SQL injection
-            $stmt = $conn->prepare("SELECT 
-                                        i.*, 
-                                        c.CaseName
-                                    FROM 
-                                        invoices i
-                                    JOIN 
-                                        cases c ON c.CaseID = i.CaseID
-                                    WHERE 
-                                        c.FirmID = ? 
-                                        AND i.CaseID = ?
-                                        AND i.Status = 'cleared'
-                    ");
-            $stmt->bind_param("ii", $firm, $caseid);
-            $stmt->execute();
-            $res = $stmt->get_result();
+                <?php
+                $owner = $_SESSION['userid'];
+                $firm = $_SESSION['fid'];
+                // Use a prepared statement to avoid SQL injection
+                $stmt = $conn->prepare("SELECT 
+                                            i.*, 
+                                            c.CaseName
+                                        FROM 
+                                            invoice_uploads i
+                                        JOIN 
+                                            cases c ON c.CaseID = i.CaseID
+                                        WHERE 
+                                            i.FirmID = ? 
+                                            AND i.CaseID = ?
+                                            AND i.Status = 'cleared'
+                        ");
+                $stmt->bind_param("ii", $firm, $caseid);
+                $stmt->execute();
+                $res = $stmt->get_result();
 
-            while ($row = $res->fetch_assoc()) {
-                echo '<tr>
-                        <td>'.$row['CaseName'].'</td>
-                        <td>'.$row['InvoiceNumber'].'</td>
-                        <td>'.$row['CreatedAt'].'</td>
-                        <td><a href="pending-invoice?invid='.$row['InvoiceID'].'&caseid='.$caseid.'" class="btn btn-primary btn-sm">Mark as Pending</a></td>
-                        <td><a href="invoice?invoiceid='.$row['InvoiceID'].'" class="btn btn-success btn-sm">Download Invoice</a></td>
-                        <td><a href="?fileid='.$row['InvoiceID'].'" class="btn btn-success btn-sm">Email Invoice</a></td>
-                        <td><a href="delete?invoiceid='.$row['InvoiceID'].'&caseid='.$caseid.'" class="btn btn-danger btn-sm">Delete Invoice</a></td>          
-                    </tr>';
-            }
-            ?>
+                while ($row = $res->fetch_assoc()) {
+                    echo '<tr>
+                            <td>'.$row['CaseName'].'</td>
+                            <td>'.$row['InvoiceNumber'].'</td>
+                            <td>'.$row['UploadedAt'].'</td>
+                            <td><a href="pending-invoice?invid='.$row['InvoiceID'].'&caseid='.$caseid.'" class="btn btn-primary btn-sm">Mark as Pending</a></td>
+                            <td><a href="download?invoiceid='.$row['InvoiceID'].'" class="btn btn-success btn-sm">Download Invoice</a></td>
+                            <td><a href="delete?invoiceid='.$row['InvoiceID'].'&caseid='.$caseid.'" class="btn btn-danger btn-sm">Delete Invoice</a></td>          
+                        </tr>';
+                }
+                ?>
             </tbody>
         </table>
     </div>

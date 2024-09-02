@@ -16,9 +16,9 @@ if (isset($_GET['invoiceid']) && isset($_GET['clientid'])) {
 
     // Prepare and execute query
     $stmt = $conn->prepare("SELECT 
-                                FilePath
+                                FilePath, InvoiceNumber
                             FROM 
-                                invoices
+                                invoice_uploads i
                             WHERE 
                                 invoiceid = ?");
     if ($stmt === false) {
@@ -35,22 +35,26 @@ if (isset($_GET['invoiceid']) && isset($_GET['clientid'])) {
 
     if ($row = $res->fetch_assoc()) {
         // The file exists in the database
-        $fileName = $row['FilePath'];
-        $filepath = 'assets/files/submitted/' . $fileName;    
+        $fileName = $row['FileName'];
+        $filepath = 'assets/files/submitted/' . $fileName; 
+        $invoicenum = $row['InvoiceNumber'];   
 
                 // Start a transaction
                 $conn->begin_transaction();
 
                 try {
-                    // Prepare the statement to delete from invoice_items
-                    $stmt1 = $conn->prepare("DELETE FROM invoice_items WHERE InvoiceID = ?");
+                    // Prepare the statement to delete from invoice_uploads
+                    $stmt1 = $conn->prepare("DELETE FROM invoice_uploads WHERE InvoiceID = ?");
                     $stmt1->bind_param("i", $invoiceid);
                     $stmt1->execute();
 
-                    // Prepare the statement to delete from invoices
-                    $stmt2 = $conn->prepare("DELETE FROM invoices WHERE InvoiceID = ?");
-                    $stmt2->bind_param("i", $invoiceid);
-                    $stmt2->execute();
+                    // Prepare the statement for notification
+                    $stmt2 = mysqli_prepare($conn, "INSERT INTO notifications (NotifSubject, NotifText, UserID, ClientID) VALUES (?, ?, ?, ?)");
+                    // Insert into notifications
+                    $notifSubject = "Invoice has Been Deleted";
+                    $notifText = 'This is to alert you that invoice number '.$invoicenum.' Has been Deleted';
+                    mysqli_stmt_bind_param($stmt2, "ssii", $notifSubject, $notifText, $owner, $clientid);
+                    mysqli_stmt_execute($stmt2);
 
                     // If both deletes are successful, commit the transaction
                     $conn->commit();

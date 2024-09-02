@@ -125,6 +125,7 @@ if (isset($_GET['fileid'])) {
                     <th>Document Name</th>
                     <th>Added on</th>
                     <th>Edit</th>
+                    <th>View</th>
                     <th>Download</th>
                     <th>Delete</th>
                 </tr>
@@ -154,6 +155,7 @@ if (isset($_GET['fileid'])) {
                         <td>'.$row['DocName'].'</td>
                         <td>'.$row['CreatedAt'].'</td>
                         <td><a href="edit-doc?fileid='.$row['DocID'].'" class="btn btn-primary btn-sm">Edit</a></td>
+                        <td><a href = "assets/files/submitted/'.$row['FilePath'].'" target="_blank" class="btn btn-primary btn-sm">View Document</a></td>
                         <td><a href="download?file='.$row['DocID'].'" class="btn btn-success btn-sm">Download</a></td>
                         <td><a href="?fileid='.$row['DocID'].'" class="btn btn-danger btn-sm">Delete</a></td>     
                     </tr>';

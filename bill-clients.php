@@ -33,7 +33,7 @@ if(isset($_GET['caseid'])){
     $nav_path = "bill-clients"; 
     $nav_current = "Case ".$casename;
     $subt = "Showing pending invoices for case: ".$casename;
-    $btn = '<a href="add-invoice?caseid='.$caseid.'" class="btn btn-secondary"><i class="fa-solid fa-receipt"></i> Create New Invoice</a>';
+    $btn = '<a href="add-invoice?caseid='.$caseid.'" class="btn btn-secondary"><i class="fa-solid fa-receipt"></i> Upload New Invoice</a>';
     $table = "php/bill-client-table.php";  
 }else {
     $title = "Case Invoices";
@@ -42,12 +42,8 @@ if(isset($_GET['caseid'])){
     $nav_path = "index";
     $nav_current = "Billing";
     $subt = "Showing cases with pending invoices";
-    $btn = '<a href="add-invoice" class="btn btn-secondary"><i class="fa-solid fa-receipt"></i> Create New Invoice</a>';
+    $btn = '<a href="add-invoice" class="btn btn-secondary"><i class="fa-solid fa-receipt"></i> Upload New Invoice</a>';
     $table = "php/bill-table.php";
-}
-
-if($_SESSION['user_type']=='client'){
-    $btn = '<a href="add-invoice" class="btn btn-secondary"><i class="fa-solid fa-receipt"></i> Upload Proof Of Payment</a>';
 }
 
 ?>
