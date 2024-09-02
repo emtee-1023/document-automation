@@ -26,57 +26,74 @@ if (isset($_GET['caseid'])) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    if (isset($_POST['save-invoice'])) {
-        // Start transaction
-        mysqli_begin_transaction($conn);
+    if (isset($_POST['upload-invoice'])) {
+    // Variables
+    $fileName = $_POST['InvoiceName'];
+    $invoiceNum = $_POST['InvoiceNumber'];
+    $clientID = $_POST['ClientID'];
+    $caseID = $_POST['CaseID'];
+    $userID = $_SESSION['userid'];
+    $firmID = $_SESSION['fid'];
+    $uploadDir = 'assets/files/submitted/'; 
 
-        try {
-            // Insert the invoice into the `invoices` table
-            $clientID = $_POST['ClientID'];
-            $caseID = $_POST['CaseID'];
-            $createdAt = $_POST['CreatedAt'];
-            $expiresAt = $_POST['ExpiresAt']; 
-            $userID = $_SESSION['userid'];  
-            $firmID = $_SESSION['fid'];  
-            $invoiceNumber = generateInvoiceNumber();  // Custom function to generate invoice number
+    // File upload handling
+    $file = $_FILES['Invoice'];
+    $originalFileName = $file['name'];
+    $fileTmpPath = $file['tmp_name'];
+    $fileExtension = pathinfo($originalFileName, PATHINFO_EXTENSION);
 
-            $insertInvoiceQuery = "INSERT INTO invoices (InvoiceNumber, CreatedAt, ExpiresAt, Status, CaseID, ClientID, UserID, FirmID) 
-                                   VALUES ('$invoiceNumber', '$createdAt', '$expiresAt', 'pending', '$caseID', '$clientID', '$userID', '$firmID')";
-            mysqli_query($conn, $insertInvoiceQuery);
-            $invoiceID = mysqli_insert_id($conn);
+    // Check if the file is a PDF
+    if (strtolower($fileExtension) !== 'pdf') {
+        $error_msg = "Only PDF files are allowed.";
+        exit;
+    }
 
-            // Insert each invoice item into the `invoice_items` table
-            foreach ($_POST['Description'] as $index => $description) {
-                $amount = $_POST['Amount'][$index];
-                $insertItemQuery = "INSERT INTO invoice_items (InvoiceID, Description, Amount) 
-                                    VALUES ('$invoiceID', '" . mysqli_real_escape_string($conn, $description) . "', '" . mysqli_real_escape_string($conn, $amount) . "')";
-                mysqli_query($conn, $insertItemQuery);
+    // Create a unique file name
+    $newFileName = uniqid() . '-' . $fileName . '.' . $fileExtension;
+    $destPath = $uploadDir . $newFileName;
+
+    // Move the file to the server
+    if (move_uploaded_file($fileTmpPath, $destPath)) {
+        // Insert into invoice_uploads
+        $sqlUpload = "INSERT INTO invoice_uploads (InvoiceNumber, FileName, FilePath, Extension, Status, UploadedAt, CaseID, ClientID, UserID, FirmID)
+                      VALUES (?, ?, ?, ?, 'pending', NOW(), ?, ?, ?, ?)";
+        $stmtUpload = $conn->prepare($sqlUpload);
+        $stmtUpload->bind_param("ssssiiii", $invoiceNum, $newFileName, $destPath, $fileExtension, $caseID, $clientID, $userID, $firmID);
+
+        if ($stmtUpload->execute()) {
+            // Get the ID of the last inserted invoice
+            $lastInvoiceID = $conn->insert_id;
+
+            // Create a notification message
+            $notifSubject = "New Invoice Uploaded";
+            $notifText = "Invoice number $invoiceNum has been uploaded.";
+
+            // Insert into notifications table
+            $sqlNotif = "INSERT INTO notifications (NotifSubject, NotifText, IsRead, CreatedAt, UserID, ClientID)
+                         VALUES (?, ?, 0, NOW(), ?, ?)";
+            $stmtNotif = $conn->prepare($sqlNotif);
+            $stmtNotif->bind_param("ssii", $notifSubject, $notifText, $userID, $clientID);
+
+            if ($stmtNotif->execute()) {
+                $success_msg = "Invoice uploaded successfully.";
+            } else {
+                $error_msg = "Notification Error.";
             }
-
-            // Commit transaction
-            mysqli_commit($conn);
-
-            // Redirect or display a success message
-            $success_msg = "Invoice generated successfully";
-            header('location: bill-clients?caseid='.$caseID);
-            exit();
-        } catch (Exception $e) {
-            // Rollback transaction on error
-            mysqli_rollback($conn);
-            $error_msg = "Failed to save invoice: " . $e->getMessage();
+        } else {
+            $error_msg = "Failed to upload invoice.";
         }
-    } elseif (isset($_POST['add-item'])) {
-        // Logic to handle adding another item by redisplaying the form with the current data
-        $formData = $_POST;
-        $formData['Description'][] = '';  // Add a new blank item
-        $formData['Amount'][] = '';
+    } else {
+        $error_msg = "Failed to move the uploaded file.";
+    }
+
+    // Close statements and connection
+    $stmtUpload->close();
+    $stmtNotif->close();
+    $conn->close();
+       
     }
 }
 
-
-function generateInvoiceNumber() {
-    return 'INV-' . strtoupper(uniqid());
-}
 ?>
 
 <div id="layoutSidenav">
@@ -98,7 +115,24 @@ function generateInvoiceNumber() {
                     echo '<div class="alert alert-success" role="alert">'.$success_msg.'</div>';
                 }
                 ?>
-                    <form method="post" action="">
+                    <form method="post" action="" enctype="multipart/form-data">
+                        <!-- Input Filename and Invoice Number on same row -->
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                <input type="text" class="form-control" id="inputInvoiceName" name="InvoiceName" placeholder="Enter File Name" required>
+                                <label for="inputInvoiceName">Enter File Name</label>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                <input type="text" class="form-control" id="inputInvoiceNumber" name="InvoiceNumber" placeholder="Enter Invoice Number" required>
+                                <label for="inputInvoiceNumber">Enter Invoice Number</label>
+                                </div>
+                            </div>  
+                        </div>
+
                         <!-- Select Case and Select Client on the same row -->
                         <div class="row mb-3">
                             <div class="col-md-6">
@@ -142,54 +176,21 @@ function generateInvoiceNumber() {
                             </div>
                         </div>
 
-                        <!-- Select creation date and expiry date on the same row -->
+                        <!-- Upload the File -->
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <div class="form-floating">
-                                    <input type="date" class="form-control" id="inputCreatedAt" name="CreatedAt" 
-                                        value="<?php echo isset($formData['CreatedAt']) ? htmlspecialchars($formData['CreatedAt']) : $today; ?>" required>
-                                    <label for="inputCreatedAt">Date Created</label>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <div class="form-floating">
-                                    <input type="date" class="form-control" id="inputExpiresAt" name="ExpiresAt" 
-                                        value="<?php echo isset($formData['ExpiresAt']) ? htmlspecialchars($formData['ExpiresAt']) : ''; ?>">
-                                    <label for="inputExpiresAt">Expiry Date</label>
+                                    <input class="form-control" id="uploadInvoice" type="file" name="Invoice" accept=".pdf" />
+                                    <label for="uploadInvoice">Upload Invoice</label>
                                 </div>
                             </div>
                         </div>
 
-                        <h2>Invoice Items</h2>
-
-                        <?php
-                        $itemCount = isset($formData['Description']) ? count($formData['Description']) : 1;
-                        for ($i = 0; $i < $itemCount; $i++) {
-                            $description = $formData['Description'][$i] ?? '';
-                            $amount = $formData['Amount'][$i] ?? '';
-                        ?>
-                            <div class="row mb-3">
-                                <div class="col-md-6">
-                                    <div class="form-floating mb-3 mb-md-0">
-                                        <input type="text" class="form-control" id="inputDescription<?= $i ?>" name="Description[]" placeholder="Item Description" value="<?= htmlspecialchars($description) ?>" required>
-                                        <label for="inputDescription<?= $i ?>">Item Description</label>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-floating">
-                                        <input type="text" class="form-control" id="inputAmount<?= $i ?>" name="Amount[]" placeholder="Amount" value="<?= htmlspecialchars($amount) ?>" required>
-                                        <label for="inputAmount<?= $i ?>">Amount</label>
-                                    </div>
-                                </div>
-                            </div>
-                        <?php
-                        }
-                        ?>
-
                         <div class="mt-4 mb-0 d-flex justify-content-center">
-                            <button type="submit" class="btn btn-secondary me-2" name="add-item">Add Another Item</button>
-                            <button type="submit" class="btn btn-primary" name="save-invoice">Save Invoice</button>
+                            <button type="submit" class="btn btn-primary" name="upload-invoice">Upload Invoice</button>
+                        </div>
+                        <div class="mt-4 mb-0 d-flex justify-content-center">
+                            <a href="bill-clients">Go to Invoices</a>
                         </div>
                     </form>
                 </div>

@@ -1,14 +1,21 @@
-# configuring 404 page
+# Custom 404 Error Page
 ErrorDocument 404 /law/404.php
 
-# mod_rewrite starts here
-RewriteEngine on
+# Enable mod_rewrite
+RewriteEngine On
 
-# dont run  the rule if folder exists on server
+# Don't apply the rule if the requested file or directory exists
+RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 
-# don't run the rule if file does not exist
-RewriteCond %{REQUEST_FILENAME}\.php -f
+# Rewrite the URL to include the .php extension
+RewriteRule ^(.*[^/])$ $1.php [NC,L]
 
-# Here we actually show the page with the .php extension
-RewriteRule ^(.*)$ $1.php [NC,L]
+# Handle cases where a directory is requested, and should use index.php
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteCond %{REQUEST_URI} !/$
+RewriteRule ^(.*)$ $1/ [L]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME}/index.php -f
+RewriteRule ^(.*)$ $1/index.php [L]
