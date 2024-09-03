@@ -1,5 +1,5 @@
 <?php
-include 'php/dbconn.php';
+include '../php/dbconn.php';
 session_start();
 
 $error_msg = '';

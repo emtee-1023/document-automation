@@ -1,8 +1,4 @@
-<?php
- include 'php/dbconn.php';
- session_start();
- 
- ?>
+<?php include 'php/header.php';?>
 
 
 <?php
@@ -81,8 +77,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             if ($stmtNotif->execute()) {
                 $success_msg = "Invoice uploaded successfully.";
-                header('location: bill-clients?caseid='.$caseID);
-                exit();
             } else {
                 $error_msg = "Notification Error.";
             }
