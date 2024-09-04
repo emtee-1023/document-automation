@@ -4,7 +4,6 @@
 <?php
 $error_msg = '';
 $success_msg = '';
-$formData = []; // Initialize form data array
 $today = date('Y-m-d');
 
 
