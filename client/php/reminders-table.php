@@ -8,7 +8,7 @@
             <thead>
                 <tr>
                     <th>Case</th>
-                    <th>Next Hearing</th>
+                    <th>Next Date</th>
                     <th>Bringup Date</th>
                     <th>View</th>
                 </tr>

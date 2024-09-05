@@ -9,7 +9,7 @@
                 <tr>
                     <th>Case</th>
                     <th>Client</th>
-                    <th>Next Hearing</th>
+                    <th>Next Date</th>
                     <th>Bringup Date</th>
                     <th>View</th>
                     <th>Delete</th>

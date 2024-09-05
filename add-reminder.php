@@ -42,11 +42,22 @@ if (isset($_POST['submit'])) {
     ".$notes
     ;
 
+    $message2 = 
+    "
+    Case: ".$casename."
+    Next Hearing: ".$nextdate."
+    Bringup Date: ".$bringup."
+    Meeting Link (for Online Hearings): ".$link."
+    Notes: 
+    ".$notes
+    ;
+
     // Prepare and execute the insertion of assignments
     $stmt_reminder = mysqli_prepare($conn, "INSERT INTO reminders (CaseID, clientid, nextdate, bringupdate, meetinglink, notes, userid, firmid) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
     $stmt_notification = mysqli_prepare($conn, "INSERT INTO notifications (NotifSubject, NotifText, UserID, ClientID) VALUES (?, ?, ?, ?)");
+    $stmt_notification2 = mysqli_prepare($conn, "INSERT INTO notifications (NotifSubject, NotifText, UserID, ClientID, SendAt) VALUES (?, ?, ?, ?, ?)");   
 
-    if ($stmt_reminder && $stmt_notification) {
+    if ($stmt_reminder && $stmt_notification && $stmt_notification2) {
         
         // Insert into reminders
         mysqli_stmt_bind_param($stmt_reminder, "iissssii", $caseid, $clientid, $nextdate, $bringup, $link, $notes, $user, $firm);
@@ -57,11 +68,18 @@ if (isset($_POST['submit'])) {
         $notifText = $message;
         mysqli_stmt_bind_param($stmt_notification, "ssii", $notifSubject, $notifText, $user, $clientid);
         mysqli_stmt_execute($stmt_notification);
+
+        // Insert into notifications2
+        $notifSubject2 = "Case reminder Bringup";
+        $notifText2 = $message2;
+        mysqli_stmt_bind_param($stmt_notification2, "ssiis", $notifSubject2, $notifText2, $user, $clientid, $bringup);
+        mysqli_stmt_execute($stmt_notification2);
         
 
         // Close the statements
         mysqli_stmt_close($stmt_reminder);
         mysqli_stmt_close($stmt_notification);
+        mysqli_stmt_close($stmt_notification2);
 
          $success_msg = "Reminder Added Successfuly";
 

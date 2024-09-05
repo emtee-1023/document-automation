@@ -155,7 +155,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                             <div class="col-md-6">
                                 <div class="form-floating">
-                                <select class="form-select" id="inputCaseID" name="CaseID">
+                                <select class="form-select" id="inputCaseID" name="CaseID" required>
                                     <option value="" disabled <?php echo empty($formData['CaseID']) ? 'selected' : ''; ?>>Choose Case</option>
                                     <?php
                                     $firm = $_SESSION['fid'];
