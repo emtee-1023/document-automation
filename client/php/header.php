@@ -63,7 +63,7 @@ $pageTitle = '';
                 <?php        
                 $user = $_SESSION['userid'];    
                 $isread = 0;
-                $sql = "SELECT NotifID FROM notifications WHERE IsRead = ? AND userid = ?";
+                $sql = "SELECT NotifID FROM notifications WHERE IsRead = ? AND userid = AND (SendAt <= NOW() OR SendAt IS NULL)?";
                 $stmt = mysqli_prepare($conn, $sql);
                 mysqli_stmt_bind_param($stmt, 'ii', $isread,$user);
                 mysqli_stmt_execute($stmt);
@@ -82,7 +82,7 @@ $pageTitle = '';
                         <?php
                         $user = $_SESSION['userid'];
                         $is_read = 0;
-                        $sql = "SELECT NotifID, NotifSubject, NotifText FROM notifications WHERE UserID = ? AND IsRead = ?";
+                        $sql = "SELECT NotifID, NotifSubject, NotifText FROM notifications WHERE UserID = ? AND IsRead = ? AND (SendAt <= NOW() OR SendAt IS NULL)";
                         $stmt = mysqli_prepare($conn, $sql);
                         mysqli_stmt_bind_param($stmt, 'ii',$user, $is_read);
                         mysqli_stmt_execute($stmt);

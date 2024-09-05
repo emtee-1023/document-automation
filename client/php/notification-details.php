@@ -9,7 +9,7 @@ $response = array();
 if (isset($_GET['id'])) {
     // Fetch notification details
     $lid = intval($_GET['id']);
-    $sql_select = "SELECT NotifSubject, NotifText FROM notifications WHERE NotifID = ?";
+    $sql_select = "SELECT NotifSubject, NotifText FROM notifications WHERE NotifID = ? AND (SendAt <= NOW() OR SendAt IS NULL)";
     $stmt_select = $conn->prepare($sql_select);
     $stmt_select->bind_param('i', $lid);
     $stmt_select->execute();
