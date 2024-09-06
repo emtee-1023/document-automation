@@ -19,7 +19,7 @@ if(isset($_GET['taskid'])){
     $task = $_GET['taskid'];
 
     // Fetch users from the database
-    $query = "SELECT CONCAT('You Have Been Assigned The Task ',t.taskname,' by ',u.fname,' ',u.lname,' that is due on ',t.taskdeadline) as message, CONCAT(u.fname,' 'u.lname) as tasker FROM tasks t JOIN users u ON u.userid = t.userid  WHERE taskid = ?";
+    $query = "SELECT CONCAT('You Have Been Assigned The Task ',t.taskname,' by ',u.fname,' ',u.lname,' that is due on ',t.taskdeadline) as message, CONCAT(u.fname,' ',u.lname) as tasker FROM tasks t JOIN users u ON u.userid = t.userid  WHERE taskid = ?";
     $stmt = mysqli_prepare($conn, $query);
     mysqli_stmt_bind_param($stmt, "i", $task);
     mysqli_stmt_execute($stmt);
@@ -51,6 +51,8 @@ if (isset($_POST['submit_assignment'])) {
                 $notifText = $message;
                 mysqli_stmt_bind_param($stmt_notification, "ssi", $notifSubject, $notifText, $userId);
                 mysqli_stmt_execute($stmt_notification);
+
+                $success_msg = "Task Assigned successfuly";
             }
 
             // Close the statements

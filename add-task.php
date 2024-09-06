@@ -11,37 +11,6 @@ $error_msg = '';
 $success_msg = '';
 $redirect = '';
 
-$user = $_SESSION['userid'];
-$firm = $_SESSION['fid'];
-
-// Check if the form was submitted
-if (isset($_POST['submit_task'])) {
-    $taskName = $_POST['task_name'];
-    $description = $_POST['description'];
-    $deadline = $_POST['deadline'];
-    $user = $_SESSION['userid'];
-    $firm = $_SESSION['fid'];
-
-    // Prepare and execute the insert statement
-    $stmt = mysqli_prepare($conn, "INSERT INTO tasks (TaskName, TaskDescription, TaskDeadline, CreatedAt, UserID, FirmID) VALUES (?, ?, ?, NOW(), ?, ?)");
-    if ($stmt) {
-        mysqli_stmt_bind_param($stmt, "sssii", $taskName, $description, $deadline, $user, $firm);
-        mysqli_stmt_execute($stmt);
-        
-        // Get the newly created task ID
-        $taskId = mysqli_insert_id($conn);
-
-        // Close the statement
-        mysqli_stmt_close($stmt);
-
-        // Redirect to the task assignment page with the task ID
-        header("Location: assign-task?taskid=$taskId");
-        exit();
-    } else {
-        // Error preparing the statement
-        $error_msg = 'Error preparing the SQL statement.';
-    }
-}
 ?>
 
 <div id="layoutSidenav">
@@ -77,7 +46,7 @@ if (isset($_POST['submit_task'])) {
                     ?>
                     <div class="card-header"><h3 class="text-center font-weight-light my-4">Create Task</h3></div>
                     <div class="card-body">
-                        <form method="post" action="" enctype="multipart/form-data">
+                        <form method="post" action="process.php" enctype="multipart/form-data">
                             <!--Task nameand deadline on the same row -->
                             <div class="row mb-3">
                                 <div class="col-md-6">
