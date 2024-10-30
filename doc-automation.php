@@ -1,6 +1,8 @@
 <?php include 'php/header.php'; ?>
-
 <?php include 'notifications.php'; ?>
+<?php
+$fid = $_SESSION['fid'];
+?>
 
 
 <div id="layoutSidenav">
@@ -17,23 +19,51 @@
                 <div class="card mb-4">
                     <div class="card-header">
                         <i class="fas fa-table me-1"></i>
-                        Showing available Templates
+                        Choose a case to generate a document
                     </div>
                     <div class="card-body">
                         <table id="datatablesSimple">
                             <thead>
                                 <tr>
-                                    <th>Template Name</th>
-                                    <th>Template Description</th>
-                                    <th>Action</th>
+                                    <th>CaseNumber</th>
+                                    <th>CaseName</th>
+                                    <th>CaseDescription</th>
+                                    <th>GeneratedDocuments</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>djkfjkd</td>
-                                    <td><a href="create.php">Create Document</a></td>
-                                    <td>done</td>
-                                </tr>
+                                <?php
+                                $stmt1 = $conn->prepare('SELECT 
+                                c.caseid,
+                                c.casenumber, 
+                                c.casename, 
+                                c.casedescription,
+                                COUNT(gd.gdid) AS doc_count
+                            FROM 
+                                cases c
+                            LEFT JOIN 
+                                generated_docs gd ON gd.caseid = c.caseid
+                            WHERE 
+                                c.firmid = ?
+                            GROUP BY 
+                                c.casenumber, c.casename, c.casedescription;
+                            ');
+                                $stmt1->bind_param('i', $fid);
+                                $stmt1->execute();
+                                $res1 = $stmt1->get_result();
+
+                                while ($row = $res1->fetch_assoc()) {
+                                ?>
+                                    <tr>
+                                        <td><?= htmlspecialchars($row['casenumber']) ?></td>
+                                        <td><a href="custom-fields?caseid=<?= htmlspecialchars($row['caseid']) ?>"><?= htmlspecialchars($row['casename']) ?></a></td>
+                                        <td><?= htmlspecialchars($row['casedescription']) ?></td>
+                                        <td><?= $row['doc_count'] ?></td>
+                                    </tr>
+                                <?php
+                                }
+                                ?>
+
                             </tbody>
                         </table>
                     </div>
@@ -43,7 +73,7 @@
         <footer class="py-4 bg-light mt-auto">
             <div class="container-fluid px-4">
                 <div class="d-flex align-items-center justify-content-between small">
-                    <div class="text-muted">Copyright &copy; Law Project</div>
+                    <div class="text-muted">Copyright &copy; InLaw</div>
                     <!-- <div>
                                 <a href="#">Privacy Policy</a>
                                 &middot;

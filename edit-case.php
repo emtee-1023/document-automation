@@ -1,9 +1,9 @@
-<?php include 'php/header.php';?>
+<?php include 'php/header.php'; ?>
 
 <?php
-if(!isset($_SESSION['userid']) && !isset($_SESSION['fid'])){
+if (!isset($_SESSION['userid']) && !isset($_SESSION['fid'])) {
     header('location: firm-login');
-} elseif(!isset($_SESSION['userid']) && isset($_SESSION['fid'])){
+} elseif (!isset($_SESSION['userid']) && isset($_SESSION['fid'])) {
     header('location: login');
 }
 
@@ -21,7 +21,7 @@ $user = $_SESSION['userid'];
 $firm = $_SESSION['fid'];
 
 // Default values
-$CaseNumber ='';
+$CaseNumber = '';
 $CaseName = '';
 $ClientName = '';
 $CaseDescription = '';
@@ -73,7 +73,7 @@ if (isset($_POST['submit'])) {
                 mysqli_stmt_execute($stmt);
                 mysqli_stmt_close($stmt);
                 $success_msg = 'Case Details updated successfully!';
-                
+
                 $CaseNumber = $CaseNumber;
                 $CaseName = $CaseName;
                 $ClientName = $ClientName;
@@ -83,7 +83,6 @@ if (isset($_POST['submit'])) {
                 $CloseDate = $CloseDate;
                 $CourtName = $CourtName;
                 $AdvocateName = $AdvocateName;
-
             } else {
                 $error_msg = 'Error preparing the SQL statement for update.';
             }
@@ -95,7 +94,7 @@ if (isset($_POST['submit'])) {
 ?>
 
 <div id="layoutSidenav">
-    <?php include 'php/sidebar.php';?>
+    <?php include 'php/sidebar.php'; ?>
     <div id="layoutSidenav_content">
         <main">
             <div class="container-fluid px-4 d-flex flex-column align-items-start">
@@ -108,24 +107,26 @@ if (isset($_POST['submit'])) {
                 </div> -->
 
                 <div class="card shadow-sm border-0 rounded-lg mt-3 col-md-10 align-self-center d-flex flex-column">
-                    <?php 
+                    <?php
                     if ($error_msg != '') {
                         echo '
                         <div class="alert alert-danger" role="alert">
-                            '.$error_msg.'
+                            ' . $error_msg . '
                         </div>';
                     }
                     ?>
 
-                    <?php 
+                    <?php
                     if ($success_msg != '') {
                         echo '
                         <div class="alert alert-success" role="alert">
-                            '.$success_msg.'
+                            ' . $success_msg . '
                         </div>';
                     }
                     ?>
-                    <div class="card-header"><h3 class="text-center font-weight-light my-4">Edit Case Details</h3></div>
+                    <div class="card-header">
+                        <h3 class="text-center font-weight-light my-4">Edit Case Details</h3>
+                    </div>
                     <div class="card-body">
                         <form class="d-flex flex-column" method="post" action="">
                             <!-- Case Number and Case Name in the same row -->
@@ -267,6 +268,5 @@ if (isset($_POST['submit'])) {
                     </div>
                 </div>
             </div>
-        </main>
-        <?php include 'php/footer.php';?>
-
+            </main>
+            <?php include 'php/footer.php'; ?>

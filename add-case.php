@@ -1,9 +1,9 @@
-<?php include 'php/header.php';?>
+<?php include 'php/header.php'; ?>
 
 <?php
-if(!isset($_SESSION['userid']) && !isset($_SESSION['fid'])){
+if (!isset($_SESSION['userid']) && !isset($_SESSION['fid'])) {
     header('location: firm-login');
-} elseif(!isset($_SESSION['userid']) && isset($_SESSION['fid'])){
+} elseif (!isset($_SESSION['userid']) && isset($_SESSION['fid'])) {
     header('location: login');
 }
 
@@ -27,7 +27,7 @@ if (isset($_POST['submit'])) {
 
     $user = $_SESSION['userid'];
     $firm = $_SESSION['fid'];
-    
+
 
     // Check if case number already exists
     $checkStmt = mysqli_prepare($conn, "SELECT COUNT(*) FROM cases WHERE casenumber = ? AND firmid = ?");
@@ -64,7 +64,7 @@ if (isset($_POST['submit'])) {
 ?>
 
 <div id="layoutSidenav">
-    <?php include 'php/sidebar.php';?>
+    <?php include 'php/sidebar.php'; ?>
     <div id="layoutSidenav_content">
         <main">
             <div class="container-fluid px-4 d-flex flex-column align-items-start">
@@ -77,24 +77,26 @@ if (isset($_POST['submit'])) {
                 </div> -->
 
                 <div class="card shadow-sm border-0 rounded-lg mt-3 col-md-10 align-self-center d-flex flex-column">
-                    <?php 
+                    <?php
                     if ($error_msg != '') {
                         echo '
                         <div class="alert alert-danger" role="alert">
-                            '.$error_msg.'
+                            ' . $error_msg . '
                         </div>';
                     }
                     ?>
 
-                    <?php 
+                    <?php
                     if ($success_msg != '') {
                         echo '
                         <div class="alert alert-success" role="alert">
-                            '.$success_msg.'
+                            ' . $success_msg . '
                         </div>';
                     }
                     ?>
-                    <div class="card-header"><h3 class="text-center font-weight-light my-4">Add New Case</h3></div>
+                    <div class="card-header">
+                        <h3 class="text-center font-weight-light my-4">Add New Case</h3>
+                    </div>
                     <div class="card-body">
                         <form class="d-flex flex-column" method="post" action="">
                             <!-- Case Number and Case Name in the same row -->
@@ -157,7 +159,7 @@ if (isset($_POST['submit'])) {
                                             $user = $_SESSION['userid'];
                                             $firm = $_SESSION['fid'];
                                             // Prepare SQL query with parameterized statement
-                                            $stmt = $conn->prepare("SELECT userid, CONCAT(fname,' ',lname) as advocatename FROM users WHERE firmid = ? AND User_type = 'advocate'");
+                                            $stmt = $conn->prepare("SELECT userid, CONCAT(fname,' ',lname) as advocatename FROM users WHERE firmid = ? AND (User_type = 'advocate' OR User_type = 'admin')");
                                             $stmt->bind_param("i", $firm); // "i" specifies the variable type as integer
                                             $stmt->execute();
                                             $result = $stmt->get_result();
@@ -174,7 +176,7 @@ if (isset($_POST['submit'])) {
                                     </div>
                                 </div>
                             </div>
-                                
+
 
                             <!-- Court Name and Case status on same row -->
                             <div class="row mb-3">
@@ -193,21 +195,21 @@ if (isset($_POST['submit'])) {
                                     <div class="form-floating">
                                         <select class="form-select" id="inputCourtName" name="CourtName" aria-label="Court Name">
                                             <option value="" disabled selected>Choose Court</option>
-                                                <?php
-                                                $user = $_SESSION['userid'];
-                                                // Prepare SQL query with parameterized statement
-                                                $stmt = $conn->prepare("SELECT courtid, courtname FROM courts WHERE firmid = ?");
-                                                $stmt->bind_param("i", $firm); // "i" specifies the variable type as integer
-                                                $stmt->execute();
-                                                $result = $stmt->get_result();
+                                            <?php
+                                            $user = $_SESSION['userid'];
+                                            // Prepare SQL query with parameterized statement
+                                            $stmt = $conn->prepare("SELECT courtid, courtname FROM courts WHERE firmid = ?");
+                                            $stmt->bind_param("i", $firm); // "i" specifies the variable type as integer
+                                            $stmt->execute();
+                                            $result = $stmt->get_result();
 
-                                                // Fetch and display options
-                                                while ($row = $result->fetch_assoc()) {
-                                                    echo '<option value="' . htmlspecialchars($row["courtid"]) . '">' . htmlspecialchars($row["courtname"]) . '</option>';
-                                                }
+                                            // Fetch and display options
+                                            while ($row = $result->fetch_assoc()) {
+                                                echo '<option value="' . htmlspecialchars($row["courtid"]) . '">' . htmlspecialchars($row["courtname"]) . '</option>';
+                                            }
 
-                                                $stmt->close();
-                                                ?>
+                                            $stmt->close();
+                                            ?>
                                         </select>
                                         <label for="inputCourtName">Court Name</label>
                                     </div>
@@ -242,7 +244,5 @@ if (isset($_POST['submit'])) {
                     </div>
                 </div>
             </div>
-        </main>
-        <?php include 'php/footer.php';?>
-
-
+            </main>
+            <?php include 'php/footer.php'; ?>
