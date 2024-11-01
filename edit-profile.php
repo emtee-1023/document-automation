@@ -38,16 +38,16 @@ if (isset($_POST['submit'])) {
     $FName = $_POST['FName'];
     $LName = $_POST['LName'];
     $Email = $_POST['Email'];
-    $NewPassword = $_POST['NewPass'];
+    $NewPassword = password_hash($_POST['NewPass'], PASSWORD_DEFAULT);
 
-    if($_POST['OldPass']==''){
+    if ($_POST['OldPass'] == '') {
         $OldPassword = $Password;
     } else {
         $OldPassword = $_POST['OldPass'];
     }
 
     // Verify old password
-    if ($OldPassword!=$Password) {
+    if (!password_verify($OldPassword, $Password)) {
         $error_msg = 'Old password is incorrect.';
     } else {
         // Check if email already exists
@@ -71,22 +71,22 @@ if (isset($_POST['submit'])) {
                 $newPhoto = $fileName;
             }
 
-             // Prepare update statement
-             $updateStmt = mysqli_prepare($conn, "UPDATE users SET FName = ?, LName = ?, Email = ?, Photo = ? " . ($NewPassword ? ", Password = ?" : "") . " WHERE UserID = ? AND FirmID = ?");
-             if ($updateStmt) {
-                 if ($NewPassword) {
-                     //$NewPassword = password_hash($NewPassword, PASSWORD_DEFAULT);
-                     mysqli_stmt_bind_param($updateStmt, "ssssii", $FName, $LName, $Email, $newPhoto, $NewPassword, $user, $firm);
-                 } else {
-                     mysqli_stmt_bind_param($updateStmt, "ssssii", $FName, $LName, $Email, $newPhoto, $user, $firm);
-                 }
-                 
-                 mysqli_stmt_execute($updateStmt);
-                 mysqli_stmt_close($updateStmt);
-                 $success_msg = 'Profile updated successfully!';
-             } else {
-                 $error_msg = 'Error preparing the SQL statement.';
-             }
+            // Prepare update statement
+            $updateStmt = mysqli_prepare($conn, "UPDATE users SET FName = ?, LName = ?, Email = ?, Photo = ? " . ($NewPassword ? ", Password = ?" : "") . " WHERE UserID = ? AND FirmID = ?");
+            if ($updateStmt) {
+                if ($NewPassword) {
+                    //$NewPassword = password_hash($NewPassword, PASSWORD_DEFAULT);
+                    mysqli_stmt_bind_param($updateStmt, "sssssii", $FName, $LName, $Email, $newPhoto, $NewPassword, $user, $firm);
+                } else {
+                    mysqli_stmt_bind_param($updateStmt, "ssssii", $FName, $LName, $Email, $newPhoto, $user, $firm);
+                }
+
+                mysqli_stmt_execute($updateStmt);
+                mysqli_stmt_close($updateStmt);
+                $success_msg = 'Profile updated successfully!';
+            } else {
+                $error_msg = 'Error preparing the SQL statement.';
+            }
         }
     }
 }
@@ -95,6 +95,7 @@ if (isset($_POST['submit'])) {
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -105,6 +106,7 @@ if (isset($_POST['submit'])) {
     <link href="css/styles.css" rel="stylesheet" />
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
 </head>
+
 <body class="bg-dark">
     <div id="layoutAuthentication">
         <div id="layoutAuthentication_content">
@@ -126,11 +128,13 @@ if (isset($_POST['submit'])) {
                                 <?php endif; ?>
                             </div>
                             <div class="card shadow-lg border-0 rounded-lg mt-5">
-                                <div class="card-header"><h3 class="text-center font-weight-light my-4">Edit Profile</h3></div>
+                                <div class="card-header">
+                                    <h3 class="text-center font-weight-light my-4">Edit Profile</h3>
+                                </div>
                                 <div class="card-body d-flex flex-column justify-content-center">
                                     <!-- Displaying Current Profile Photo -->
                                     <div class="text-center mb-4">
-                                        <img src="assets/img/submitted/<?php echo $newPhoto?>" alt="Description" class="img-fluid rounded-circle" style="width: 100px; height:100px;">
+                                        <img src="assets/img/submitted/<?php echo $newPhoto ?>" alt="Description" class="img-fluid rounded-circle" style="width: 100px; height:100px;">
                                     </div>
                                     <form method="post" action="" enctype="multipart/form-data">
                                         <!-- First Name and Last Name in the same row -->
@@ -169,14 +173,14 @@ if (isset($_POST['submit'])) {
                                         <div class="row mb-3">
                                             <div class="col-md-6">
                                                 <div class="form-floating">
-                                                    <input class="form-control" id="inputOldPass" type="password" placeholder="old password" name="OldPass"/>
+                                                    <input class="form-control" id="inputOldPass" type="password" placeholder="old password" name="OldPass" />
                                                     <label for="inputEmail">Old Password</label>
                                                 </div>
                                             </div>
 
                                             <div class="col-md-6">
                                                 <div class="form-floating">
-                                                    <input class="form-control" id="inputNewPass" type="password" placeholder="new password" name="NewPass"/>
+                                                    <input class="form-control" id="inputNewPass" type="password" placeholder="new password" name="NewPass" />
                                                     <label for="inputEmail">New Password</label>
                                                     <div id="emailHelp" class="form-text"></div>
                                                 </div>
@@ -204,4 +208,5 @@ if (isset($_POST['submit'])) {
         </div>
     </div>
 </body>
+
 </html>

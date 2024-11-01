@@ -67,9 +67,9 @@ if (isset($_POST['submit'])) {
             $error_msg = 'Case name already exists within firm. If you cannot access it, contact admin';
         } else {
             // Update case details
-            $stmt = mysqli_prepare($conn, "UPDATE cases SET casenumber = ?, casename = ?, clientid = ?, casedescription = ?, casestatus = ?, opendate = ?, closedate = ?, courtid = ?, userid = ?, firmid = ? WHERE caseid = ? AND userid = ?");
+            $stmt = mysqli_prepare($conn, "UPDATE cases SET casenumber = ?, casename = ?, clientid = ?, casedescription = ?, casestatus = ?, opendate = ?, closedate = ?, courtid = ?, userid = ?, firmid = ? WHERE caseid = ?");
             if ($stmt) {
-                mysqli_stmt_bind_param($stmt, "sssssssiiiii", $CaseNumber, $CaseName, $ClientName, $CaseDescription, $CaseStatus, $OpenDate, $CloseDate, $CourtName, $AdvocateName, $firm, $case_id, $user);
+                mysqli_stmt_bind_param($stmt, "sssssssiiii", $CaseNumber, $CaseName, $ClientName, $CaseDescription, $CaseStatus, $OpenDate, $CloseDate, $CourtName, $AdvocateName, $firm, $case_id);
                 mysqli_stmt_execute($stmt);
                 mysqli_stmt_close($stmt);
                 $success_msg = 'Case Details updated successfully!';
@@ -133,7 +133,7 @@ if (isset($_POST['submit'])) {
                             <div class="row mb-3">
                                 <div class="col-md-6">
                                     <div class="form-floating mb-3 mb-md-0">
-                                        <input class="form-control" id="inputCaseNumber" type="text" placeholder="Enter case number" name="CaseNumber" value="<?php echo htmlspecialchars($CaseNumber); ?>" />
+                                        <input class="form-control" id="inputCaseNumber" type="text" placeholder="Enter case number" name="CaseNumber" value="<?php echo htmlspecialchars($CaseNumber); ?> " />
                                         <label for="inputCaseNumber">Case Number</label>
                                     </div>
                                 </div>

@@ -63,19 +63,18 @@ if (isset($_POST['submit'])) {
                     }
 
                     // Prepare and execute the INSERT statement for users
-                    $userStmt = mysqli_prepare($conn, "INSERT INTO users (FName, LName, Email, Password, User_type, FirmID) VALUES (?, ?, ?, ?, ?, ?)");
+                    $userStmt = mysqli_prepare($conn, "INSERT INTO users (FName, LName, Email, Password, User_type, Photo FirmID) VALUES (?, ?, ?, ?, ?, ?, ?)");
                     if ($userStmt) {
                         // Use variables here
                         $firstName = 'Administrator';
                         $lastName = '';
                         $userType = 'admin';
+                        $photo = 'defaultpfp.png';
                         mysqli_stmt_bind_param($userStmt, "sssssi", $firstName, $lastName, $FirmMail, $hashedPassword, $userType, $firmid);
                         mysqli_stmt_execute($userStmt);
                         mysqli_stmt_close($userStmt);
 
                         $success_msg = 'Firm added successfully!';
-                        header('location: https://payment.intasend.com/pay/4d0add4c-7272-407f-b47c-94af8e547822/');
-                        exit();
                     } else {
                         $error_msg = 'Error preparing the SQL statement for users.';
                     }
@@ -94,117 +93,123 @@ if (isset($_POST['submit'])) {
 
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8" />
-        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-        <meta name="description" content="" />
-        <meta name="author" content="" />
-        <title>Firm Login - DocAuto</title>
-        <link href="css/styles.css" rel="stylesheet" />
-        <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
-    </head>
-    <body class="bg-dark">
-        <div id="layoutAuthentication">
-            <div id="layoutAuthentication_content">
-                <main>
-                    <div class="container">
-                        <div class="row justify-content-center">
-                            <div class="col-md-7">
-                                <div class="mt-3">
-                                <?php 
-                                    if($error_msg!=''){
-                                        echo
-                                        '
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <title>Firm Login - DocAuto</title>
+    <link href="css/styles.css" rel="stylesheet" />
+    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+</head>
+
+<body class="bg-dark">
+    <div id="layoutAuthentication">
+        <div id="layoutAuthentication_content">
+            <main>
+                <div class="container">
+                    <div class="row justify-content-center">
+                        <div class="col-md-7">
+                            <div class="mt-3">
+                                <?php
+                                if ($error_msg != '') {
+                                    echo
+                                    '
                                         <div class="alert alert-danger" role="alert">
-                                            '.$error_msg.'
+                                            ' . $error_msg . '
                                         </div>
-                                        ';}
-                                    ?>
+                                        ';
+                                }
+                                ?>
 
-                                    <?php 
-                                    if($success_msg!=''){
-                                        echo
-                                        '
+                                <?php
+                                if ($success_msg != '') {
+                                    echo
+                                    '
                                         <div class="alert alert-success" role="alert">
-                                            '.$success_msg.'
+                                            ' . $success_msg . '
                                         </div>
-                                        ';}
-                                    ?>
-                                        
+                                        ';
+                                }
+                                ?>
+
+                            </div>
+                            <div class="card shadow-lg border-0 rounded-lg mt-5">
+                                <div class="card-header">
+                                    <h3 class="text-center font-weight-light my-4">Create New Firm</h3>
                                 </div>
-                                <div class="card shadow-lg border-0 rounded-lg mt-5">
-                                    <div class="card-header"><h3 class="text-center font-weight-light my-4">Create New Firm</h3></div>
-                                    <div class="card-body">
-                                        <form method="post" action="" enctype="multipart/form-data">
-                                            <!-- Firm Name and Email in the same row -->
-                                            <div class="row mb-3">
-                                                <div class="col-md-6">
-                                                    <div class="form-floating mb-3 mb-md-0">
-                                                        <input class="form-control" id="inputFirmName" type="text" placeholder="Enter firm name" name="FirmName" />
-                                                        <label for="inputFirmName">Firm Name</label>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <div class="form-floating">
-                                                        <input class="form-control" id="inputFirmMail" type="email" placeholder="Enter firm email" name="FirmMail" />
-                                                        <label for="inputFirmMail">Firm Email Address</label>
-                                                    </div>
+                                <div class="card-body">
+                                    <form method="post" action="" enctype="multipart/form-data">
+                                        <!-- Firm Name and Email in the same row -->
+                                        <div class="row mb-3">
+                                            <div class="col-md-6">
+                                                <div class="form-floating mb-3 mb-md-0">
+                                                    <input class="form-control" id="inputFirmName" type="text" placeholder="Enter firm name" name="FirmName" />
+                                                    <label for="inputFirmName">Firm Name</label>
                                                 </div>
                                             </div>
-
-                                            <!-- Password and Confirm Password -->
-                                            <div class="row mb-3">
-                                                <div class="col-md-6">
-                                                    <div class="form-floating">
-                                                        <input class="form-control" id="inputPass" type="password" placeholder="Password" name="Pass" />
-                                                        <label for="inputPass">Password</label>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <div class="form-floating">
-                                                        <input class="form-control" id="inputConfirmPass" type="password" placeholder="Confirm Password" name="ConfirmPass" />
-                                                        <label for="inputConfirmPass">Confirm Password</label>
-                                                    </div>
+                                            <div class="col-md-6">
+                                                <div class="form-floating">
+                                                    <input class="form-control" id="inputFirmMail" type="email" placeholder="Enter firm email" name="FirmMail" />
+                                                    <label for="inputFirmMail">Firm Email Address</label>
                                                 </div>
                                             </div>
+                                        </div>
 
-                                            <!-- Logo -->
-                                            <div class="row mb-3">
-                                                <div class="col-md-12">
-                                                    <div class="form-floating">
-                                                        <input class="form-control" id="inputLogo" type="file" name="Logo" />
-                                                        <label for="inputLogo">Logo</label>
-                                                    </div>
+                                        <!-- Password and Confirm Password -->
+                                        <div class="row mb-3">
+                                            <div class="col-md-6">
+                                                <div class="form-floating">
+                                                    <input class="form-control" id="inputPass" type="password" placeholder="Password" name="Pass" />
+                                                    <label for="inputPass">Password</label>
                                                 </div>
                                             </div>
-
-                                            <!-- Address  -->
-                                            <div class="row mb-3">
-                                                <div class="col-md-12">
-                                                    <div class="form-floating">
-                                                        <textarea class="form-control" name="Address" id="inputAddress" placeholder="Enter Firm's Physical Address" style="height: 120px;"></textarea>
-                                                        <label for="inputAddress">Address</label>
-                                                    </div>
+                                            <div class="col-md-6">
+                                                <div class="form-floating">
+                                                    <input class="form-control" id="inputConfirmPass" type="password" placeholder="Confirm Password" name="ConfirmPass" />
+                                                    <label for="inputConfirmPass">Confirm Password</label>
                                                 </div>
                                             </div>
+                                        </div>
 
-                                            <div class="mt-4 mb-0 d-flex justify-content-center">
-                                                <div class="d-grid">
-                                                    <input type="submit" class="btn btn-primary btn-block" name="submit" value="Create Firm">
+                                        <!-- Logo -->
+                                        <div class="row mb-3">
+                                            <div class="col-md-12">
+                                                <div class="form-floating">
+                                                    <input class="form-control" id="inputLogo" type="file" name="Logo" />
+                                                    <label for="inputLogo">Logo</label>
                                                 </div>
                                             </div>
-                                        </form>
+                                        </div>
 
-                                    </div>
-                                    <div class="card-footer text-center py-3">
-                                        <div class="small"><a href="firm-login">Back to Login</a></div>
-                                    </div>
+                                        <!-- Address  -->
+                                        <div class="row mb-3">
+                                            <div class="col-md-12">
+                                                <div class="form-floating">
+                                                    <textarea class="form-control" name="Address" id="inputAddress" placeholder="Enter Firm's Physical Address" style="height: 120px;"></textarea>
+                                                    <label for="inputAddress">Address</label>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="mt-4 mb-0 d-flex justify-content-center">
+                                            <div class="d-grid">
+                                                <input type="submit" class="btn btn-primary btn-block" name="submit" value="Create Firm">
+                                            </div>
+                                        </div>
+                                    </form>
+
+                                </div>
+                                <div class="card-footer text-center py-3">
+                                    <div class="small"><a href="firm-login">Back to Login</a></div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </main>
                 </div>
-            <div id="layoutAuthentication_footer">
-           <?php include 'php/footer.php';?>
+            </main>
+        </div>
+        <div id="layoutAuthentication_footer">
+            <?php include 'php/footer.php'; ?>

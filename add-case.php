@@ -103,7 +103,7 @@ if (isset($_POST['submit'])) {
                             <div class="row mb-3">
                                 <div class="col-md-6">
                                     <div class="form-floating mb-3 mb-md-0">
-                                        <input class="form-control" id="inputCaseNumber" type="text" placeholder="Enter case number" name="CaseNumber" />
+                                        <input class="form-control" id="inputCaseNumber" type="text" placeholder="Enter case number" name="CaseNumber" required />
                                         <label for="inputCaseNumber">Case Number</label>
                                     </div>
                                 </div>
@@ -125,7 +125,7 @@ if (isset($_POST['submit'])) {
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-floating">
-                                        <select class="form-select" id="inputClientName" name="ClientName" aria-label="Client Name">
+                                        <select class="form-select" id="inputClientName" name="ClientName" aria-label="Client Name" required>
                                             <option value="" disabled selected>Choose Client</option>
                                             <?php
                                             $user = $_SESSION['userid'];
@@ -182,7 +182,7 @@ if (isset($_POST['submit'])) {
                             <div class="row mb-3">
                                 <div class="col-md-6">
                                     <div class="form-floating">
-                                        <select class="form-select" id="inputCaseStatus" name="CaseStatus" aria-label="Case Status">
+                                        <select class="form-select" id="inputCaseStatus" name="CaseStatus" aria-label="Case Status" required>
                                             <option value="" disabled selected>Choose Case Status</option>
                                             <option value="open">Open</option>
                                             <option value="closed">Closed</option>
@@ -193,7 +193,7 @@ if (isset($_POST['submit'])) {
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-floating">
-                                        <select class="form-select" id="inputCourtName" name="CourtName" aria-label="Court Name">
+                                        <select class="form-select" id="inputCourtName" name="CourtName" aria-label="Court Name" required>
                                             <option value="" disabled selected>Choose Court</option>
                                             <?php
                                             $user = $_SESSION['userid'];
