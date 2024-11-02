@@ -47,7 +47,7 @@ function defMail($recepient, $subject, $message)
     }
 }
 
-function passReset($token, $fname)
+function passReset($fname, $token)
 {
     $message = '
     <!DOCTYPE html>
@@ -57,46 +57,96 @@ function passReset($token, $fname)
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <title>InLaw Password Reset</title>
-        <!-- Include Bootstrap CSS -->
-        <link
-        rel="stylesheet"
-        href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-        />
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #f8f9fa;
+                margin: 0;
+                padding: 0;
+            }
+            .container {
+                margin: 0 auto;
+                max-width: 580px;
+                padding: 10px;
+            }
+            .card {
+                background-color: #ffffff;
+                border: 1px solid #dee2e6;
+                border-radius: 5px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                padding: 20px;
+                width: 100%;
+                box-sizing: border-box;
+            }
+            .card-body {
+                text-align: center;
+            }
+            .h2 {
+                font-size: 24px;
+                margin-bottom: 10px;
+            }
+            .mb-3 {
+                margin-bottom: 15px;
+            }
+            .btn {
+                display: inline-block;
+                background-color: #007bff;
+                color: #ffffff;
+                padding: 10px 20px;
+                text-decoration: none;
+                border-radius: 5px;
+                font-size: 16px;
+            }
+            .btn:hover {
+                background-color: #0056b3;
+            }
+            .footer {
+                text-align: center;
+                margin-top: 20px;
+            }
+            .content-block {
+                margin-bottom: 5px;
+            }
+            .text-muted {
+                color: #6c757d;
+                font-size: 12px;
+            }
+            .powered-by a {
+                color: #6c757d;
+                text-decoration: none;
+            }
+        </style>
     </head>
-
     <body>
-        <div
-        class="container"
-        style="margin: 0 auto; max-width: 580px; padding: 10px"
-        >
-        <div class="card" style="width: 100%">
-            <div class="card-body text-center">
-            <h1 class="h2">Password Reset</h1>
-            <p class="mb-3">Dear ' . $fname . '</p>
-            <p class="mb-3">
-                We have received your password reset request. Click on the password
-                reset button below or paste the provided link on your browser
-            </p>
-            <a href="password-reset?token=' . $token . '" class="btn btn-primary">Reset Pass</a>
-            <p class="mb-3">link</p>
-            <p class="mb-3">Thank you for choosing InLaw.</p>
+        <div class="container">
+            <div class="card">
+                <div class="card-body">
+                    <h1 class="h2">Password Reset</h1>
+                    <p class="mb-3">Dear ' . $fname . '</p>
+                    <p class="mb-3">
+                        We have received your password reset request. Click on the password
+                        reset button below or paste the provided link on your browser
+                    </p>
+                    <a href="password-reset?token=' . $token . '" class="btn">Reset Pass</a>
+                    <p class="mb-3">link</p>
+                    <p class="mb-3">Thank you for choosing InLaw.</p>
+                </div>
             </div>
-        </div>
-
-        <div class="footer text-center mt-3">
-            <div class="content-block">
-            <p class="text-muted" style="font-size: 12px">Inlaw-Legal</p>
+            <div class="footer">
+                <div class="content-block">
+                    <p class="text-muted">Inlaw-Legal</p>
+                </div>
+                <div class="content-block powered-by">
+                    <p class="text-muted">
+                        Powered by
+                        <a href="https://inlaw-legal.tech">InLaw</a>.
+                    </p>
+                </div>
             </div>
-            <div class="content-block powered-by">
-            <p class="text-muted" style="font-size: 12px">
-                Powered by
-                <a href="https://inlaw-legal.tech" class="text-muted">InLaw</a>.
-            </p>
-            </div>
-        </div>
         </div>
     </body>
     </html>
+
     ';
     return $message;
 }
