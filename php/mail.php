@@ -47,7 +47,7 @@ function defMail($recepient, $subject, $message)
     }
 }
 
-function passReset($token, $fname)
+function passReset($fname, $token)
 {
     $message = '
     <!DOCTYPE html>
