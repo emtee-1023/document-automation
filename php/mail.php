@@ -4,8 +4,8 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
 
-require 'dbconn.php';
-require 'vendor/autoload.php';
+require __DIR__ . DIRECTORY_SEPARATOR . 'dbconn.php';
+require __DIR__ . '/../vendor/autoload.php';
 
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
 $dotenv->load();
@@ -42,8 +42,9 @@ function defMail($recepient, $subject, $message)
         $mail->AltBody = $message;
 
         $mail->send();
+        return true;
     } catch (Exception $e) {
-        echo "mail not sent";
+        return false;
     }
 }
 
@@ -99,6 +100,7 @@ function passReset($fname, $token)
             }
             .btn:hover {
                 background-color: #0056b3;
+                color: #ffffff;
             }
             .footer {
                 text-align: center;
@@ -127,8 +129,8 @@ function passReset($fname, $token)
                         We have received your password reset request. Click on the password
                         reset button below or paste the provided link on your browser
                     </p>
-                    <a href="password-reset?token=' . $token . '" class="btn">Reset Pass</a>
-                    <p class="mb-3">link</p>
+                    <a href="https://app.inlaw-legal.tech/reset-pass?token=' . $token . '" class="btn">Reset Pass</a>
+                    <p class="mb-3">https://app.inlaw-legal.tech/reset-pass?token=' . $token . '</p>
                     <p class="mb-3">Thank you for choosing InLaw.</p>
                 </div>
             </div>
