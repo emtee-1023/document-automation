@@ -3,6 +3,8 @@ include 'php/dbconn.php';
 session_start();
 
 $error_msg = '';
+$success_msg = $_SESSION['success_msg'] ?? '';
+unset($_SESSION['success_msg']);
 
 if (!isset($_SESSION['fid'])) {
     header('location: firm-login');
@@ -88,6 +90,15 @@ if (!isset($_GET['userid'])) {
                                     '
                                         <div class="alert alert-danger" role="alert">
                                             ' . $error_msg . '
+                                        </div>
+                                        ';
+                                }
+
+                                if ($success_msg != '') {
+                                    echo
+                                    '
+                                        <div class="alert alert-success" role="alert">
+                                            ' . $success . '
                                         </div>
                                         ';
                                 }

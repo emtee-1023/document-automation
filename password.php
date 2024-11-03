@@ -57,8 +57,8 @@ unset($_SESSION['success_msg']);
                                             <label for="inputEmail">Email address</label>
                                         </div>
                                         <div class="d-flex align-items-center justify-content-between mt-4 mb-0">
-                                            <a class="small" href="login">Return to login</a>
-                                            <input class="btn btn-primary" type="submit" value="Reset Password" name="recover-pass">
+                                            <a class="small" href="firm-login">Return to login</a>
+                                            <input class="btn btn-primary" type="submit" value="Recover Password" name="recover-pass">
                                         </div>
                                     </form>
                                 </div>
