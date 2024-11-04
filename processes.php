@@ -99,8 +99,8 @@ if (isset($_POST['recover-pass'])) {
     $res1 = $stmt1->get_result();
 
     if ($res1->num_rows > 0) { //users
-        $stmt3 = $conn->prepare('UPDATE users set Password = ?');
-        $stmt3->bind_param('s', $newPass);
+        $stmt3 = $conn->prepare('UPDATE users set Password = ? WHERE PReset = ?');
+        $stmt3->bind_param('ss', $newPass, $token);
         if (!$stmt3->execute()) {
             $_SESSION['error_msg'] = "Unable to change Password.";
             header('location: password');
@@ -120,8 +120,8 @@ if (isset($_POST['recover-pass'])) {
         $res5 = $stmt5->get_result();
 
         if ($res5->num_rows > 0) {
-            $stmt4 = $conn->prepare('UPDATE firms set FirmPass = ?');
-            $stmt4->bind_param('s', $newPass);
+            $stmt4 = $conn->prepare('UPDATE firms set FirmPass = ? WHERE PReset = ?');
+            $stmt4->bind_param('ss', $newPass, $token);
             if (!$stmt4->execute()) {
                 $_SESSION['error_msg'] = "Unable to change Password.";
                 header('location: password');
