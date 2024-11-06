@@ -1,6 +1,7 @@
 <?php
 include 'php/dbconn.php';
 session_start();
+include 'php/mail.php';
 
 if (!isset($_SESSION['userid']) && !isset($_SESSION['fid'])) {
     header('location: firm-login');
@@ -60,7 +61,7 @@ $pageTitle = '';
             </div>
         </form> -->
         <!-- Navbar-->
-        <ul class="navbar-nav ms-auto ms-md-0 me-5 me-lg-5">
+        <ul class="navbar-nav ms-auto ms-md-0 me-5 me-lg-5 flex-grow-1 justify-content-end">
             <!-- Notification Bell -->
             <?php
             $user = $_SESSION['userid'];

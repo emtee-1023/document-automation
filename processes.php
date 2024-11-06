@@ -34,7 +34,7 @@ if (isset($_POST['recover-pass'])) {
         }
         $subject = "PASSWORD RESET";
         $message = passReset($fname, $token);
-        if (!defMail($email, $subject, $message)) {
+        if (!noReplyMail($email, $subject, $message)) {
             $_SESSION['error_msg'] = "Error Encountered When Sending Email";
             header('location: password');
             exit();
@@ -67,7 +67,7 @@ if (isset($_POST['recover-pass'])) {
             }
             $subject = "PASSWORD RESET";
             $message = passReset($fname, $token);
-            if (!defMail($email, $subject, $message)) {
+            if (!noReplyMail($email, $subject, $message)) {
                 $_SESSION['error_msg'] = "Error Encountered When Sending Email";
                 header('location: password');
                 exit();

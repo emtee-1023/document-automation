@@ -4,4 +4,4 @@ $receipient = "marktalamson@gmail.com";
 $subject = "subject";
 $message = "message";
 
-defMail($receipient, $subject, $message);
+noReplyMail($receipient, $subject, $message);

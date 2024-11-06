@@ -1,9 +1,9 @@
-<?php include 'php/header.php';?>
+<?php include 'php/header.php'; ?>
 
 <?php
-if(!isset($_SESSION['userid']) && !isset($_SESSION['fid'])){
+if (!isset($_SESSION['userid']) && !isset($_SESSION['fid'])) {
     header('location: firm-login');
-} elseif(!isset($_SESSION['userid']) && isset($_SESSION['fid'])){
+} elseif (!isset($_SESSION['userid']) && isset($_SESSION['fid'])) {
     header('location: login');
 }
 
@@ -17,7 +17,7 @@ $optionvalue = '';
 
 
 
-if(isset($_GET['caseid'])){
+if (isset($_GET['caseid'])) {
     $caseid = $_GET['caseid'];
 
     $q1 = "SELECT * FROM cases WHERE caseid = ? ";
@@ -33,8 +33,6 @@ if(isset($_GET['caseid'])){
     $optionvalue = $caseid;
 
     mysqli_stmt_close($stmt);
-
-
 }
 
 if (isset($_POST['submit'])) {
@@ -45,6 +43,19 @@ if (isset($_POST['submit'])) {
 
     $user = $_SESSION['userid'];
     $firm = $_SESSION['fid'];
+
+    //fetch some details we'll use for notifications and emails.
+    $stmtc = $conn->prepare("SELECT c.casename CONCAT(c2.fname,' ',c2.mname,' ',c2.lname) AS clientName c2.email f.firmname, f.firmmail FROM cases c JOIN clients c2 ON c2.clientid = c.clientid JOIN firms f ON f.firmid = c.firmid  WHERE c.caseid = ?");
+    $stmtc->bind_param('s', $CaseID);
+    $stmtc->execute();
+    $stmtc->bind_result($caseName, $clientName, $clientEmail, $firmName, $firmEmail);
+
+    $subject = 'New Document Uploaded to your Case';
+    $message = mailAddedDoc($clientName, $firmName, $caseName);
+
+    if (!noReplyMail($clientEmail, $subject, $message)) {
+        $error_msg = "Problem encountered when mailing the client";
+    }
 
     // Handle file upload
     if (isset($_FILES['Document']) && $_FILES['Document']['error'] === UPLOAD_ERR_OK) {
@@ -94,7 +105,7 @@ if (isset($_POST['submit'])) {
 ?>
 
 <div id="layoutSidenav">
-    <?php include 'php/sidebar.php';?>
+    <?php include 'php/sidebar.php'; ?>
     <div id="layoutSidenav_content">
         <main">
             <div class="container-fluid px-4 d-flex flex-column align-items-start">
@@ -107,38 +118,40 @@ if (isset($_POST['submit'])) {
                 </div> -->
 
                 <div class="card shadow-sm border-0 rounded-lg mt-3 col-md-10 align-self-center d-flex flex-column">
-                    <?php 
+                    <?php
                     if ($error_msg != '') {
                         echo '
                         <div class="alert alert-danger" role="alert">
-                            '.$error_msg.'
+                            ' . $error_msg . '
                         </div>';
                     }
                     ?>
 
-                    <?php 
+                    <?php
                     if ($success_msg != '') {
                         echo '
                         <div class="alert alert-success" role="alert">
-                            '.$success_msg.'
+                            ' . $success_msg . '
                         </div>';
                     }
                     ?>
-                    <div class="card-header"><h3 class="text-center font-weight-light my-4">Add New Document</h3></div>
+                    <div class="card-header">
+                        <h3 class="text-center font-weight-light my-4">Add New Document</h3>
+                    </div>
                     <div class="card-body">
                         <form method="post" action="" enctype="multipart/form-data">
                             <!-- Document Name and Case ID in the same row -->
                             <div class="row mb-3">
                                 <div class="col-md-6">
                                     <div class="form-floating mb-3 mb-md-0">
-                                        <input class="form-control" id="inputDocumentName" type="text" placeholder="Enter document name" name="DocumentName"/>
+                                        <input class="form-control" id="inputDocumentName" type="text" placeholder="Enter document name" name="DocumentName" />
                                         <label for="inputDocumentName">Document Name</label>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-floating">
                                         <select class="form-select" id="inputCaseID" name="CaseID">
-                                            <option value="<?php echo $optionvalue?>" disabled selected><?php echo $option.' - '.$option2?></option>
+                                            <option value="<?php echo $optionvalue ?>" disabled selected><?php echo $option . ' - ' . $option2 ?></option>
                                             <?php
                                             $user = $_SESSION['userid'];
                                             $firm = $_SESSION['fid'];
@@ -173,7 +186,7 @@ if (isset($_POST['submit'])) {
                                     </div>
                                 </div>
                             </div>
-                            
+
 
                             <div class="mt-5 mb-0 d-flex justify-content-center">
                                 <div class="d-grid">
@@ -181,12 +194,12 @@ if (isset($_POST['submit'])) {
                                 </div>
                             </div>
                         </form>
-                        
+
                     </div>
                     <div class="card-footer text-center py-3">
                         <div class="small"><a href="case-docs">Back to Documents</a></div>
                     </div>
                 </div>
             </div>
-        </main>
-        <?php include 'php/footer.php';?>
+            </main>
+            <?php include 'php/footer.php'; ?>
