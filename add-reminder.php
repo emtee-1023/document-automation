@@ -1,9 +1,9 @@
-<?php include 'php/header.php';?>
+<?php include 'php/header.php'; ?>
 
 <?php
-if(!isset($_SESSION['userid']) && !isset($_SESSION['fid'])){
+if (!isset($_SESSION['userid']) && !isset($_SESSION['fid'])) {
     header('location: firm-login');
-} elseif(!isset($_SESSION['userid']) && isset($_SESSION['fid'])){
+} elseif (!isset($_SESSION['userid']) && isset($_SESSION['fid'])) {
     header('location: login');
 }
 
@@ -32,33 +32,17 @@ if (isset($_POST['submit'])) {
     $row = mysqli_fetch_assoc($result);
     $casename = $row['casename'];
 
-    $message = 
-    "
-    Case: ".$casename."
-    Next Hearing: ".$nextdate."
-    Bringup Date: ".$bringup."
-    Meeting Link (for Online Hearings): ".$link."
-    Notes: 
-    ".$notes
-    ;
+    $message = "Case: " . $casename;
 
-    $message2 = 
-    "
-    Case: ".$casename."
-    Next Hearing: ".$nextdate."
-    Bringup Date: ".$bringup."
-    Meeting Link (for Online Hearings): ".$link."
-    Notes: 
-    ".$notes
-    ;
+    $message2 = "Case: " . $casename;
 
     // Prepare and execute the insertion of assignments
     $stmt_reminder = mysqli_prepare($conn, "INSERT INTO reminders (CaseID, clientid, nextdate, bringupdate, meetinglink, notes, userid, firmid) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
     $stmt_notification = mysqli_prepare($conn, "INSERT INTO notifications (NotifSubject, NotifText, UserID, ClientID) VALUES (?, ?, ?, ?)");
-    $stmt_notification2 = mysqli_prepare($conn, "INSERT INTO notifications (NotifSubject, NotifText, UserID, ClientID, SendAt) VALUES (?, ?, ?, ?, ?)");   
+    $stmt_notification2 = mysqli_prepare($conn, "INSERT INTO notifications (NotifSubject, NotifText, UserID, ClientID, SendAt) VALUES (?, ?, ?, ?, ?)");
 
     if ($stmt_reminder && $stmt_notification && $stmt_notification2) {
-        
+
         // Insert into reminders
         mysqli_stmt_bind_param($stmt_reminder, "iissssii", $caseid, $clientid, $nextdate, $bringup, $link, $notes, $user, $firm);
         mysqli_stmt_execute($stmt_reminder);
@@ -74,50 +58,49 @@ if (isset($_POST['submit'])) {
         $notifText2 = $message2;
         mysqli_stmt_bind_param($stmt_notification2, "ssiis", $notifSubject2, $notifText2, $user, $clientid, $bringup);
         mysqli_stmt_execute($stmt_notification2);
-        
+
 
         // Close the statements
         mysqli_stmt_close($stmt_reminder);
         mysqli_stmt_close($stmt_notification);
         mysqli_stmt_close($stmt_notification2);
 
-         $success_msg = "Reminder Added Successfuly";
-
-
+        $success_msg = "Reminder Added Successfuly";
     } else {
         // Handle the error if the prepared statements failed
         $error_msg = "Error preparing statements: " . mysqli_error($conn);
     }
-
 }
 ?>
 
 <div id="layoutSidenav">
-    <?php include 'php/sidebar.php';?>
+    <?php include 'php/sidebar.php'; ?>
     <div id="layoutSidenav_content">
         <main">
             <div class="container-fluid px-4 d-flex flex-column align-items-start">
-                
+
 
                 <div class="card shadow-sm border-0 rounded-lg mt-3 md-6 col-md-10 align-self-center d-flex flex-column">
-                    <?php 
+                    <?php
                     if ($error_msg != '') {
                         echo '
                         <div class="alert alert-danger" role="alert">
-                            '.$error_msg.'
+                            ' . $error_msg . '
                         </div>';
                     }
                     ?>
 
-                    <?php 
+                    <?php
                     if ($success_msg != '') {
                         echo '
                         <div class="alert alert-success" role="alert">
-                            '.$success_msg.'
+                            ' . $success_msg . '
                         </div>';
                     }
                     ?>
-                    <div class="card-header"><h3 class="text-center font-weight-light my-4">Create Reminder</h3></div>
+                    <div class="card-header">
+                        <h3 class="text-center font-weight-light my-4">Create Reminder</h3>
+                    </div>
                     <div class="card-body">
                         <form method="post" action="" enctype="multipart/form-data">
                             <!--choose case and client on the same row -->
@@ -176,13 +159,13 @@ if (isset($_POST['submit'])) {
                             <div class="row ">
                                 <div class="col-md-6">
                                     <div class="form-floating mb-3">
-                                        <input class="form-control" id="nextDate" type="datetime-local" name="nextDate" required/>
+                                        <input class="form-control" id="nextDate" type="datetime-local" name="nextDate" required />
                                         <label for="nextDate">Next Date</label>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-floating mb-3">
-                                        <input class="form-control" id="bringupDate" type="datetime-local" name="bringupDate" required/>
+                                        <input class="form-control" id="bringupDate" type="datetime-local" name="bringupDate" required />
                                         <label for="deadline">Bringup Date</label>
                                     </div>
                                 </div>
@@ -192,7 +175,7 @@ if (isset($_POST['submit'])) {
                             <div class="row ">
                                 <div class="col-md-12">
                                     <div class="form-floating mb-3">
-                                        <input class="form-control" id="Link" type="text" name="Link"/>
+                                        <input class="form-control" id="Link" type="text" name="Link" />
                                         <label for="Link">Meeting Link (online)</label>
                                     </div>
                                 </div>
@@ -217,9 +200,6 @@ if (isset($_POST['submit'])) {
                         <div class="d-grid">
                             <a href="reminders">Back to reminders</a>
                         </div>
-            </div>
-        </main>
-        <?php include 'php/footer.php';?>
-
-        
-
+                    </div>
+                    </main>
+                    <?php include 'php/footer.php'; ?>

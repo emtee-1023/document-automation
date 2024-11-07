@@ -84,7 +84,7 @@ $pageTitle = '';
                     </li>
                     <?php
                     $user = $_SESSION['userid'];
-                    $is_read = 0;
+                    $is_read = 1;
                     $sql = "SELECT NotifID, NotifSubject, NotifText FROM notifications WHERE UserID = ? AND IsRead = ? AND (SendAt <= NOW() OR SendAt IS NULL)";
                     $stmt = mysqli_prepare($conn, $sql);
                     mysqli_stmt_bind_param($stmt, 'ii', $user, $is_read);
@@ -121,7 +121,7 @@ $pageTitle = '';
                 <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                     <li><a class="dropdown-item" href="edit-profile?id=<?php echo $_SESSION['userid']; ?>">Profile Settings</a></li>
-                    <li><a class="dropdown-item" href="#">Activity Log</a></li>
+                    <!-- <li><a class="dropdown-item" href="#">Activity Log</a></li> -->
                     <li>
                         <hr class="dropdown-divider" />
                     </li>
