@@ -1,4 +1,5 @@
 <?php
+date_default_timezone_set('Africa/Nairobi');
 include 'php/dbconn.php';
 session_start();
 include 'php/mail.php';
@@ -84,7 +85,7 @@ $pageTitle = '';
                     </li>
                     <?php
                     $user = $_SESSION['userid'];
-                    $is_read = 1;
+                    $is_read = 0;
                     $sql = "SELECT NotifID, NotifSubject, NotifText FROM notifications WHERE UserID = ? AND IsRead = ? AND (SendAt <= NOW() OR SendAt IS NULL)";
                     $stmt = mysqli_prepare($conn, $sql);
                     mysqli_stmt_bind_param($stmt, 'ii', $user, $is_read);

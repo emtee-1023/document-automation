@@ -15,19 +15,31 @@ $success_msg = '';
 $user = $_SESSION['userid'];
 $firm = $_SESSION['fid'];
 
-if(isset($_GET['taskid'])){
+if (isset($_GET['taskid'])) {
     $task = $_GET['taskid'];
 
     // Fetch users from the database
-    $query = "SELECT CONCAT('You Have Been Assigned The Task ',t.taskname,' by ',u.fname,' ',u.lname,' that is due on ',t.taskdeadline) as message, CONCAT(u.fname,' ',u.lname) as tasker FROM tasks t JOIN users u ON u.userid = t.userid  WHERE taskid = ?";
+    $query = "
+            SELECT
+                CONCAT('You Have Been Assigned The Task ',t.taskname,' by ',u.fname,' ',u.lname,' that is due on) as message, 
+                CONCAT(u.fname,' ',u.lname) as tasker
+                t.taskdeadline
+                t.taskname
+                t.taskdescription
+            FROM tasks t 
+            JOIN users u ON u.userid = t.userid
+            WHERE taskid = ?";
     $stmt = mysqli_prepare($conn, $query);
     mysqli_stmt_bind_param($stmt, "i", $task);
     mysqli_stmt_execute($stmt);
     $result = mysqli_stmt_get_result($stmt);
     $row = mysqli_fetch_assoc($result);
 
-    $message = $row['message'];
+    $task_deadline_readable = date('D d M Y \a\t h.iA', strtotime($row['taskdeadline']));
+    $message = $row['message'] . " " . $task_deadline_readable;
     $tasker = $row['tasker'];
+    $task_title = $row['taskname'];
+    $task_description = $row['taskdescription'];
 }
 
 if (isset($_POST['submit_assignment'])) {
@@ -42,17 +54,41 @@ if (isset($_POST['submit_assignment'])) {
 
         if ($stmt_assignment && $stmt_notification) {
             foreach ($assignedUsers as $userId) {
+                //fetch assignee name from the db
+                $query2 = "
+                            SELECT
+                            CONCAT(u.fname,' ',u.lname) as assigneeName,
+                            u.email
+
+                            FROM task_assignments t,
+                            JOIN users u ON u.userid = t.userid
+
+                            WHERE userid = ?
+                ";
+                $stmt2 = mysqli_prepare($conn, $query2);
+                mysqli_stmt_bind_param($stmt2, "i", $userId);
+                mysqli_stmt_execute($stmt2);
+                $result2 = mysqli_stmt_get_result($stmt2);
+                $row2 = mysqli_fetch_assoc($result2);
+
+                $assignee_name = $row2['assigneeName'];
+                $assignee_email = $row2['email'];
+
                 // Insert into task_assignments
                 mysqli_stmt_bind_param($stmt_assignment, "ii", $taskId, $userId);
                 mysqli_stmt_execute($stmt_assignment);
 
                 // Insert into notifications
-                $notifSubject = "New Task Assignment from ".$tasker;
+                $notifSubject = "New Task Assignment from " . $tasker;
                 $notifText = $message;
                 mysqli_stmt_bind_param($stmt_notification, "ssi", $notifSubject, $notifText, $userId);
                 mysqli_stmt_execute($stmt_notification);
 
                 $success_msg = "Task Assigned successfuly";
+
+                //email the assignee that they have been tasked
+                $email_subject = "New Task Assigned: " . $task_title;
+                $email_message = mailAssignedTask($assignee_name, $task_title, $tasker, $task_deadline_readable, $task_description);
             }
 
             // Close the statements
@@ -88,7 +124,7 @@ if (isset($_POST['submit_assignment'])) {
                             <?php echo htmlspecialchars($success_msg); ?>
                         </div>
                     <?php endif; ?>
-                    
+
                     <div class="card-header">
                         <h3 class="text-center font-weight-light my-4">Assign User</h3>
                     </div>
@@ -99,15 +135,15 @@ if (isset($_POST['submit_assignment'])) {
                             <div class="mb-3">
                                 <label for="assignedUsers" class="form-label">Choose Users To Assign</label>
                                 <div>
-                                    <?php 
-                                        // Fetch users from the database
-                                        $query = "SELECT UserID, CONCAT(fname, ' ', lname) as username FROM users WHERE firmid = ?";
-                                        $stmt = mysqli_prepare($conn, $query);
-                                        mysqli_stmt_bind_param($stmt, "i", $firm);
-                                        mysqli_stmt_execute($stmt);
-                                        $result = mysqli_stmt_get_result($stmt);
-                                        
-                                        while ($row = mysqli_fetch_assoc($result)): ?>
+                                    <?php
+                                    // Fetch users from the database
+                                    $query = "SELECT UserID, CONCAT(fname, ' ', lname) as username FROM users WHERE firmid = ?";
+                                    $stmt = mysqli_prepare($conn, $query);
+                                    mysqli_stmt_bind_param($stmt, "i", $firm);
+                                    mysqli_stmt_execute($stmt);
+                                    $result = mysqli_stmt_get_result($stmt);
+
+                                    while ($row = mysqli_fetch_assoc($result)): ?>
                                         <div class="form-check">
                                             <input class="form-check-input" type="checkbox" id="user_<?php echo $row['UserID']; ?>" name="assigned_users[]" value="<?php echo htmlspecialchars($row['UserID']); ?>">
                                             <label class="form-check-label" for="user_<?php echo $row['UserID']; ?>">
@@ -117,7 +153,7 @@ if (isset($_POST['submit_assignment'])) {
                                     <?php endwhile; ?>
                                 </div>
                             </div>
-                            
+
                             <div class="mt-3 mb-0 d-flex justify-content-center">
                                 <div class="d-grid">
                                     <input type="submit" class="btn btn-primary" name="submit_assignment" value="Assign Task">

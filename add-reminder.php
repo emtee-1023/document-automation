@@ -24,15 +24,34 @@ if (isset($_POST['submit'])) {
     $notes = $_POST['Notes'];
 
     // Fetch message from the database
-    $query = "SELECT casename FROM cases WHERE caseid = ?";
+    $query = "
+            SELECT
+                cases.casenumber,
+                cases.casename, 
+                courts.courtname,
+                CONCAT(c.prefix,' ',c.fname,' ',c.mname,' ',c.lname) as clientname,
+                c.email,
+                CONCAT(u.fname, ' ', u.lname) as advName,
+                u.Email as advMail
+            FROM cases 
+            JOIN courts ON cases.courtid = courts.courtid
+            JOIN clients c ON c.clientid = cases.clientid
+            JOIN users u ON u.userid = cases.userid
+            WHERE caseid = ?";
     $stmt = mysqli_prepare($conn, $query);
     mysqli_stmt_bind_param($stmt, "i", $caseid);
     mysqli_stmt_execute($stmt);
     $result = mysqli_stmt_get_result($stmt);
     $row = mysqli_fetch_assoc($result);
     $casename = $row['casename'];
+    $casenumber = $row['casenumber'];
+    $courtname = $row['courtname'];
+    $clientname = $row['clientname'];
+    $advName = $row['advName'];
+    $clientRecepient = $row['email'];
+    $advRecepient = $row['advMail'];
 
-    $message = "Case: " . $casename;
+    $message1 = "Case: " . $casename;
 
     $message2 = "Case: " . $casename;
 
@@ -40,6 +59,35 @@ if (isset($_POST['submit'])) {
     $stmt_reminder = mysqli_prepare($conn, "INSERT INTO reminders (CaseID, clientid, nextdate, bringupdate, meetinglink, notes, userid, firmid) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
     $stmt_notification = mysqli_prepare($conn, "INSERT INTO notifications (NotifSubject, NotifText, UserID, ClientID) VALUES (?, ?, ?, ?)");
     $stmt_notification2 = mysqli_prepare($conn, "INSERT INTO notifications (NotifSubject, NotifText, UserID, ClientID, SendAt) VALUES (?, ?, ?, ?, ?)");
+
+    //setup the email
+    $next_date_readable = date('D d M Y \a\t h.iA', strtotime($nextdate));
+    $bringup_date_readable = date('D d M Y \a\t h.iA', strtotime($bringup));
+    //email 1: let the client know a reminder has been set
+    $subject = "New Date Scheduled for " . $courtname . " " . $casenumber . " " . $casename;
+    $message = mailClientAddedRem($clientname, $courtname, $casenumber, $casename, $next_date_readable, $notes, $link);
+    noReplyMail($clientRecepient, $subject, $message);
+
+    //email 2: let the client know the bringup date has reached
+    $subject = "Bring-Up Date for " . $courtname . " " . $casenumber . " " . $casename . " is Today";
+    $message = mailClientBringup($clientname, $courtname, $casenumber, $casename, $next_date_readable, $notes, $link);
+    scheduledMail($clientRecepient, $subject, $message, $bringup);
+
+    //email 3: let the advocate know the bringup date has reached
+    $subject = "Bring-Up Date for " . $courtname . " " . $casenumber . " " . $casename . " is Today";
+    $message = mailAdvBringup($advName, $courtname, $casenumber, $casename, $next_date_readable, $notes, $link);
+    scheduledMail($advRecepient, $subject, $message, $bringup);
+
+    //email 3: let the client know the actual date is today
+    $subject = "Reminder: Matter coming up today " . $courtname . " " . $casenumber . " " . $casename;
+    $message = mailClientRem($clientname, $courtname, $casenumber, $casename, $next_date_readable, $notes, $link);
+    scheduledMail($clientRecepient, $subject, $message, $nextdate);
+
+    //email 3: let the advocate know the actual date is today
+    $subject = "Reminder: Matter coming up today " . $courtname . " " . $casenumber . " " . $casename;
+    $message = mailAdvRem($advName, $courtname, $casenumber, $casename, $next_date_readable, $notes, $link);
+    scheduledMail($advRecepient, $subject, $message, $nextdate);
+
 
     if ($stmt_reminder && $stmt_notification && $stmt_notification2) {
 
@@ -49,7 +97,7 @@ if (isset($_POST['submit'])) {
 
         // Insert into notifications
         $notifSubject = "New Case Reminder Set";
-        $notifText = $message;
+        $notifText = $message1;
         mysqli_stmt_bind_param($stmt_notification, "ssii", $notifSubject, $notifText, $user, $clientid);
         mysqli_stmt_execute($stmt_notification);
 

@@ -38,17 +38,30 @@ if (isset($_GET['caseid'])) {
 if (isset($_POST['submit'])) {
     $DocumentName = $_POST['DocumentName'];
     $CaseID = $_POST['CaseID'];
-    $DraftingCost = $_POST['DraftingCost'];
+    //$DraftingCost = $_POST['DraftingCost'];
     $uploadTime = date('d-m-Y H:i:s');
 
     $user = $_SESSION['userid'];
     $firm = $_SESSION['fid'];
 
     //fetch some details we'll use for notifications and emails.
-    $stmtc = $conn->prepare("SELECT c.casename CONCAT(c2.fname,' ',c2.mname,' ',c2.lname) AS clientName c2.email f.firmname, f.firmmail FROM cases c JOIN clients c2 ON c2.clientid = c.clientid JOIN firms f ON f.firmid = c.firmid  WHERE c.caseid = ?");
+    $stmtc = $conn->prepare("
+                            SELECT 
+                                c.casename, 
+                                CONCAT(c2.fname,' ',c2.mname,' ',c2.lname) AS clientName, 
+                                c2.email, 
+                                f.firmname, 
+                                f.firmmail 
+                                FROM cases c 
+                                JOIN clients c2 ON c2.clientid = c.clientid 
+                                JOIN firms f ON f.firmid = c.firmid  
+                                WHERE c.caseid = ?");
     $stmtc->bind_param('s', $CaseID);
     $stmtc->execute();
     $stmtc->bind_result($caseName, $clientName, $clientEmail, $firmName, $firmEmail);
+    $stmtc->fetch();
+    $stmtc->close();
+
 
     $subject = 'New Document Uploaded to your Case';
     $message = mailAddedDoc($clientName, $firmName, $caseName);
