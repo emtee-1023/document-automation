@@ -1,9 +1,9 @@
-<?php include 'php/header.php';?>
+<?php include 'php/header.php'; ?>
 
 <?php
-if(!isset($_SESSION['userid']) && !isset($_SESSION['fid'])){
+if (!isset($_SESSION['userid']) && !isset($_SESSION['fid'])) {
     header('location: firm-login');
-} elseif(!isset($_SESSION['userid']) && isset($_SESSION['fid'])){
+} elseif (!isset($_SESSION['userid']) && isset($_SESSION['fid'])) {
     header('location: login');
 }
 
@@ -24,48 +24,80 @@ if (isset($_POST['submit'])) {
     $notes = $_POST['Notes'];
 
     // Fetch message from the database
-    $query = "SELECT casename FROM cases WHERE caseid = ?";
+    $query = "
+            SELECT
+                cases.casenumber,
+                cases.casename, 
+                courts.courtname,
+                CONCAT(c.prefix,' ',c.fname,' ',c.mname,' ',c.lname) as clientname,
+                c.email,
+                CONCAT(u.fname, ' ', u.lname) as advName,
+                u.Email as advMail
+            FROM cases 
+            JOIN courts ON cases.courtid = courts.courtid
+            JOIN clients c ON c.clientid = cases.clientid
+            JOIN users u ON u.userid = cases.userid
+            WHERE caseid = ?";
     $stmt = mysqli_prepare($conn, $query);
     mysqli_stmt_bind_param($stmt, "i", $caseid);
     mysqli_stmt_execute($stmt);
     $result = mysqli_stmt_get_result($stmt);
     $row = mysqli_fetch_assoc($result);
     $casename = $row['casename'];
+    $casenumber = $row['casenumber'];
+    $courtname = $row['courtname'];
+    $clientname = $row['clientname'];
+    $advName = $row['advName'];
+    $clientRecepient = $row['email'];
+    $advRecepient = $row['advMail'];
 
-    $message = 
-    "
-    Case: ".$casename."
-    Next Hearing: ".$nextdate."
-    Bringup Date: ".$bringup."
-    Meeting Link (for Online Hearings): ".$link."
-    Notes: 
-    ".$notes
-    ;
+    $message1 = "Case: " . $casename;
 
-    $message2 = 
-    "
-    Case: ".$casename."
-    Next Hearing: ".$nextdate."
-    Bringup Date: ".$bringup."
-    Meeting Link (for Online Hearings): ".$link."
-    Notes: 
-    ".$notes
-    ;
+    $message2 = "Case: " . $casename;
 
     // Prepare and execute the insertion of assignments
     $stmt_reminder = mysqli_prepare($conn, "INSERT INTO reminders (CaseID, clientid, nextdate, bringupdate, meetinglink, notes, userid, firmid) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
     $stmt_notification = mysqli_prepare($conn, "INSERT INTO notifications (NotifSubject, NotifText, UserID, ClientID) VALUES (?, ?, ?, ?)");
-    $stmt_notification2 = mysqli_prepare($conn, "INSERT INTO notifications (NotifSubject, NotifText, UserID, ClientID, SendAt) VALUES (?, ?, ?, ?, ?)");   
+    $stmt_notification2 = mysqli_prepare($conn, "INSERT INTO notifications (NotifSubject, NotifText, UserID, ClientID, SendAt) VALUES (?, ?, ?, ?, ?)");
+
+    //setup the email
+    $next_date_readable = date('D d M Y \a\t h.iA', strtotime($nextdate));
+    $bringup_date_readable = date('D d M Y \a\t h.iA', strtotime($bringup));
+    //email 1: let the client know a reminder has been set
+    $subject = "New Date Scheduled for " . $courtname . " " . $casenumber . " " . $casename;
+    $message = mailClientAddedRem($clientname, $courtname, $casenumber, $casename, $next_date_readable, $notes, $link);
+    noReplyMail($clientRecepient, $subject, $message);
+
+    //email 2: let the client know the bringup date has reached
+    $subject = "Bring-Up Date for " . $courtname . " " . $casenumber . " " . $casename . " is Today";
+    $message = mailClientBringup($clientname, $courtname, $casenumber, $casename, $next_date_readable, $notes, $link);
+    scheduledMail($clientRecepient, $subject, $message, $bringup);
+
+    //email 3: let the advocate know the bringup date has reached
+    $subject = "Bring-Up Date for " . $courtname . " " . $casenumber . " " . $casename . " is Today";
+    $message = mailAdvBringup($advName, $courtname, $casenumber, $casename, $next_date_readable, $notes, $link);
+    scheduledMail($advRecepient, $subject, $message, $bringup);
+
+    //email 3: let the client know the actual date is today
+    $subject = "Reminder: Matter coming up today " . $courtname . " " . $casenumber . " " . $casename;
+    $message = mailClientRem($clientname, $courtname, $casenumber, $casename, $next_date_readable, $notes, $link);
+    scheduledMail($clientRecepient, $subject, $message, $nextdate);
+
+    //email 3: let the advocate know the actual date is today
+    $subject = "Reminder: Matter coming up today " . $courtname . " " . $casenumber . " " . $casename;
+    $message = mailAdvRem($advName, $courtname, $casenumber, $casename, $next_date_readable, $notes, $link);
+    scheduledMail($advRecepient, $subject, $message, $nextdate);
+
 
     if ($stmt_reminder && $stmt_notification && $stmt_notification2) {
-        
+
         // Insert into reminders
         mysqli_stmt_bind_param($stmt_reminder, "iissssii", $caseid, $clientid, $nextdate, $bringup, $link, $notes, $user, $firm);
         mysqli_stmt_execute($stmt_reminder);
 
         // Insert into notifications
         $notifSubject = "New Case Reminder Set";
-        $notifText = $message;
+        $notifText = $message1;
         mysqli_stmt_bind_param($stmt_notification, "ssii", $notifSubject, $notifText, $user, $clientid);
         mysqli_stmt_execute($stmt_notification);
 
@@ -74,50 +106,49 @@ if (isset($_POST['submit'])) {
         $notifText2 = $message2;
         mysqli_stmt_bind_param($stmt_notification2, "ssiis", $notifSubject2, $notifText2, $user, $clientid, $bringup);
         mysqli_stmt_execute($stmt_notification2);
-        
+
 
         // Close the statements
         mysqli_stmt_close($stmt_reminder);
         mysqli_stmt_close($stmt_notification);
         mysqli_stmt_close($stmt_notification2);
 
-         $success_msg = "Reminder Added Successfuly";
-
-
+        $success_msg = "Reminder Added Successfuly";
     } else {
         // Handle the error if the prepared statements failed
         $error_msg = "Error preparing statements: " . mysqli_error($conn);
     }
-
 }
 ?>
 
 <div id="layoutSidenav">
-    <?php include 'php/sidebar.php';?>
+    <?php include 'php/sidebar.php'; ?>
     <div id="layoutSidenav_content">
         <main">
             <div class="container-fluid px-4 d-flex flex-column align-items-start">
-                
+
 
                 <div class="card shadow-sm border-0 rounded-lg mt-3 md-6 col-md-10 align-self-center d-flex flex-column">
-                    <?php 
+                    <?php
                     if ($error_msg != '') {
                         echo '
                         <div class="alert alert-danger" role="alert">
-                            '.$error_msg.'
+                            ' . $error_msg . '
                         </div>';
                     }
                     ?>
 
-                    <?php 
+                    <?php
                     if ($success_msg != '') {
                         echo '
                         <div class="alert alert-success" role="alert">
-                            '.$success_msg.'
+                            ' . $success_msg . '
                         </div>';
                     }
                     ?>
-                    <div class="card-header"><h3 class="text-center font-weight-light my-4">Create Reminder</h3></div>
+                    <div class="card-header">
+                        <h3 class="text-center font-weight-light my-4">Create Reminder</h3>
+                    </div>
                     <div class="card-body">
                         <form method="post" action="" enctype="multipart/form-data">
                             <!--choose case and client on the same row -->
@@ -176,13 +207,13 @@ if (isset($_POST['submit'])) {
                             <div class="row ">
                                 <div class="col-md-6">
                                     <div class="form-floating mb-3">
-                                        <input class="form-control" id="nextDate" type="datetime-local" name="nextDate" required/>
+                                        <input class="form-control" id="nextDate" type="datetime-local" name="nextDate" required />
                                         <label for="nextDate">Next Date</label>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-floating mb-3">
-                                        <input class="form-control" id="bringupDate" type="datetime-local" name="bringupDate" required/>
+                                        <input class="form-control" id="bringupDate" type="datetime-local" name="bringupDate" required />
                                         <label for="deadline">Bringup Date</label>
                                     </div>
                                 </div>
@@ -192,7 +223,7 @@ if (isset($_POST['submit'])) {
                             <div class="row ">
                                 <div class="col-md-12">
                                     <div class="form-floating mb-3">
-                                        <input class="form-control" id="Link" type="text" name="Link"/>
+                                        <input class="form-control" id="Link" type="text" name="Link" />
                                         <label for="Link">Meeting Link (online)</label>
                                     </div>
                                 </div>
@@ -217,9 +248,6 @@ if (isset($_POST['submit'])) {
                         <div class="d-grid">
                             <a href="reminders">Back to reminders</a>
                         </div>
-            </div>
-        </main>
-        <?php include 'php/footer.php';?>
-
-        
-
+                    </div>
+                    </main>
+                    <?php include 'php/footer.php'; ?>

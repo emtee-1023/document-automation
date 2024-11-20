@@ -1,6 +1,8 @@
 <?php
+date_default_timezone_set('Africa/Nairobi');
 include 'php/dbconn.php';
 session_start();
+include 'php/mail.php';
 
 if (!isset($_SESSION['userid']) && !isset($_SESSION['fid'])) {
     header('location: firm-login');
@@ -60,7 +62,7 @@ $pageTitle = '';
             </div>
         </form> -->
         <!-- Navbar-->
-        <ul class="navbar-nav ms-auto ms-md-0 me-5 me-lg-5">
+        <ul class="navbar-nav ms-auto ms-md-0 me-5 me-lg-5 flex-grow-1 justify-content-end">
             <!-- Notification Bell -->
             <?php
             $user = $_SESSION['userid'];
@@ -120,7 +122,7 @@ $pageTitle = '';
                 <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                     <li><a class="dropdown-item" href="edit-profile?id=<?php echo $_SESSION['userid']; ?>">Profile Settings</a></li>
-                    <li><a class="dropdown-item" href="#">Activity Log</a></li>
+                    <!-- <li><a class="dropdown-item" href="#">Activity Log</a></li> -->
                     <li>
                         <hr class="dropdown-divider" />
                     </li>

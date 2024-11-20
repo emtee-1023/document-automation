@@ -203,7 +203,10 @@ if (isset($_POST['submit'])) {
 
                                 </div>
                                 <div class="card-footer text-center py-3">
-                                    <div class="small"><a href="firm-login">Back to Login</a></div>
+                                    <div class="small mb-4"><a href="firm-login">Back to Login</a></div>
+                                    <div class="small">By signing up, you agree to our <a href="assets/files/T&C.pdf" target="_blank">Terms and Conditions</a></div>
+                                    <div class="small"><a href="assets/files/privacy-policy.pdf" target="_blank">privacy Policy</a></div>
+
                                 </div>
                             </div>
                         </div>
