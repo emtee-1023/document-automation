@@ -21,14 +21,14 @@ if (isset($_GET['taskid'])) {
     // Fetch users from the database
     $query = "
             SELECT
-                CONCAT('You Have Been Assigned The Task ',t.taskname,' by ',u.fname,' ',u.lname,' that is due on) as message, 
-                CONCAT(u.fname,' ',u.lname) as tasker
-                t.taskdeadline
-                t.taskname
+                CONCAT('You Have Been Assigned The Task ',t.taskname,' by ',u.fname,' ',u.lname,' that is due on') as message, 
+                CONCAT(u.fname,' ',u.lname) as tasker,
+                t.taskdeadline,
+                t.taskname,
                 t.taskdescription
             FROM tasks t 
             JOIN users u ON u.userid = t.userid
-            WHERE taskid = ?";
+            WHERE t.taskid = ?";
     $stmt = mysqli_prepare($conn, $query);
     mysqli_stmt_bind_param($stmt, "i", $task);
     mysqli_stmt_execute($stmt);
@@ -56,14 +56,11 @@ if (isset($_POST['submit_assignment'])) {
             foreach ($assignedUsers as $userId) {
                 //fetch assignee name from the db
                 $query2 = "
-                            SELECT
-                            CONCAT(u.fname,' ',u.lname) as assigneeName,
-                            u.email
-
-                            FROM task_assignments t,
-                            JOIN users u ON u.userid = t.userid
-
-                            WHERE userid = ?
+                        SELECT 
+                            CONCAT(fname, ' ', lname) AS assigneeName, 
+                            email 
+                        FROM users 
+                        WHERE userid = ?
                 ";
                 $stmt2 = mysqli_prepare($conn, $query2);
                 mysqli_stmt_bind_param($stmt2, "i", $userId);
@@ -89,6 +86,7 @@ if (isset($_POST['submit_assignment'])) {
                 //email the assignee that they have been tasked
                 $email_subject = "New Task Assigned: " . $task_title;
                 $email_message = mailAssignedTask($assignee_name, $task_title, $tasker, $task_deadline_readable, $task_description);
+                noReplyMail($assignee_email, $email_subject, $email_message);
             }
 
             // Close the statements

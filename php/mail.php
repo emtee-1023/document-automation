@@ -83,7 +83,6 @@ function scheduledMail($recepient, $subject, $message, $scheduleTime)
     }
 }
 
-
 function passReset($fname, $token)
 {
     $message = '
@@ -159,7 +158,7 @@ function mailAddedDoc($clientName, $firmName, $caseName)
                         Log back in to your client portal by following the link below to
                         check it out.
                     </p>
-                    <a href="https://app.inlaw-legal.tech/client/cases"
+                    <a href="https://app.inlaw-legal.tech/client/case-docs"
                        style="display: inline-block; background-color: #d7d8da; color: #574c4c; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-size: 16px; text-align: center; max-width: 100px; margin: 0 auto;"
                        target="_blank">Go to InLaw</a>
                     <p style="margin-bottom: 15px;">Thank you for choosing InLaw.</p>
@@ -214,7 +213,7 @@ function mailClientAddedRem($clientName, $court, $caseNum, $caseName, $nextDate,
                     <p style="margin-bottom: 15px;">
                         Please log in to InLaw to review the details and make any necessary updates to your schedule.
                     </p>
-                    <a href="https://app.inlaw-legal.tech/client/cases" 
+                    <a href="https://app.inlaw-legal.tech/client/reminders" 
                        style="display: inline-block; background-color: #d7d8da; color: #574c4c; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-size: 16px; text-align: center; max-width: 100px; margin: 0 auto;"
                        target="_blank">Go to InLaw</a>
                     <p style="margin-bottom: 15px;">Thank you for choosing InLaw.</p>
@@ -270,7 +269,7 @@ function mailClientBringup($clientName, $court, $caseNum, $caseName, $nextDate, 
                     <p style="margin-bottom: 15px;">
                         Please log in to InLaw for more information or to review any relevant documents.
                     </p>
-                    <a href="https://app.inlaw-legal.tech/client/cases" 
+                    <a href="https://app.inlaw-legal.tech/client/reminders" 
                        style="display: inline-block; background-color: #d7d8da; color: #574c4c; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-size: 16px; text-align: center; max-width: 100px; margin: 0 auto;"
                        target="_blank">Go to InLaw</a>
                     <p style="margin-bottom: 15px;">Thank you for choosing InLaw.</p>
@@ -326,7 +325,7 @@ function mailAdvBringup($advName, $court, $caseNum, $caseName, $nextDate, $notes
                     <p style="margin-bottom: 15px;">
                         Please log in to InLaw for more information or to review any relevant documents.
                     </p>
-                    <a href="https://app.inlaw-legal.tech/cases" 
+                    <a href="https://app.inlaw-legal.tech/reminders" 
                        style="display: inline-block; background-color: #d7d8da; color: #574c4c; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-size: 16px; text-align: center; max-width: 100px; margin: 0 auto;"
                        target="_blank">Go to InLaw</a>
                     <p style="margin-bottom: 15px;">Thank you for choosing InLaw.</p>
@@ -382,7 +381,7 @@ function mailClientRem($clientName, $court, $caseNum, $caseName, $nextDate, $not
                     <p style="margin-bottom: 15px;">
                         Please log in to InLaw for more information or to review any relevant documents.
                     </p>
-                    <a href="https://app.inlaw-legal.tech/client/cases" 
+                    <a href="https://app.inlaw-legal.tech/client/reminders" 
                        style="display: inline-block; background-color: #d7d8da; color: #574c4c; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-size: 16px; text-align: center; max-width: 100px; margin: 0 auto;"
                        target="_blank">Go to InLaw</a>
                     <p style="margin-bottom: 15px;">Thank you for choosing InLaw.</p>
@@ -438,7 +437,7 @@ function mailAdvRem($advName, $court, $caseNum, $caseName, $nextDate, $notes, $o
                     <p style="margin-bottom: 15px;">
                         Please log in to InLaw for more information or to review any relevant documents.
                     </p>
-                    <a href="https://app.inlaw-legal.tech/client/cases" 
+                    <a href="https://app.inlaw-legal.tech/reminders" 
                        style="display: inline-block; background-color: #d7d8da; color: #574c4c; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-size: 16px; text-align: center; max-width: 100px; margin: 0 auto;"
                        target="_blank">Go to InLaw</a>
                     <p style="margin-bottom: 15px;">Thank you for choosing InLaw.</p>
@@ -495,7 +494,7 @@ function mailAssignedTask($assignee, $taskName, $assigner, $taskDeadline, $descr
                     <p style="margin-bottom: 15px;">
                         Please log in to InLaw to review the task and get started.
                     </p>
-                    <a href="https://app.inlaw-legal.tech/client/cases" 
+                    <a href="https://app.inlaw-legal.tech/client/tasks" 
                        style="display: inline-block; background-color: #d7d8da; color: #574c4c; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-size: 16px; text-align: center; max-width: 100px; margin: 0 auto;"
                        target="_blank">Go to InLaw</a>
                     <p style="margin-bottom: 15px;">Thank you for choosing InLaw.</p>

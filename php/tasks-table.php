@@ -7,7 +7,7 @@
         <table id="datatablesSimple">
             <thead>
                 <tr>
-                    <th>TaskName</th>
+                    <th>Task</th>
                     <th>Assigned To</th>
                     <th>Assigned on</th>
                     <th>Deadline</th>
@@ -17,7 +17,7 @@
                 </tr>
             </thead>
             <tbody>
-            <?php
+                <?php
                 $user = $_SESSION['userid'];
                 $firmid = $_SESSION['fid'];
 
@@ -47,16 +47,16 @@
 
                 while ($row = $res->fetch_assoc()) {
                     echo '<tr>
-                            <td>'.$row['TaskName'].'</td>
-                            <td>'.$row['assignee'].'</td>
-                            <td>'.$row['AssignedAt'].'</td>
-                            <td>'.$row['TaskDeadline'].'</td>
-                            <td>'.$row['TaskStatus'].'</td>
+                            <td>' . $row['TaskName'] . '</td>
+                            <td>' . $row['assignee'] . '</td>
+                            <td>' . $row['AssignedAt'] . '</td>
+                            <td>' . $row['TaskDeadline'] . '</td>
+                            <td>' . $row['TaskStatus'] . '</td>
                             <td><a href="#" class="btn btn-primary btn-sm">View Task</a ></td>
-                            <td><a href="delete?taskid='.$row['TaskID'].'&assignee='.$row['UserID'].'" class="btn btn-danger btn-sm">Delete Task</a ></td>
+                            <td><a href="delete?taskid=' . $row['TaskID'] . '&assignee=' . $row['UserID'] . '" class="btn btn-danger btn-sm">Delete Task</a ></td>
                         </tr>';
                 }
-            ?>
+                ?>
 
             </tbody>
         </table>
