@@ -3,7 +3,7 @@ include '../php/dbconn.php';
 session_start();
 
 if (!isset($_SESSION['userid']) && !isset($_SESSION['fid'])) {
-    header('location: firm-login');
+    header('location: client-portal');
 } elseif (!isset($_SESSION['userid']) && isset($_SESSION['fid'])) {
     header('location: login');
 }
