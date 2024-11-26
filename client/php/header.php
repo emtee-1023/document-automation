@@ -6,6 +6,8 @@ if (!isset($_SESSION['userid']) && !isset($_SESSION['fid'])) {
     header('location: client-portal');
 } elseif (!isset($_SESSION['userid']) && isset($_SESSION['fid'])) {
     header('location: login');
+} elseif (!isset($_SESSION['fid'])) {
+    header('location: choose-firm');
 }
 
 $error_msg =  '';
@@ -61,7 +63,7 @@ $pageTitle = '';
             </div>
         </form> -->
         <!-- Navbar-->
-        <ul class="navbar-nav ms-auto ms-md-0 me-5 me-lg-5">
+        <ul class="navbar-nav ms-auto ms-md-0 me-5 me-lg-5 flex-grow-1 justify-content-end">
             <!-- Notification Bell -->
             <?php
             $user = $_SESSION['userid'];
@@ -121,6 +123,7 @@ $pageTitle = '';
                 <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                     <li><a class="dropdown-item" href="logout">Logout</a></li>
+                    <li><a class="dropdown-item" href="change-firm">Change Lawfirm</a></li>
                 </ul>
             </li>
         </ul>

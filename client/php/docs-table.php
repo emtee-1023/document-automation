@@ -3,9 +3,9 @@ $success_msg = '';
 $error_msg = '';
 
 $client = $_SESSION['clientid'];
-$firm =$_SESSION['fid'];
+$firm = $_SESSION['fid'];
 
-if(isset($_GET['caseid'])){
+if (isset($_GET['caseid'])) {
     $caseid = $_GET['caseid'];
 
     // Use a prepared statement to avoid SQL injection
@@ -13,7 +13,7 @@ if(isset($_GET['caseid'])){
     if (!$stmt) {
         die('Prepare failed: ' . $conn->error);
     }
-    $stmt->bind_param("ii",$client,$caseid);
+    $stmt->bind_param("ii", $client, $caseid);
     $stmt->execute();
     $res = $stmt->get_result();
     $row = $res->fetch_assoc();
@@ -23,7 +23,7 @@ if(isset($_GET['caseid'])){
     $case_id = $row['CaseID'];
     $cond = " AND c.caseid = $case_id";
 
-    $table_title = "Showing case documents under <strong>Case: ".$casenumber."</strong>";
+    $table_title = "Showing case documents under <strong>Case: " . $casenumber . "</strong>";
 } else {
     $table_title = "Displaying all case documents";
     $cond = "";
@@ -36,7 +36,7 @@ if(isset($_GET['caseid'])){
 if (isset($_GET['fileid'])) {
     // Sanitize the file parameter
     $fileid = intval($_GET['fileid']); // Convert to integer for security
-    
+
 
     // Prepare and execute query
     $stmt = $conn->prepare("SELECT 
@@ -67,7 +67,7 @@ if (isset($_GET['fileid'])) {
             // Delete the file
             if (unlink($filepath)) {
                 $success_msg = "File deleted successfully.";
-                
+
                 // Optionally, delete the file record from the database
                 $stmt = $conn->prepare("DELETE FROM case_docs WHERE docid = ?");
                 $stmt->bind_param("i", $fileid);
@@ -92,30 +92,32 @@ if (isset($_GET['fileid'])) {
 
 ?>
 <div class="mt-3">
-    <?php 
-    if($error_msg!=''){
+    <?php
+    if ($error_msg != '') {
         echo
         '
         <div class="alert alert-danger" role="alert">
-            '.$error_msg.'
+            ' . $error_msg . '
         </div>
-        ';}
+        ';
+    }
     ?>
-    <?php 
-    if($success_msg!=''){
+    <?php
+    if ($success_msg != '') {
         echo
         '
         <div class="alert alert-success" role="alert">
-            '.$success_msg.'
+            ' . $success_msg . '
         </div>
-        ';}
+        ';
+    }
     ?>
 </div>
 
 <div class="card mb-4">
     <div class="card-header">
         <i class="fas fa-table me-1"></i>
-        <?php echo $table_title;?>
+        <?php echo $table_title; ?>
     </div>
     <div class="card-body">
         <table id="datatablesSimple">
@@ -125,37 +127,40 @@ if (isset($_GET['fileid'])) {
                     <th>Case Number</th>
                     <th>Document Name</th>
                     <th>Added on</th>
+                    <th>Added By</th>
                     <th>Download</th>
                 </tr>
             </thead>
             <tbody>
-            <?php            
-            // Use a prepared statement to avoid SQL injection
-            $stmt = $conn->prepare("SELECT 
+                <?php
+                // Use a prepared statement to avoid SQL injection
+                $stmt = $conn->prepare("SELECT 
                                         cd.*,
                                         c.casenumber as casenumber,
-                                        c.casename as casename
+                                        c.casename as casename,
+                                        concat(u.fname,' ',u.lname) as user
                                     FROM 
                                         case_docs cd
-                                    JOIN 
-                                        cases c ON cd.caseid = c.caseid
+                                    JOIN cases c ON cd.caseid = c.caseid
+                                    LEFT JOIN users u ON cd.userid = u.userid
                                     WHERE 
                                         c.clientid = ? $cond
                     ");
-            $stmt->bind_param("i",$client);
-            $stmt->execute();
-            $res = $stmt->get_result();
+                $stmt->bind_param("i", $client);
+                $stmt->execute();
+                $res = $stmt->get_result();
 
-            while ($row = $res->fetch_assoc()) {
-                echo '<tr>
-                        <td>'.$row['DocID'].'</td>
-                        <td>'.$row['casenumber'].'</td>
-                        <td>'.$row['DocName'].'</td>
-                        <td>'.$row['CreatedAt'].'</td>
-                        <td><a href="download?file='.$row['DocID'].'" class="btn btn-success btn-sm">Download</a></td>
+                while ($row = $res->fetch_assoc()) {
+                    echo '<tr>
+                        <td>' . $row['DocID'] . '</td>
+                        <td>' . $row['casenumber'] . '</td>
+                        <td>' . $row['DocName'] . '</td>
+                        <td>' . (($row['CreatedAt'] !== '0000-00-00' && !empty($row['CreatedAt'])) ? date('d M Y', strtotime($row['CreatedAt'])) : 'N/A') . '</td>
+                        <td>' . ($row['user'] ?? 'Client') . '</td>
+                        <td><a href="download?file=' . $row['DocID'] . '" class="btn btn-success btn-sm">Download</a></td>
                     </tr>';
-            }
-            ?>
+                }
+                ?>
 
             </tbody>
         </table>

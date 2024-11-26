@@ -1,9 +1,9 @@
-<?php include 'php/header.php';?>
+<?php include 'php/header.php'; ?>
 
 <?php
-if(!isset($_SESSION['userid']) && !isset($_SESSION['fid'])){
+if (!isset($_SESSION['userid']) && !isset($_SESSION['fid'])) {
     header('location: firm-login');
-} elseif(!isset($_SESSION['userid']) && isset($_SESSION['fid'])){
+} elseif (!isset($_SESSION['userid']) && isset($_SESSION['fid'])) {
     header('location: login');
 }
 
@@ -12,33 +12,48 @@ $success_msg = '';
 $redirect = '';
 
 if (isset($_POST['submit'])) {
-    $FName = $_POST['FName'];         
-    $MName = $_POST['MName'];          
-    $LName = $_POST['LName'];        
-    $Email = $_POST['Email'];          
-    $Phone = $_POST['Phone'];          
-    $Address = $_POST['Address'];     
+    $FName = $_POST['FName'];
+    $MName = $_POST['MName'];
+    $LName = $_POST['LName'];
+    $Email = $_POST['Email'];
+    $Phone = $_POST['Phone'];
+    $Address = $_POST['Address'];
     $ClientType = $_POST['ClientType'];
     $Prefix = $_POST['Prefix'];
     $user = $_SESSION['userid'];
     $firm = $_SESSION['fid'];
 
-    // Prepare and execute the insert statement
-    $stmt = mysqli_prepare($conn, "INSERT INTO clients (ClientType, Prefix, FName, MName, LName, Email, Phone, Address, userid, firmid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-    if ($stmt) {
-        mysqli_stmt_bind_param($stmt, "ssssssssii", $ClientType, $Prefix, $FName, $MName, $LName, $Email, $Phone, $Address, $user, $firm);
-        mysqli_stmt_execute($stmt);
-        mysqli_stmt_close($stmt);
-        $success_msg = 'Client added successfully!';
-    } else {
-        // Error preparing the statement
-       $error_msg = 'Error preparing the SQL statement.';
+    //check whether the email exists
+    $checkEmailStmt = mysqli_prepare($conn, "SELECT COUNT(*) FROM clients WHERE Email = ? AND firmid = ?");
+    if ($checkEmailStmt) {
+        mysqli_stmt_bind_param($checkEmailStmt, "si", $Email, $firm);
+        mysqli_stmt_execute($checkEmailStmt);
+        mysqli_stmt_bind_result($checkEmailStmt, $emailCount);
+        mysqli_stmt_fetch($checkEmailStmt);
+        mysqli_stmt_close($checkEmailStmt);
+
+        if ($emailCount > 0) {
+            // Email exists
+            $error_msg = "Client's Email already exists.";
+        } else {
+            // Prepare and execute the insert statement
+            $stmt = mysqli_prepare($conn, "INSERT INTO clients (ClientType, Prefix, FName, MName, LName, Email, Phone, Address, userid, firmid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            if ($stmt) {
+                mysqli_stmt_bind_param($stmt, "ssssssssii", $ClientType, $Prefix, $FName, $MName, $LName, $Email, $Phone, $Address, $user, $firm);
+                mysqli_stmt_execute($stmt);
+                mysqli_stmt_close($stmt);
+                $success_msg = 'Client added successfully!';
+            } else {
+                // Error preparing the statement
+                $error_msg = 'Error preparing the SQL statement.';
+            }
+        }
     }
 }
 ?>
 
 <div id="layoutSidenav">
-    <?php include 'php/sidebar.php';?>
+    <?php include 'php/sidebar.php'; ?>
     <div id="layoutSidenav_content">
         <main">
             <div class="container-fluid px-4 d-flex flex-column align-items-start">
@@ -51,24 +66,26 @@ if (isset($_POST['submit'])) {
                 </div> -->
 
                 <div class="card shadow-sm border-0 rounded-lg mt-3 col-md-10 align-self-center d-flex flex-column">
-                    <?php 
+                    <?php
                     if ($error_msg != '') {
                         echo '
                         <div class="alert alert-danger" role="alert">
-                            '.$error_msg.'
+                            ' . $error_msg . '
                         </div>';
                     }
                     ?>
 
-                    <?php 
+                    <?php
                     if ($success_msg != '') {
                         echo '
                         <div class="alert alert-success" role="alert">
-                            '.$success_msg.'
+                            ' . $success_msg . '
                         </div>';
                     }
                     ?>
-                    <div class="card-header"><h3 class="text-center font-weight-light my-4">Add New Client</h3></div>
+                    <div class="card-header">
+                        <h3 class="text-center font-weight-light my-4">Add New Client</h3>
+                    </div>
                     <div class="card-body">
                         <form class="d-flex flex-column" method="post" action="">
                             <!-- Client Type and Prefix in the same row -->
@@ -162,7 +179,5 @@ if (isset($_POST['submit'])) {
                     </div>
                 </div>
             </div>
-        </main>
-        <?php include 'php/footer.php';?>
-
-                                    
+            </main>
+            <?php include 'php/footer.php'; ?>

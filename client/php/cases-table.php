@@ -102,8 +102,8 @@ if (isset($_GET['status'])) {
                         <td>' . $row['ClientName'] . '</td>
                         <td>' . $row['advocatename'] . '</td>
                         <td>' . $row['CaseStatus'] . '</td>
-                        <td>' . $row['OpenDate'] . '</td>
-                        <td>' . $row['CloseDate'] . '</td>
+                        <td>' . (($row['OpenDate'] !== '0000-00-00' && !empty($row['OpenDate'])) ? date('d M Y', strtotime($row['OpenDate'])) : 'N/A') . '</td>
+                        <td>' . (($row['CloseDate'] !== '0000-00-00' && !empty($row['CloseDate'])) ? date('d M Y', strtotime($row['CloseDate'])) : 'N/A') . '</td>
                         <td><a href="case-docs?caseid=' . $row['CaseID'] . '">' . $num . '</a></td>
                     </tr>';
                 }

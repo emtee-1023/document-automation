@@ -128,7 +128,7 @@
             // Register the service worker with the full ngrok URL
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.register('/firebase-messaging-sw.js', {
-                        scope: '/law/' // Assuming your service worker is in the law sub-directory
+                        scope: '/' // Assuming your service worker is in the law sub-directory
                     })
                     .then(function(registration) {
                         console.log('Service Worker registered with scope:', registration.scope);
