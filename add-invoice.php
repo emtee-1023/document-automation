@@ -77,8 +77,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                             FROM invoice_uploads i 
                                             JOIN clients c1 ON c1.clientid = i.clientid 
                                             JOIN firms f ON f.firmid = i.firmid 
-                                            JOIN courts c2 ON c2.courtid  = i.courtid 
                                             JOIN cases c3 ON c3.caseid = i.caseid
+                                            JOIN courts c2 ON c2.courtid  = c3.courtid 
                                             WHERE invoiceid = ?");
                 $stmtc->bind_param('i', $lastInvoiceID);
                 $stmtc->execute();
