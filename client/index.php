@@ -45,7 +45,7 @@
                             <div class="card-body">Pending Invoices:
                                 <?php
                                 $client = $_SESSION['clientid'];
-                                $res = mysqli_query($conn, "select * from invoices where clientid=$client and status = 'pending'");
+                                $res = mysqli_query($conn, "select * from invoice_uploads where clientid=$client and status = 'pending'");
                                 $count = mysqli_num_rows($res);
                                 echo $count;
                                 ?></div>
