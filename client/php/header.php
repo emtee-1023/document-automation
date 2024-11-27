@@ -31,6 +31,7 @@ $pageTitle = '';
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
+
     <style>
         /* Center the dropdown on small screens */
         @media (max-width: 575.98px) {

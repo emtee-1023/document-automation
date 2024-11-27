@@ -1,5 +1,5 @@
 <?php
-include 'dbconn.php';
+include '../../php/dbconn.php';
 session_start();
 
 header('Content-Type: application/json');
@@ -21,7 +21,7 @@ if (isset($_GET['id'])) {
     }
 
     $stmt_select->close();
-    
+
     echo json_encode($response);
     exit;
 }
@@ -35,7 +35,7 @@ if (isset($_GET['notifid'])) {
     $stmt->bind_param('ii', $isread, $did);
     $stmt->execute();
     $stmt->close();
-    
+
     exit;
 }
 
@@ -55,10 +55,10 @@ if (isset($_GET['action']) && $_GET['action'] === 'fetch_notifications') {
             AND 
                 (SendAt <= NOW() OR SendAt IS NULL)";
 
-            $stmt = $conn->prepare($sql);
-            $stmt->bind_param("i", $clientid); // Bind the UserID parameter
-            $stmt->execute();
-            $results = $stmt->get_result();
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $clientid); // Bind the UserID parameter
+    $stmt->execute();
+    $results = $stmt->get_result();
 
     if ($results->num_rows > 0) {
         while ($row = $results->fetch_assoc()) {
@@ -109,4 +109,3 @@ if (isset($_GET['action']) && $_GET['action'] === 'get_unread_count') {
 }
 
 echo json_encode(['error' => 'Invalid request.']);
-?>
