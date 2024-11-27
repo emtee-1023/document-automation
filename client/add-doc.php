@@ -17,20 +17,25 @@ if (isset($_POST['submit'])) {
                                 CONCAT(c2.fname,' ',c2.mname,' ',c2.lname) AS clientName, 
                                 c2.email, 
                                 f.firmname, 
-                                f.firmmail 
+                                f.firmmail,
+                                ct.courtname,
+                                c3.casenum
                                 FROM cases c 
                                 JOIN clients c2 ON c2.clientid = c.clientid 
                                 JOIN firms f ON f.firmid = c.firmid  
+                                JOIN cases c3 ON c3.caseid = c.caseid
+                                JOIN courts ct ON ct.courtid = c3.courtid
+
                                 WHERE c.caseid = ?");
     $stmtc->bind_param('s', $CaseID);
     $stmtc->execute();
-    $stmtc->bind_result($caseName, $clientName, $clientEmail, $firmName, $firmEmail);
+    $stmtc->bind_result($caseName, $clientName, $clientEmail, $firmName, $firmEmail, $courtName, $caseNum);
     $stmtc->fetch();
     $stmtc->close();
 
 
     $subject = 'New Document Uploaded to your Case';
-    $message = mailAddedDoc($clientName, $firmName, $caseName);
+    $message = mailAddedDoc($clientName, $firmName, $courtName, $caseNum, $caseName);
 
     if (!noReplyMail($clientEmail, $subject, $message)) {
         $error_msg = "Problem encountered when mailing the client";
