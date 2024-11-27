@@ -19,7 +19,7 @@ if (isset($_POST['submit'])) {
                                 f.firmname, 
                                 f.firmmail,
                                 ct.courtname,
-                                c3.casenum
+                                c3.casenumber
                                 FROM cases c 
                                 JOIN clients c2 ON c2.clientid = c.clientid 
                                 JOIN firms f ON f.firmid = c.firmid  
