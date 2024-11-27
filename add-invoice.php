@@ -64,6 +64,36 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 // Get the ID of the last inserted invoice
                 $lastInvoiceID = $conn->insert_id;
 
+                $stmtc = $conn->prepare("
+                                        SELECT 
+                                            concat(c1.fname,' ',c1.lname) as clientname,
+                                            f.firmname,
+                                            c2.courtname,
+                                            c3.casenum,
+                                            c3.casename,
+                                            i.invoicenumber,
+                                            c1.email
+
+                                            FROM invoice_uploads i 
+                                            JOIN clients c1 ON c1.clientid = i.clientid 
+                                            JOIN firms f ON f.firmid = i.firmid 
+                                            JOIN courts c2 ON c2.courtid  = i.courtid 
+                                            JOIN cases c3 ON c3.caseid = i.caseid
+                                            WHERE invoiceid = ?");
+                $stmtc->bind_param('i', $lastInvoiceID);
+                $stmtc->execute();
+                $stmtc->bind_result($clientName, $firmName, $courtName, $caseNum, $caseName, $invoiceNum, $recepient);
+                $stmtc->fetch();
+                $stmtc->close();
+
+                //email the client
+                $EmSubject = "New Invoice Uploaded To Your Case";
+                $EmMessage = mailAddedInvoice($clientName, $firmName, $courtName, $caseNum, $caseName, $invoiceNum);
+
+                if (!noReplyMail($recepient, $EmSubject, $EmMessage)) {
+                    $error_msg = "Problem encountered when mailing the client";
+                }
+
                 // Create a notification message
                 $notifSubject = "New Invoice Uploaded";
                 $notifText = "Invoice number $invoiceNum has been uploaded.";
