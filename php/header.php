@@ -29,6 +29,7 @@ $pageTitle = '';
     <link href="css/styles.css" rel="stylesheet" />
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <link rel="shortcut icon" href="assets/img/icon.png" type="image/x-icon">
 
     <style>
         /* Center the dropdown on small screens */
