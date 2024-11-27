@@ -143,8 +143,8 @@ if (isset($_GET['fileid'])) {
                                         concat(u.fname,' ',u.lname) as user
                                     FROM 
                                         case_docs cd
-                                    JOIN 
-                                        cases c ON cd.caseid = c.caseid
+                                    JOIN cases c ON cd.caseid = c.caseid
+                                    LEFT JOIN users u ON cd.userid = u.userid
                                     WHERE 
                                         cd.firmid = ? $cond
                     ");
