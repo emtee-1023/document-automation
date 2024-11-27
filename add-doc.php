@@ -193,7 +193,7 @@ if (isset($_POST['submit'])) {
                             <div class="row mb-3">
                                 <div class="col-md-6">
                                     <div class="form-floating">
-                                        <input class="form-control" id="inputDocument" type="file" name="Document" accept=".pdf" />
+                                        <input class="form-control" id="inputDocument" type="file" name="Document" accept=".pdf,.docx" />
                                         <label for="inputDocument">Upload Document</label>
                                     </div>
                                 </div>
