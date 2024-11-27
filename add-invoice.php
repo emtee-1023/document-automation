@@ -119,7 +119,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             <div class="col-md-6">
                                 <div class="form-floating">
                                     <input type="text" class="form-control" id="inputInvoiceName" name="InvoiceName" placeholder="Enter File Name" required>
-                                    <label for="inputInvoiceName">Enter File Name eg. Client Invoice</label>
+                                    <label for="inputInvoiceName">Enter Document Name eg. Fee Note</label>
                                 </div>
                             </div>
 
