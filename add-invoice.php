@@ -69,7 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                             concat(c1.fname,' ',c1.lname) as clientname,
                                             f.firmname,
                                             c2.courtname,
-                                            c3.casenum,
+                                            c3.casenumber,
                                             c3.casename,
                                             i.invoicenumber,
                                             c1.email
