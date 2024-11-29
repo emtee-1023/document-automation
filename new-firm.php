@@ -103,6 +103,7 @@ if (isset($_POST['submit'])) {
     <title>Firm Login - DocAuto</title>
     <link href="css/styles.css" rel="stylesheet" />
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+    <link rel="shortcut icon" href="assets/img/icon.png" type="image/x-icon">
 </head>
 
 <body class="bg-dark">

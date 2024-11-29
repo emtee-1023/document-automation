@@ -94,6 +94,30 @@
             location.reload();
         });
     });
+
+    $(document).ready(function() {
+        $("#summernote").summernote({
+            height: 200, // Set the height of the editor
+            toolbar: [
+                // Customize the toolbar
+                ["style", ["bold", "italic", "underline", "clear"]],
+                ["font", ["strikethrough", "superscript", "subscript"]],
+                ["fontsize", ["fontsize"]],
+                ["color", ["color"]],
+                ["para", ["ul", "ol", "paragraph"]],
+                ["height", ["height"]],
+                ["table", ["table"]],
+                ["insert", ["link", "picture", "video"]],
+                ["view", ["fullscreen", "codeview", "help"]],
+            ],
+        });
+
+        // Save button action
+        $("#save").click(function() {
+            var markup = $("#summernote").val(); // Get the content
+            console.log(markup); // For demonstration, log to the console
+        });
+    });
 </script>
 </body>
 

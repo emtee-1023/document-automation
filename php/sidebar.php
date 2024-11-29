@@ -42,6 +42,11 @@
                     Task Manager
                 </a>
 
+                <a class="nav-link" href="case-updates">
+                    <div class="sb-nav-link-icon"><i class="fa-solid fa-file-alt"></i></div>
+                    Case Updates
+                </a>
+
                 <div class="sb-sidenav-menu-heading">Doc-Automation</div>
                 <a class="nav-link" href="doc-automation">
                     <div class="sb-nav-link-icon"><i class="fa-solid fa-print"></i></div>

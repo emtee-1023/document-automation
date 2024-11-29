@@ -7,6 +7,9 @@ date_default_timezone_set('Africa/Nairobi');
 $currentTimestamp = date('Y-m-d H:i:s');
 $_10Expiry = date('Y-m-d H:i:s', strtotime('+10 minutes'));
 
+$user = $_SESSION['userid'];
+$firm = $_SESSION['fid'];
+
 if (isset($_POST['recover-pass'])) {
     $email = $_POST['email'];
 
@@ -139,5 +142,194 @@ if (isset($_POST['recover-pass'])) {
         $_SESSION['error_msg'] = "Problem Verifying Token.";
         header('location: password');
         exit();
+    }
+} else if (isset($_POST['submit_task'])) {
+    $taskName = $_POST['task_name'];
+    $description = $_POST['description'];
+    $deadline = $_POST['deadline'];
+    $document = $_FILES['document'];
+
+    // Handle file upload
+    if (isset($_FILES['Document']) && $_FILES['Document']['error'] === UPLOAD_ERR_OK) {
+        $fileTmpPath = $_FILES['Document']['tmp_name'];
+        $fileName = $_FILES['Document']['name'];
+        $fileSize = $_FILES['Document']['size'];
+        $fileType = $_FILES['Document']['type'];
+        $fileNameCmps = explode(".", $fileName);
+        $fileExtension = strtolower(end($fileNameCmps));
+        $newFileName = time() . '.' . $fileExtension;
+        $Extension = pathinfo($fileName, PATHINFO_EXTENSION);
+        $uploadFileDir = 'assets/files/submitted/';
+        $dest_path = $uploadFileDir . $newFileName;
+
+        // Move the uploaded file
+        if (move_uploaded_file($fileTmpPath, $dest_path)) {
+            // Prepare and execute the insert statement
+            $stmt = mysqli_prepare($conn, "INSERT INTO tasks (TaskName, TaskDescription, Document, TaskDeadline, CreatedAt, UserID, FirmID) VALUES (?, ?, ?, ?, ?, ?, ?)");
+            if ($stmt) {
+                mysqli_stmt_bind_param($stmt, "sssssii", $taskName, $description, $newFileName, $deadline, $currentTimestamp, $user, $firm);
+                mysqli_stmt_execute($stmt);
+
+                // Get the newly created task ID
+                $taskId = mysqli_insert_id($conn);
+
+                // Close the statement
+                mysqli_stmt_close($stmt);
+
+                // Redirect to the task assignment page with the task ID
+                header("Location: assign-task?taskid=" . $taskId);
+                exit();
+            } else {
+                // Error preparing the statement
+                $error_msg = 'Error preparing the SQL statement.';
+            }
+        } else {
+            $error_msg = 'Error moving the uploaded file.';
+        }
+    } else {
+        // Prepare and execute the insert statement
+        $stmt = mysqli_prepare($conn, "INSERT INTO tasks (TaskName, TaskDescription, TaskDeadline, CreatedAt, UserID, FirmID) VALUES (?, ?, ?, ?, ?, ?)");
+        if ($stmt) {
+            mysqli_stmt_bind_param($stmt, "ssssii", $taskName, $description, $deadline, $currentTimestamp, $user, $firm);
+            mysqli_stmt_execute($stmt);
+
+            // Get the newly created task ID
+            $taskId = mysqli_insert_id($conn);
+
+            // Close the statement
+            mysqli_stmt_close($stmt);
+
+            // Redirect to the task assignment page with the task ID
+            header("Location: assign-task?taskid=" . $taskId);
+            exit();
+        } else {
+            // Error preparing the statement
+            $error_msg = 'Error preparing the SQL statement.';
+        }
+    }
+} else if (isset($_POST['submit-case-update'])) {
+    $caseid = $_POST['caseid'];
+    $title = $_POST['title'];
+    $details = $_POST['details'];
+
+    // Handle file upload
+    if (isset($_FILES['Document']) && $_FILES['Document']['error'] === UPLOAD_ERR_OK) {
+        $fileTmpPath = $_FILES['Document']['tmp_name'];
+        $fileName = $_FILES['Document']['name'];
+        $fileSize = $_FILES['Document']['size'];
+        $fileType = $_FILES['Document']['type'];
+        $fileNameCmps = explode(".", $fileName);
+        $fileExtension = strtolower(end($fileNameCmps));
+        $newFileName = time() . '.' . $fileExtension;
+        $Extension = pathinfo($fileName, PATHINFO_EXTENSION);
+        $uploadFileDir = 'assets/files/submitted/';
+        $dest_path = $uploadFileDir . $newFileName;
+
+        // Move the uploaded file
+        if (move_uploaded_file($fileTmpPath, $dest_path)) {
+            // Prepare and execute the insert statement
+            $stmt = mysqli_prepare($conn, "INSERT INTO case_updates (CaseID, Title, Details, Document, CreatedAt, UserID, FirmID) VALUES (?, ?, ?, ?, ?, ?, ?)");
+            if ($stmt) {
+                mysqli_stmt_bind_param($stmt, "sssssii", $caseid, $title, $details, $newFileName, $currentTimestamp, $user, $firm);
+                mysqli_stmt_execute($stmt);
+
+                // Get the newly created update ID
+                $updtid = mysqli_insert_id($conn);
+                mysqli_stmt_close($stmt);
+
+                //create an email for the client
+                $stmtc = $conn->prepare("
+                                        SELECT 
+                                            concat(cl.fname,' ',cl.lname) as clientName,
+                                            cl.email,
+                                            f.firmname,
+                                            c1.courtname,
+                                            c2.casenumber,
+                                            c2.casename,
+                                            c3.title,
+                                            c3.details
+
+                                            FROM case_updates c3
+                                            JOIN cases c2 ON c3.caseid = c2.caseid
+                                            JOIN firms f ON c3.firmid = f.firmid
+                                            JOIN clients cl ON c2.clientid = cl.clientid
+                                            JOIN courts c1 ON c2.courtid = c1.courtid
+                                            WHERE c3.updateid = ?
+                                            
+                                            ");
+                $stmtc->bind_param('s', $updtid);
+                $stmtc->execute();
+                $stmtc->bind_result($client, $recepient, $firmName, $courtName, $caseNum, $caseName, $title, $details);
+                $stmtc->fetch();
+                $stmtc->close();
+                $subject = "InLaw Case Update";
+                $message = mailCaseUpdate($client, $firmName, $courtName, $caseNum, $caseName, $title, $details);
+                if (!noReplyMail($recepient, $subject, $message)) {
+                    $_SESSION['error'] = "Problem encountered when mailing the client";
+                }
+                header('location: case-updates');
+                exit();
+
+                $_SESSION['success'] = "Case Update Added Successfuly";
+                header('location: case-updates');
+                exit();
+            } else {
+                // Error preparing the statement
+                $error_msg = 'Error preparing the SQL statement.';
+            }
+        } else {
+            $error_msg = 'Error moving the uploaded file.';
+        }
+    } else {
+        // Prepare and execute the insert statement
+        $stmt = mysqli_prepare($conn, "INSERT INTO case_updates (CaseID, Title, Details, CreatedAt, UserID, FirmID) VALUES (?, ?, ?, ?, ?, ?)");
+        if ($stmt) {
+            mysqli_stmt_bind_param($stmt, "ssssii", $caseid, $title, $details, $currentTimestamp, $user, $firm);
+            mysqli_stmt_execute($stmt);
+
+            // Get the newly created update ID
+            $updtid = mysqli_insert_id($conn);
+            mysqli_stmt_close($stmt);
+
+            //create an email for the client
+            $stmtc = $conn->prepare("
+                                    SELECT 
+                                        concat(cl.fname,' ',cl.lname) as clientName,
+                                        cl.email,
+                                        f.firmname,
+                                        c1.courtname,
+                                        c2.casenumber,
+                                        c2.casename,
+                                        c3.title,
+                                        c3.details
+
+                                        FROM case_updates c3
+                                        JOIN cases c2 ON c3.caseid = c2.caseid
+                                        JOIN firms f ON c3.firmid = f.firmid
+                                        JOIN clients cl ON c2.clientid = cl.clientid
+                                        JOIN courts c1 ON c2.courtid = c1.courtid
+                                        WHERE c3.updateid = ?
+                                        
+                                        ");
+            $stmtc->bind_param('s', $updtid);
+            $stmtc->execute();
+            $stmtc->bind_result($client, $recepient, $firmName, $courtName, $caseNum, $caseName, $title, $details);
+            $stmtc->fetch();
+            $stmtc->close();
+            $subject = "InLaw Case Update";
+            $message = mailCaseUpdate($client, $firmName, $courtName, $caseNum, $caseName, $title, $details);
+            if (!noReplyMail($recepient, $subject, $message)) {
+                $_SESSION['error'] = "Problem encountered when mailing the client";
+            }
+            header('location: case-updates');
+            exit();
+
+            $_SESSION['success'] = "Case Update Added Successfuly";
+            header('location: case-updates');
+            exit();
+        } else {
+            // Error preparing the statement
+            $error_msg = 'Error preparing the SQL statement.';
+        }
     }
 }

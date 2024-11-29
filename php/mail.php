@@ -567,3 +567,59 @@ function mailAddedInvoice($clientName, $firmName, $courtName, $caseNum, $caseNam
     ';
     return $message;
 }
+
+function mailCaseUpdate($clientName, $firmName, $courtName, $caseNum, $caseName, $updateTitle, $updateDetails)
+{
+    $message = '
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>InLaw Doc Notification</title>
+    </head>
+    <body style="font-family: Arial, sans-serif; background-color: #f8f9fa; margin: 0; padding: 0;">
+        <div style="margin: 0 auto; max-width: 580px; padding: 10px;">
+            <div style="background-color: #ffffff; border: 1px solid #dee2e6; border-radius: 5px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); padding: 20px; width: 100%; box-sizing: border-box;">
+                <div style="text-align: start;">
+                    <h1 style="font-size: 24px; text-align: center; margin-bottom: 10px;">New Invoice Upload</h1>
+                    <p style="margin-bottom: 15px;">Dear ' . $clientName . '</p>
+                    <p style="margin-bottom: 15px;">
+                        A Case-Update has been added by the firm ' . $firmName . ' to
+                        your case titled ' . $courtName . ' ' . $caseNum . ' ' . $caseName . ' with the following details:                  
+                    </p>
+                    <p style="margin-bottom: 15px;">
+                        Update Details:
+                        <ul style="margin-bottom: 15px;">
+                            <li>Update Title: ' . $updateTitle . '</li>
+                            <li>Update Details: <br> ' . $updateDetails . '</li>
+                        </ul>
+                    </p>
+                    <p style="margin-bottom: 15px;">
+                        Log back into your client portal by following the link below to
+                        check it out.
+                    </p>
+                    <a href="https://app.inlaw-legal.tech/client/case-updates"
+                       style="display: inline-block; background-color: #d7d8da; color: #574c4c; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-size: 16px; text-align: center; max-width: 100px; margin: 0 auto;"
+                       target="_blank">Go to InLaw</a>
+                    <p style="margin-bottom: 15px;">Thank you for choosing InLaw.</p>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 20px;">
+                <div style="margin-bottom: 5px;">
+                    <p style="color: #6c757d; font-size: 12px;">Inlaw-Legal</p>
+                </div>
+                <div>
+                    <p style="color: #6c757d; font-size: 12px;">
+                        Powered by
+                        <a href="https://inlaw-legal.tech" style="color: #6c757d; text-decoration: none;">InLaw</a>.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </body>
+    </html>
+    ';
+    return $message;
+}
