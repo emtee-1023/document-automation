@@ -147,65 +147,44 @@ if (isset($_POST['recover-pass'])) {
     $taskName = $_POST['task_name'];
     $description = $_POST['description'];
     $deadline = $_POST['deadline'];
-    $document = $_FILES['document'];
 
     // Handle file upload
     if (isset($_FILES['Document']) && $_FILES['Document']['error'] === UPLOAD_ERR_OK) {
+        // Get file info
         $fileTmpPath = $_FILES['Document']['tmp_name'];
         $fileName = $_FILES['Document']['name'];
-        $fileSize = $_FILES['Document']['size'];
-        $fileType = $_FILES['Document']['type'];
-        $fileNameCmps = explode(".", $fileName);
-        $fileExtension = strtolower(end($fileNameCmps));
-        $newFileName = time() . '.' . $fileExtension;
-        $Extension = pathinfo($fileName, PATHINFO_EXTENSION);
+        $newFileName = time() . '.' . pathinfo($fileName, PATHINFO_EXTENSION); // Generate a unique file name
+
+        // Define destination path
         $uploadFileDir = 'assets/files/submitted/';
         $dest_path = $uploadFileDir . $newFileName;
 
-        // Move the uploaded file
+        // Move the uploaded file to the destination
         if (move_uploaded_file($fileTmpPath, $dest_path)) {
-            // Prepare and execute the insert statement
+            // Insert task with document into database
             $stmt = mysqli_prepare($conn, "INSERT INTO tasks (TaskName, TaskDescription, Document, TaskDeadline, CreatedAt, UserID, FirmID) VALUES (?, ?, ?, ?, ?, ?, ?)");
-            if ($stmt) {
-                mysqli_stmt_bind_param($stmt, "sssssii", $taskName, $description, $newFileName, $deadline, $currentTimestamp, $user, $firm);
-                mysqli_stmt_execute($stmt);
+            mysqli_stmt_bind_param($stmt, "sssssii", $taskName, $description, $newFileName, $deadline, $currentTimestamp, $user, $firm);
+            mysqli_stmt_execute($stmt);
+            $taskId = mysqli_insert_id($conn);
+            mysqli_stmt_close($stmt);
 
-                // Get the newly created task ID
-                $taskId = mysqli_insert_id($conn);
-
-                // Close the statement
-                mysqli_stmt_close($stmt);
-
-                // Redirect to the task assignment page with the task ID
-                header("Location: assign-task?taskid=" . $taskId);
-                exit();
-            } else {
-                // Error preparing the statement
-                $error_msg = 'Error preparing the SQL statement.';
-            }
+            // Redirect after successful insert
+            header("Location: assign-task?taskid=" . $taskId);
+            exit();
         } else {
             $error_msg = 'Error moving the uploaded file.';
         }
     } else {
-        // Prepare and execute the insert statement
+        // Insert task without document into database
         $stmt = mysqli_prepare($conn, "INSERT INTO tasks (TaskName, TaskDescription, TaskDeadline, CreatedAt, UserID, FirmID) VALUES (?, ?, ?, ?, ?, ?)");
-        if ($stmt) {
-            mysqli_stmt_bind_param($stmt, "ssssii", $taskName, $description, $deadline, $currentTimestamp, $user, $firm);
-            mysqli_stmt_execute($stmt);
+        mysqli_stmt_bind_param($stmt, "ssssii", $taskName, $description, $deadline, $currentTimestamp, $user, $firm);
+        mysqli_stmt_execute($stmt);
+        $taskId = mysqli_insert_id($conn);
+        mysqli_stmt_close($stmt);
 
-            // Get the newly created task ID
-            $taskId = mysqli_insert_id($conn);
-
-            // Close the statement
-            mysqli_stmt_close($stmt);
-
-            // Redirect to the task assignment page with the task ID
-            header("Location: assign-task?taskid=" . $taskId);
-            exit();
-        } else {
-            // Error preparing the statement
-            $error_msg = 'Error preparing the SQL statement.';
-        }
+        // Redirect after successful insert
+        header("Location: assign-task?taskid=" . $taskId);
+        exit();
     }
 } else if (isset($_POST['submit-case-update'])) {
     $caseid = $_POST['caseid'];

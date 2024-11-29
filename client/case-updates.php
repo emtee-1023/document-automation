@@ -16,13 +16,7 @@
                 <ol class="breadcrumb mb-2">
                     <li class="breadcrumb-item active">Update Your Client</li>
                 </ol>
-                <div class="row justify-content-end">
-                    <div class="col-xl-3 col-md-6">
-                        <div class="mt-2 mb-5 float-end">
-                            <a href="add-update" class="btn btn-secondary"><i class="fa-solid fa-list-check"></i> Add New Update</a>
-                        </div>
-                    </div>
-                </div>
+
                 <div class="container mt-4">
                     <ul class="nav nav-tabs" id="taskTabs" role="tablist">
                         <li class="nav-item" role="presentation">
