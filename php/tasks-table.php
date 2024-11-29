@@ -64,7 +64,7 @@
                             <td>' . htmlspecialchars(date('D d M Y \a\t h.iA', strtotime($row['AssignedAt']))) . '</td>
                             <td>' . htmlspecialchars(date('D d M Y \a\t h.iA', strtotime($row['TaskDeadline']))) . '</td>
                             <td>' . htmlspecialchars($row['TaskStatus']) . '</td>
-                            <td><a href="#" class="btn btn-primary btn-sm">View Task</a ></td>
+                            <td><a href="#" class="btn btn-primary btn-sm open-modal" data-id="' . $row['TaskID'] . '">View Task</a ></td>
                             <td><a href="delete?taskid=' . urlencode($row['TaskID']) . '&assignee=' . urlencode($row['UserID']) . '" class="btn btn-danger btn-sm">Delete Task</a ></td>
                         </tr>';
                             }
@@ -92,6 +92,7 @@
                                 <th>Deadline</th>
                                 <th>Status</th>
                                 <th>View</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -124,7 +125,8 @@
                             <td>' . htmlspecialchars(date('D d M Y \a\t h.iA', strtotime($row['AssignedAt']))) . '</td>
                             <td>' . htmlspecialchars(date('D d M Y \a\t h.iA', strtotime($row['TaskDeadline']))) . '</td>
                             <td>' . htmlspecialchars($row['TaskStatus']) . '</td>
-                            <td><a href="#" class="btn btn-primary btn-sm">View Task</a ></td>
+                            <td><a href="#" class="btn btn-primary btn-sm open-modal" data-id="' . $row['TaskID'] . '">View Task</a ></td>
+                            <td><a href="complete-task?id=' . $row['TaskID'] . '" class="btn btn-success btn-sm">Complete Task</a ></td>
                         </tr>';
                             }
                             ?>
@@ -136,12 +138,69 @@
     </div>
 </div>
 
+<div class="modal fade" id="descriptionModal" tabindex="-1" aria-labelledby="descriptionModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="descriptionModalLabel">Task Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h6>Additional Task Details/Instructions:</h6>
+                <p id="descriptionText" class="ms-1"></p>
+                <a href="#" id="documentLink" class="btn btn-primary d-none" target="_blank">View Document</a>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     $(document).ready(function() {
-        // Initialize DataTable for Assigned Tasks
-        $('#datatablesSimple').DataTable();
+        // Handle modal trigger
+        $('.open-modal').on('click', function() {
+            const taskId = $(this).data('id'); // Get the TaskID from the button's data attribute
 
-        // Initialize DataTable for Completed Tasks
-        $('#datatablesCompleted').DataTable();
+            // AJAX request to fetch task details
+            $.ajax({
+                url: 'fetch-task-details.php', // Backend PHP file
+                type: 'GET',
+                data: {
+                    id: taskId
+                }, // Pass TaskID to the backend
+                dataType: 'json', // Expect JSON response
+                success: function(response) {
+                    if (response.success) {
+                        // Populate modal with task details
+                        $('#descriptionText').text(response.data.description);
+
+                        // Handle document link or display "No document attached"
+                        if (response.data.document_url) {
+                            $('#documentLink')
+                                .attr('href', response.data.document_url)
+                                .removeClass('d-none')
+                                .text('View Document');
+                        } else {
+                            $('#documentLink')
+                                .removeClass('d-none') // Make visible
+                                .attr('href', '#') // Ensure no navigation
+                                .text('No document attached') // Update text
+                                .addClass('disabled'); // Add disabled class to prevent click
+                        }
+
+                        // Show modal
+                        $('#descriptionModal').modal('show');
+                    } else {
+                        alert('Error: ' + response.message);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('AJAX Error: ', error);
+                    alert('An error occurred while fetching task details.');
+                }
+            });
+        });
     });
 </script>
