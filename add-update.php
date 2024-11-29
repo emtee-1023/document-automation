@@ -86,7 +86,7 @@ $redirect = '';
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-floating mb-3">
-                                        <input class="form-control" id="document" type="file" name="document" />
+                                        <input class="form-control" id="document" type="file" name="Document" />
                                         <label for="deadline">Document (if needed)</label>
                                     </div>
                                 </div>

@@ -60,13 +60,12 @@
                                                 <th>Added By</th>
                                                 <th>Added On</th>
                                                 <th>View</th>
-                                                <th>Edit</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             <?php
                                             // User and firm session variables
-                                            $user = $_SESSION['userid'];
+                                            $clientid = $_SESSION['clientid'];
                                             $firmid = $_SESSION['fid'];
 
                                             // SQL query using prepared statements
@@ -81,9 +80,9 @@
                                                     JOIN cases c2 ON c2.caseid = c3.caseid
                                                     JOIN courts c1 ON c2.courtid = c1.courtid
                                                     JOIN users u ON u.userid = c3.userid
-                                                    WHERE c2.casestatus = 'open' AND c3.firmid = ?
+                                                    WHERE c2.casestatus = 'open' AND c2.clientid = ?
                                                 ");
-                                            $stmt->bind_param("i", $firmid);
+                                            $stmt->bind_param("i", $clientid);
                                             $stmt->execute();
                                             $res = $stmt->get_result();
 
@@ -96,7 +95,6 @@
                                                     <td>' . htmlspecialchars($row['updater']) . '</td>
                                                     <td>' . htmlspecialchars(date('D d M Y \a\t h.iA', strtotime($row['createdat']))) . '</td>
                                                     <td><a href="case-update-details?id=' . $row['updateid'] . '" class="btn btn-primary btn-sm">View Details</a ></td>
-                                                    <td><a href="#" class="btn btn-primary btn-sm">Edit Update</a ></td>
                                                 </tr>';
                                             }
                                             ?>
@@ -122,7 +120,6 @@
                                                 <th>Added By</th>
                                                 <th>Added On</th>
                                                 <th>View</th>
-                                                <th>Edit</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -139,9 +136,9 @@
                                                     JOIN cases c2 ON c2.caseid = c3.caseid
                                                     JOIN courts c1 ON c2.courtid = c1.courtid
                                                     JOIN users u ON u.userid = c3.userid
-                                                    WHERE c2.casestatus = 'pending' AND c3.firmid = ?
+                                                    WHERE c2.casestatus = 'pending' AND c2.clientid = ?
                                                 ");
-                                            $stmt->bind_param("i", $firmid);
+                                            $stmt->bind_param("i", $clientid);
                                             $stmt->execute();
                                             $res = $stmt->get_result();
 
@@ -154,7 +151,6 @@
                                                     <td>' . htmlspecialchars($row['updater']) . '</td>
                                                     <td>' . htmlspecialchars(date('D d M Y \a\t h.iA', strtotime($row['createdat']))) . '</td>
                                                     <td><a href="#" class="btn btn-primary btn-sm">View Update</a ></td>
-                                                    <td><a href="#" class="btn btn-primary btn-sm">Edit Update</a ></td>
                                                 </tr>';
                                             }
                                             ?>
@@ -180,7 +176,6 @@
                                                 <th>Added By</th>
                                                 <th>Added On</th>
                                                 <th>View</th>
-                                                <th>Edit</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -197,9 +192,9 @@
                                                     JOIN cases c2 ON c2.caseid = c3.caseid
                                                     JOIN courts c1 ON c2.courtid = c1.courtid
                                                     JOIN users u ON u.userid = c3.userid
-                                                    WHERE c2.casestatus = 'closed' AND c3.firmid = ?
+                                                    WHERE c2.casestatus = 'closed' AND c2.clientid = ?
                                                 ");
-                                            $stmt->bind_param("i", $firmid);
+                                            $stmt->bind_param("i", $clientid);
                                             $stmt->execute();
                                             $res = $stmt->get_result();
 
@@ -212,7 +207,6 @@
                                                     <td>' . htmlspecialchars($row['updater']) . '</td>
                                                     <td>' . htmlspecialchars(date('D d M Y \a\t h.iA', strtotime($row['createdat']))) . '</td>
                                                     <td><a href="#" class="btn btn-primary btn-sm">View Update</a ></td>
-                                                    <td><a href="#" class="btn btn-primary btn-sm">Edit Update</a ></td>
                                                 </tr>';
                                             }
                                             ?>

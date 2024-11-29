@@ -583,7 +583,7 @@ function mailCaseUpdate($clientName, $firmName, $courtName, $caseNum, $caseName,
         <div style="margin: 0 auto; max-width: 580px; padding: 10px;">
             <div style="background-color: #ffffff; border: 1px solid #dee2e6; border-radius: 5px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); padding: 20px; width: 100%; box-sizing: border-box;">
                 <div style="text-align: start;">
-                    <h1 style="font-size: 24px; text-align: center; margin-bottom: 10px;">New Invoice Upload</h1>
+                    <h1 style="font-size: 24px; text-align: center; margin-bottom: 10px;">New Case Update</h1>
                     <p style="margin-bottom: 15px;">Dear ' . $clientName . '</p>
                     <p style="margin-bottom: 15px;">
                         A Case-Update has been added by the firm ' . $firmName . ' to
