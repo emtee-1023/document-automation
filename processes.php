@@ -164,7 +164,7 @@ if (isset($_POST['recover-pass'])) {
         // Move the uploaded file
         if (move_uploaded_file($fileTmpPath, $dest_path)) {
             // Prepare and execute the insert statement
-            $stmt = mysqli_prepare($conn, "INSERT INTO tasks (TaskName, TaskDesciption, Document, TaskDeadline, CreatedAt, UserID, FirmID) VALUES (?, ?, ?, ?, ?, ?, ?)");
+            $stmt = mysqli_prepare($conn, "INSERT INTO tasks (TaskName, TaskDescription, Document, TaskDeadline, CreatedAt, UserID, FirmID) VALUES (?, ?, ?, ?, ?, ?, ?)");
             if ($stmt) {
                 mysqli_stmt_bind_param($stmt, "sssssii", $taskName, $description, $newFileName, $deadline, $currentTimestamp, $user, $firm);
                 mysqli_stmt_execute($stmt);
@@ -184,7 +184,7 @@ if (isset($_POST['recover-pass'])) {
         }
     } else {
         // Prepare and execute the insert statement
-        $stmt = mysqli_prepare($conn, "INSERT INTO tasks (TaskName, TaskDesciption, TaskDeadline, CreatedAt, UserID, FirmID) VALUES (?, ?, ?, ?, ?, ?)");
+        $stmt = mysqli_prepare($conn, "INSERT INTO tasks (TaskName, TaskDescription, TaskDeadline, CreatedAt, UserID, FirmID) VALUES (?, ?, ?, ?, ?, ?)");
         if ($stmt) {
             mysqli_stmt_bind_param($stmt, "ssssii", $taskName, $description, $deadline, $currentTimestamp, $user, $firm);
             mysqli_stmt_execute($stmt);

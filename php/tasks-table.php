@@ -48,11 +48,11 @@
                                                         t2.AssignedAt, t2.UserID,
                                                         t1.TaskDeadline, t1.TaskStatus
                                                     FROM tasks t1 
-                                                    JOIN task_assignments t2  ON t1.taskid = t2.taskid 
-                                                    JOIN users u ON u.userid = t2.userid
-                                                    WHERE t1.userid = ?
+                                                     JOIN task_assignments t2  ON t1.taskid = t2.taskid 
+                                                     JOIN users u ON u.userid = t2.userid
+                                                    WHERE t1.firmid = ?
                                                 ");
-                            $stmt->bind_param("i", $user);
+                            $stmt->bind_param("i", $firmid);
                             $stmt->execute();
                             $res = $stmt->get_result();
 
