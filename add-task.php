@@ -1,14 +1,13 @@
 <?php
-include 'php/header.php';
-include 'php/dbconn.php';
-include 'php/mail.php';
-?>
+ob_start();  // Start output buffering at the very beginning of the script
+include 'php/header.php';  // Include header.php
 
-<?php
 if (!isset($_SESSION['userid']) && !isset($_SESSION['fid'])) {
     header('location: firm-login');
+    exit();
 } elseif (!isset($_SESSION['userid']) && isset($_SESSION['fid'])) {
     header('location: login');
+    exit();
 }
 
 $error_msg = '';
@@ -21,7 +20,6 @@ $_10Expiry = date('Y-m-d H:i:s', strtotime('+10 minutes'));
 
 $user = $_SESSION['userid'];
 $firm = $_SESSION['fid'];
-
 
 if (isset($_POST['submit_task'])) {
     $taskName = $_POST['task_name'];
@@ -53,10 +51,10 @@ if (isset($_POST['submit_task'])) {
                 $taskid = mysqli_insert_id($conn);
                 mysqli_stmt_close($stmt);
 
-                header('location: assign-task?taskid=' . $taskid);
+                // Perform the redirect
+                header('Location: assign-task?taskid=' . $taskid);
                 exit();
             } else {
-                // Error preparing the statement
                 $error_msg = 'Error preparing the SQL statement.';
             }
         } else {
@@ -73,26 +71,25 @@ if (isset($_POST['submit_task'])) {
             $taskid = mysqli_insert_id($conn);
             mysqli_stmt_close($stmt);
 
-            header('location: assign-task?taskid=' . $taskid);
+            // Perform the redirect
+            header('Location: assign-task?taskid=' . $taskid);
             exit();
         } else {
-            // Error preparing the statement
             $error_msg = 'Error preparing the SQL statement.';
         }
     }
 }
-
 ?>
 
 <div id="layoutSidenav">
     <?php include 'php/sidebar.php'; ?>
     <div id="layoutSidenav_content">
-        <main">
+        <main>
             <div class="container-fluid px-4 d-flex flex-column align-items-start">
                 <h1 class="mt-4">Create Task</h1>
                 <ol class="breadcrumb mb-4">
                     <li class="breadcrumb-item"><a href="tasks">Tasks</a></li>
-                    <li class="breadcrumb-item active">NewTask</li>
+                    <li class="breadcrumb-item active">New Task</li>
                 </ol>
                 <div class="row justify-content-end">
                 </div>
@@ -120,7 +117,7 @@ if (isset($_POST['submit_task'])) {
                     </div>
                     <div class="card-body">
                         <form method="post" enctype="multipart/form-data">
-                            <!--Task nameand deadline on the same row -->
+                            <!-- Task name and deadline on the same row -->
                             <div class="row mb-3">
                                 <div class="col-md-6">
                                     <div class="form-floating mb-3">
@@ -136,6 +133,7 @@ if (isset($_POST['submit_task'])) {
                                 </div>
                             </div>
 
+                            <!-- File upload -->
                             <div class="row mb-3">
                                 <div class="col-md-6">
                                     <div class="form-floating mb-3">
@@ -145,8 +143,8 @@ if (isset($_POST['submit_task'])) {
                                 </div>
                             </div>
 
-                            <!-- Deadline-->
-                            <div class="row ">
+                            <!-- Description -->
+                            <div class="row">
                                 <div class="col-md-12">
                                     <div class="form-floating mb-3">
                                         <textarea class="form-control" id="description" name="description" rows="3" placeholder="Description" style="height: 200px;"></textarea>
@@ -155,7 +153,6 @@ if (isset($_POST['submit_task'])) {
                                 </div>
                             </div>
 
-
                             <div class="mt-3 mb-0 d-flex justify-content-center">
                                 <div class="d-grid">
                                     <input type="submit" class="btn btn-primary" name="submit_task" value="Choose User(s)">
@@ -163,5 +160,13 @@ if (isset($_POST['submit_task'])) {
                             </div>
                         </form>
                     </div>
-                    </main>
-                    <?php include 'php/footer.php'; ?>
+                </div>
+            </div>
+        </main>
+        <?php include 'php/footer.php'; ?>
+    </div>
+</div>
+
+<?php
+ob_end_flush();  // End the output buffering and send the output
+?>
