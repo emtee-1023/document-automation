@@ -10,6 +10,9 @@ if (!isset($_SESSION['userid']) && !isset($_SESSION['fid'])) {
     exit();
 }
 
+date_default_timezone_set('Africa/Nairobi');
+$currentTimestamp = date('Y-m-d H:i:s');
+
 $error_msg = '';
 $success_msg = '';
 $user = $_SESSION['userid'];
@@ -49,7 +52,7 @@ if (isset($_POST['submit_assignment'])) {
     // Check if any users were selected
     if (!empty($assignedUsers)) {
         // Prepare and execute the insertion of assignments
-        $stmt_assignment = mysqli_prepare($conn, "INSERT INTO task_assignments (taskid, userid, AssignedAt) VALUES (?, ?, NOW())");
+        $stmt_assignment = mysqli_prepare($conn, "INSERT INTO task_assignments (taskid, userid, AssignedAt) VALUES (?, ?, ?)");
         $stmt_notification = mysqli_prepare($conn, "INSERT INTO notifications (NotifSubject, NotifText, UserID) VALUES (?, ?, ?)");
 
         if ($stmt_assignment && $stmt_notification) {
@@ -72,7 +75,7 @@ if (isset($_POST['submit_assignment'])) {
                 $assignee_email = $row2['email'];
 
                 // Insert into task_assignments
-                mysqli_stmt_bind_param($stmt_assignment, "ii", $taskId, $userId);
+                mysqli_stmt_bind_param($stmt_assignment, "iii", $taskId, $userId, $currentTimestamp);
                 mysqli_stmt_execute($stmt_assignment);
 
                 // Insert into notifications
