@@ -1,4 +1,8 @@
-<?php include 'php/header.php'; ?>
+<?php
+include 'php/header.php';
+include 'php/dbconn.php';
+include 'php/mail.php';
+?>
 
 <?php
 if (!isset($_SESSION['userid']) && !isset($_SESSION['fid'])) {
@@ -10,6 +14,73 @@ if (!isset($_SESSION['userid']) && !isset($_SESSION['fid'])) {
 $error_msg = '';
 $success_msg = '';
 $redirect = '';
+
+date_default_timezone_set('Africa/Nairobi');
+$currentTimestamp = date('Y-m-d H:i:s');
+$_10Expiry = date('Y-m-d H:i:s', strtotime('+10 minutes'));
+
+$user = $_SESSION['userid'];
+$firm = $_SESSION['fid'];
+
+
+if (isset($_POST['submit_task'])) {
+    $taskName = $_POST['task_name'];
+    $description = $_POST['description'];
+    $deadline = $_POST['deadline'];
+
+    // Handle file upload
+    if (isset($_FILES['Document']) && $_FILES['Document']['error'] === UPLOAD_ERR_OK) {
+        $fileTmpPath = $_FILES['Document']['tmp_name'];
+        $fileName = $_FILES['Document']['name'];
+        $fileSize = $_FILES['Document']['size'];
+        $fileType = $_FILES['Document']['type'];
+        $fileNameCmps = explode(".", $fileName);
+        $fileExtension = strtolower(end($fileNameCmps));
+        $newFileName = time() . '.' . $fileExtension;
+        $Extension = pathinfo($fileName, PATHINFO_EXTENSION);
+        $uploadFileDir = 'assets/files/submitted/';
+        $dest_path = $uploadFileDir . $newFileName;
+
+        // Move the uploaded file
+        if (move_uploaded_file($fileTmpPath, $dest_path)) {
+            // Prepare and execute the insert statement
+            $stmt = mysqli_prepare($conn, "INSERT INTO tasks (TaskName, TaskDescription, Document, TaskDeadline, CreatedAt, UserID, FirmID) VALUES (?, ?, ?, ?, ?, ?, ?)");
+            if ($stmt) {
+                mysqli_stmt_bind_param($stmt, "sssssii", $taskName, $description, $newFileName, $deadline, $currentTimestamp, $user, $firm);
+                mysqli_stmt_execute($stmt);
+
+                // Get the newly created task ID
+                $taskid = mysqli_insert_id($conn);
+                mysqli_stmt_close($stmt);
+
+                header('location: assign-task?taskid=' . $taskid);
+                exit();
+            } else {
+                // Error preparing the statement
+                $error_msg = 'Error preparing the SQL statement.';
+            }
+        } else {
+            $error_msg = 'Error moving the uploaded file.';
+        }
+    } else {
+        // Prepare and execute the insert statement
+        $stmt = mysqli_prepare($conn, "INSERT INTO tasks (TaskName, TaskDescription, TaskDeadline, CreatedAt, UserID, FirmID) VALUES (?, ?, ?, ?, ?, ?)");
+        if ($stmt) {
+            mysqli_stmt_bind_param($stmt, "ssssii", $taskName, $description, $deadline, $currentTimestamp, $user, $firm);
+            mysqli_stmt_execute($stmt);
+
+            // Get the newly created task ID
+            $taskid = mysqli_insert_id($conn);
+            mysqli_stmt_close($stmt);
+
+            header('location: assign-task?taskid=' . $taskid);
+            exit();
+        } else {
+            // Error preparing the statement
+            $error_msg = 'Error preparing the SQL statement.';
+        }
+    }
+}
 
 ?>
 
@@ -48,7 +119,7 @@ $redirect = '';
                         <h3 class="text-center font-weight-light my-4">Create Task</h3>
                     </div>
                     <div class="card-body">
-                        <form method="post" action="processes.php" enctype="multipart/form-data">
+                        <form method="post" enctype="multipart/form-data">
                             <!--Task nameand deadline on the same row -->
                             <div class="row mb-3">
                                 <div class="col-md-6">
