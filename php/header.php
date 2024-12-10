@@ -23,16 +23,18 @@ $pageTitle = '';
     <meta name="description" content="" />
     <meta name="author" content="" />
     <title><?php echo $pageTitle; ?></title>
-    <link rel="stylesheet" href="https://cdn.datatables.net/2.1.3/css/dataTables.dataTables.css" />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.18/summernote.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
-    <link href="css/styles.css" rel="stylesheet" />
-    <link rel="shortcut icon" href="assets/img/icon.png" type="image/x-icon">
 
-    <script src="https://cdn.datatables.net/2.1.3/js/dataTables.js"></script>
-    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.18/summernote.min.js"></script>
+    <!-- jQuery (load once only) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Simple-DataTables -->
+    <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/simple-datatables.min.js"></script>
+
+    <!-- Custom Styles -->
+    <link href="css/styles.css" rel="stylesheet" />
+    <link rel="shortcut icon" href="assets/img/icon.png" type="image/x-icon" />
+
     <style>
         /* Center the dropdown on small screens */
         @media (max-width: 575.98px) {
@@ -41,14 +43,12 @@ $pageTitle = '';
                 left: 50%;
                 transform: translateX(37%);
                 min-width: 200px;
-                /* Adjust the minimum width if necessary */
-                /* width: auto; Ensure the dropdown adapts to its content */
-
             }
         }
     </style>
-
 </head>
+
+
 
 <body class="sb-nav-fixed">
     <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">

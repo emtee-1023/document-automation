@@ -21,7 +21,7 @@
                     Displaying all assigned tasks
                 </div>
                 <div class="card-body">
-                    <table id="datatablesCompleted" class="table table-bordered table-striped">
+                    <table id="datatablesSimple" class="table table-bordered table-striped">
                         <!-- Existing table structure -->
                         <thead>
                             <tr>
@@ -199,6 +199,29 @@
                 error: function(xhr, status, error) {
                     console.error('AJAX Error: ', error);
                     alert('An error occurred while fetching task details.');
+                }
+            });
+        });
+    });
+
+    window.addEventListener("DOMContentLoaded", (event) => {
+        // Initialize Simple DataTable for the first (visible) tab
+        const table1 = document.getElementById('datatablesSimple');
+        if (table1) {
+            new simpleDatatables.DataTable(table1);
+        }
+
+        // Initialize Simple DataTables for other tabs only when they are shown
+        document.querySelectorAll('button[data-bs-toggle="tab"]').forEach((button) => {
+            button.addEventListener('shown.bs.tab', (e) => {
+                let target = e.target.getAttribute("data-bs-target");
+
+                if (target === "#tab2") {
+                    const table2 = document.getElementById('datatablesCompleted');
+                    if (table2 && !table2.dataset.initialized) {
+                        new simpleDatatables.DataTable(table2);
+                        table2.dataset.initialized = true; // Mark as initialized
+                    }
                 }
             });
         });

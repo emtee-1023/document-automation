@@ -51,7 +51,7 @@
                                     Displaying updates for open cases
                                 </div>
                                 <div class="card-body">
-                                    <table id="datatablesCompleted" class="table table-bordered table-striped">
+                                    <table id="datatablesSimple" class="table table-bordered table-striped">
                                         <!-- Existing table structure -->
                                         <thead>
                                             <tr>
@@ -95,8 +95,8 @@
                                                     <td>' . htmlspecialchars($row['title']) . '</td>
                                                     <td>' . htmlspecialchars($row['updater']) . '</td>
                                                     <td>' . htmlspecialchars(date('D d M Y \a\t h.iA', strtotime($row['createdat']))) . '</td>
-                                                    <td><a href="case-update-details?id=' . $row['updateid'] . '" class="btn btn-primary btn-sm">View Details</a ></td>
-                                                    <td><a href="#" class="btn btn-primary btn-sm">Edit Update</a ></td>
+                                                    <td><a href="case-update-details?id=' . $row['updateid'] . '" class="btn btn-primary btn-sm">Details</a ></td>
+                                                    <td><a href="#" class="btn btn-primary btn-sm">Edit</a ></td>
                                                 </tr>';
                                             }
                                             ?>
@@ -153,8 +153,8 @@
                                                     <td>' . htmlspecialchars($row['title']) . '</td>
                                                     <td>' . htmlspecialchars($row['updater']) . '</td>
                                                     <td>' . htmlspecialchars(date('D d M Y \a\t h.iA', strtotime($row['createdat']))) . '</td>
-                                                    <td><a href="#" class="btn btn-primary btn-sm">View Update</a ></td>
-                                                    <td><a href="#" class="btn btn-primary btn-sm">Edit Update</a ></td>
+                                                    <td><a href="#" class="btn btn-primary btn-sm">View</a ></td>
+                                                    <td><a href="#" class="btn btn-primary btn-sm">Edit</a ></td>
                                                 </tr>';
                                             }
                                             ?>
@@ -211,8 +211,8 @@
                                                     <td>' . htmlspecialchars($row['title']) . '</td>
                                                     <td>' . htmlspecialchars($row['updater']) . '</td>
                                                     <td>' . htmlspecialchars(date('D d M Y \a\t h.iA', strtotime($row['createdat']))) . '</td>
-                                                    <td><a href="#" class="btn btn-primary btn-sm">View Update</a ></td>
-                                                    <td><a href="#" class="btn btn-primary btn-sm">Edit Update</a ></td>
+                                                    <td><a href="#" class="btn btn-primary btn-sm">View</a ></td>
+                                                    <td><a href="#" class="btn btn-primary btn-sm">Edit</a ></td>
                                                 </tr>';
                                             }
                                             ?>
@@ -225,15 +225,33 @@
                 </div>
 
                 <script>
-                    $(document).ready(function() {
-                        // Initialize DataTable for 1st Table
-                        $('#datatablesSimple').DataTable();
+                    window.addEventListener("DOMContentLoaded", (event) => {
+                        // Initialize Simple DataTable for the first (visible) tab
+                        const table1 = document.getElementById('datatablesSimple');
+                        if (table1) {
+                            new simpleDatatables.DataTable(table1);
+                        }
 
-                        // Initialize DataTable for 2nd Table
-                        $('#datatablesCompleted').DataTable();
+                        // Initialize Simple DataTables for other tabs only when they are shown
+                        document.querySelectorAll('button[data-bs-toggle="tab"]').forEach((button) => {
+                            button.addEventListener('shown.bs.tab', (e) => {
+                                let target = e.target.getAttribute("data-bs-target");
 
-                        // Initialize DataTable for 3rd Table
-                        $('#datatablesThird').DataTable();
+                                if (target === "#tab2") {
+                                    const table2 = document.getElementById('datatablesCompleted');
+                                    if (table2 && !table2.dataset.initialized) {
+                                        new simpleDatatables.DataTable(table2);
+                                        table2.dataset.initialized = true; // Mark as initialized
+                                    }
+                                } else if (target === "#tab3") {
+                                    const table3 = document.getElementById('datatablesThird');
+                                    if (table3 && !table3.dataset.initialized) {
+                                        new simpleDatatables.DataTable(table3);
+                                        table3.dataset.initialized = true; // Mark as initialized
+                                    }
+                                }
+                            });
+                        });
                     });
                 </script>
             </div>
