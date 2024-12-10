@@ -134,14 +134,14 @@ if (isset($_POST['submit_task'])) {
                             </div>
 
                             <!-- File upload -->
-                            <div class="row mb-3">
+                            <!-- <div class="row mb-3">
                                 <div class="col-md-6">
                                     <div class="form-floating mb-3">
                                         <input class="form-control" id="document" type="file" name="Document" />
                                         <label for="document">Upload Document</label>
                                     </div>
                                 </div>
-                            </div>
+                            </div> -->
 
                             <!-- Description -->
                             <div class="row">
