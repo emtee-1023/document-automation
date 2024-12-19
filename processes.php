@@ -7,8 +7,8 @@ date_default_timezone_set('Africa/Nairobi');
 $currentTimestamp = date('Y-m-d H:i:s');
 $_10Expiry = date('Y-m-d H:i:s', strtotime('+10 minutes'));
 
-$user = $_SESSION['userid'];
-$firm = $_SESSION['fid'];
+$user = $_SESSION['userid'] ?? '';
+$firm = $_SESSION['fid'] ?? '';
 
 if (isset($_POST['recover-pass'])) {
     $email = $_POST['email'];
@@ -324,5 +324,95 @@ if (isset($_POST['recover-pass'])) {
             // Error preparing the statement
             $error_msg = 'Error preparing the SQL statement.';
         }
+    }
+} else if (isset($_POST['firm-login'])) {
+    $firm_email = $_POST['firm-mail'];
+    $firm_pass = $_POST['firm-pass'];
+
+    //check whether firm exists
+    $stmt = $conn->prepare('SELECT * FROM firms WHERE FirmMail = ?');
+    $stmt->bind_param('s', $firm_email);
+    if (!$stmt->execute()) {
+        $_SESSION['error'] = "Error Getting Firm Details";
+        header('location: firm-login');
+        exit();
+    }
+
+    $res = $stmt->get_result();
+
+    if ($row = mysqli_fetch_assoc($res)) {
+        // Firm Acc found, now you can verify the password
+        if (password_verify($firm_pass, $row['FirmPass'])) {
+            // Password is correct, proceed with login
+            $_SESSION['fid'] = $row['FirmID'];
+            $_SESSION['firmname'] = $row['FirmName'];
+            $_SESSION['fmail'] = $row['FirmMail'];
+            $_SESSION['fpass'] = $row['FirmPass'];
+            $_SESSION['faddress'] = $row['FirmAddress'];
+            $_SESSION['flogo'] = $row['FirmLogo'];
+            $_SESSION['fstatus'] = $row['FirmStatus'];
+            $_SESSION['success'] = "Login Successful";
+
+            // Update Firm table for last login 
+            $stmt2 = $conn->prepare('UPDATE firms SET LastLogin = ? WHERE FirmID = ?');
+            $stmt2->bind_param('si', $currentTimestamp, $row['FirmID']);
+            $stmt2->execute();
+
+            header('location: choose-user');
+            exit();
+        } else {
+            // Incorrect password
+            $_SESSION['error'] = "Invalid Credentials";
+            header('location: firm-login');
+            exit();
+        }
+    } else {
+        // No firm acc found with that email
+        $_SESSION['error'] = "Invalid Credentials";
+        header('location: firm-login');
+        exit();
+    }
+} else if (isset($_POST['user-login'])) {
+    $user = $_POST['userid'];
+    $pass = $_POST['password'];
+
+    $stmt = $conn->prepare('SELECT * FROM users WHERE UserID = ?');
+    $stmt->bind_param('i', $user);
+    if (!$stmt->execute()) {
+        $_SESSION['error'] = "Error Getting User Details";
+        header('location: login?userid=' . $user);
+        exit();
+    }
+    $res = $stmt->get_result();
+
+    if ($row = mysqli_fetch_assoc($res)) {
+        // User found, now you can verify the password
+        if (password_verify($pass, $row['Password'])) {
+            // Password is correct, proceed with login
+            $_SESSION['userid'] = $row['UserID'];
+            $_SESSION['fname'] = $row['FName'];
+            $_SESSION['lname'] = $row['LName'];
+            $_SESSION['pfp'] = $row['Photo'];
+            $_SESSION['user_type'] = $row['User_type'];
+            $_SESSION['success'] = "Login Successful";
+
+            // Update User table for last login 
+            $stmt2 = $conn->prepare('UPDATE users SET LastLogin = ? WHERE UserID = ?');
+            $stmt2->bind_param('si', $currentTimestamp, $row['UserID']);
+            $stmt2->execute();
+
+            header('location: index');
+            exit();
+        } else {
+            // Incorrect password
+            $_SESSION['error'] = "Invalid Credentials";
+            header('location: login?userid=' . $user);
+            exit();
+        }
+    } else {
+        // No user found with that id
+        $_SESSION['error'] = "Invalid Credentials";
+        header('location: login?userid=' . $user);
+        exit();
     }
 }

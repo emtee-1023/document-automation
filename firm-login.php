@@ -1,136 +1,79 @@
 <?php
-include 'php/dbconn.php';
 session_start();
-
-$error_msg = '';
-$success_msg = $_SESSION['success_msg'] ?? '';
-unset($_SESSION['success_msg']);
-
-if (isset($_POST['login'])) {
-    $firm_email = $_POST['email'];
-    $firm_pass = $_POST['password'];
-
-    // Prepare a statement
-    if ($stmt = mysqli_prepare($conn, "SELECT * FROM firms WHERE firmmail = ?")) {
-        // Bind parameters
-        mysqli_stmt_bind_param($stmt, "s", $firm_email);
-
-        // Execute the statement
-        mysqli_stmt_execute($stmt);
-
-        // Get the result
-        $res = mysqli_stmt_get_result($stmt);
-
-        // Check if a user was found
-        if ($row = mysqli_fetch_assoc($res)) {
-            // User found, now you can verify the password
-
-            if (password_verify($firm_pass, $row['FirmPass'])) {
-                // Password is correct, proceed with login
-                $_SESSION['fid'] = $row['FirmID'];
-                $_SESSION['firmname'] = $row['FirmName'];
-                $_SESSION['fmail'] = $row['FirmMail'];
-                $_SESSION['fpass'] = $row['FirmPass'];
-                $_SESSION['faddress'] = $row['FirmAddress'];
-                $_SESSION['flogo'] = $row['FirmLogo'];
-                $_SESSION['fstatus'] = $row['FirmStatus'];
-                header('location: choose-user');
-                exit();
-            } else {
-                // Incorrect password
-                $error_msg = 'invalid credentials';
-            }
-        } else {
-            // No user found with that email
-            $error_msg = 'invalid credentials';
-        }
-
-        // Close the statement
-        mysqli_stmt_close($stmt);
-    } else {
-        // Error preparing the statement
-        echo "Error preparing the SQL statement.";
-    }
-}
-
+$pageTitle = 'InLaw | Firm Login';
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
+<?php include 'php/head.php'; ?>
 
-<head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <meta name="description" content="" />
-    <meta name="author" content="" />
-    <title>Firm Login - DocAuto</title>
-    <link href="css/styles.css" rel="stylesheet" />
-    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
-    <link rel="shortcut icon" href="assets/img/icon.png" type="image/x-icon">
-</head>
-
-<body class="bg-dark">
+<body>
     <div id="layoutAuthentication">
         <div id="layoutAuthentication_content">
             <main>
-                <div class="container">
-                    <div class="row justify-content-center">
-                        <div class="col-lg-5">
-                            <div class="mt-3">
-                                <?php
-                                if ($error_msg != '') {
-                                    echo
-                                    '
-                                        <div class="alert alert-danger" role="alert">
-                                            ' . $error_msg . '
-                                        </div>
-                                        ';
-                                } ?>
+                <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center">
 
-                                <?php
+                    <section class=" section register min-vh-md-100 d-flex flex-md-column align-items-center justify-content-center col-6 col-md-5">
+                        <img src="assets/img/login.svg" alt="" style="width: 100%;">
+                    </section>
 
-                                if ($success_msg != '') {
-                                    echo
-                                    '
-                                        <div class="alert alert-success" role="alert">
-                                            ' . $success_msg . '
-                                        </div>
-                                        ';
-                                }
-                                ?>
+                    <section class="section register min-vh-md-100 d-flex flex-md-column align-items-center justify-content-center col-12 col-md-6">
+                        <div class="container">
+                            <div class="row justify-content-center">
+                                <div class="col-lg-12 col-md-12 d-flex flex-column align-items-center justify-content-center">
 
-                            </div>
-                            <div class="card shadow-lg border-0 rounded-lg mt-5">
-                                <div class="card-header">
-                                    <h3 class="text-center font-weight-light my-4">Login to Firm</h3>
-                                </div>
-                                <div class="card-body">
-                                    <form method="post" action="">
-                                        <div class="form-floating mb-3">
-                                            <input class="form-control" id="inputEmail" type="email" placeholder="email address" name="email" />
-                                            <label for="inputEmail">Firm Email address</label>
+                                    <div class="d-flex justify-content-center py-4">
+                                        <img src="assets/img/icon.png" alt="" style="width: 30px;  height: 50px;">
+                                        <span class="d-flex flex-column justify-content-center align-items-center ms-2">InLaw</span>
+                                    </div><!-- End Logo -->
+
+                                    <div class="card mb-3">
+
+                                        <div class="card-body">
+
+                                            <div class="pt-4 pb-2">
+                                                <h5 class="card-title text-center pb-0 fs-4">Login to Your Firm</h5>
+                                                <p class="text-center small">Enter your firm's email & password to login</p>
+                                            </div>
+
+                                            <form class="row g-3" action="processes.php" method="POST">
+                                                <div class="col-12">
+                                                    <label for="firmMail" class="form-label">Email</label>
+                                                    <div class="input-group">
+                                                        <input type="text" name="firm-mail" class="form-control" id="firmMail" required>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-12">
+                                                    <label for="firmPass" class="form-label">Password</label>
+                                                    <input type="password" name="firm-pass" class="form-control" id="firmPass" required>
+                                                </div>
+
+                                                <!-- <div class="col-12">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" name="remember" value="true" id="rememberMe">
+                                                        <label class="form-check-label" for="rememberMe">Remember me</label>
+                                                    </div>
+                                                </div> -->
+
+                                                <div class="col-12">
+                                                    <button class="btn btn-primary w-100" type="submit" name="firm-login">Login</button>
+                                                </div>
+                                                <div class="col-12 d-flex justify-content-between">
+                                                    <p class="small mb-0"><a href="client/index">Client Portal</a></p>
+                                                    <p class="small mb-0"><a href="new-firm">Create Account</a></p>
+                                                    <p class="small mb-0"><a href="password">Forgot Password</a></p>
+                                                </div>
+                                            </form>
+
                                         </div>
-                                        <div class="form-floating mb-3">
-                                            <input class="form-control" id="inputPassword" type="password" placeholder="Password" name="password" />
-                                            <label for="inputPassword">Password</label>
-                                        </div>
-                                        <!-- <div class="form-check mb-3">
-                                                <input class="form-check-input" id="inputRememberPassword" type="checkbox" value="" />
-                                                <label class="form-check-label" for="inputRememberPassword">Remember Password</label>
-                                            </div> -->
-                                        <div class="d-flex align-items-center justify-content-between mt-4 mb-0">
-                                            <a class="small" href="password">Forgot Password?</a>
-                                            <input type="submit" class="btn btn-primary" name="login" value="login">
-                                        </div>
-                                    </form>
-                                </div>
-                                <div class="card-footer text-center py-3">
-                                    <div class="small mb-3"><a href="new-firm">Create New Firm Account</a></div>
-                                    <div class="small"><a href="client/client-portal">proceed to client portal</a></div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+
+                    </section>
+
                 </div>
             </main>
         </div>

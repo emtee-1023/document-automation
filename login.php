@@ -1,10 +1,7 @@
 <?php
 include 'php/dbconn.php';
 session_start();
-
-$error_msg = '';
-$success_msg = $_SESSION['success_msg'] ?? '';
-unset($_SESSION['success_msg']);
+$pageTitle = 'InLaw | User Login';
 
 if (!isset($_SESSION['fid'])) {
     header('location: firm-login');
@@ -15,147 +12,75 @@ if (!isset($_GET['userid'])) {
     header('location: choose-user');
 } else {
     $user = $_GET['userid'];
-
-    if (isset($_POST['login'])) {
-        //$email = $_POST['email'];
-        $pass = $_POST['password'];
-
-        // Prepare a statement
-        if ($stmt = mysqli_prepare($conn, "SELECT * FROM users WHERE userid = ?")) {
-            // Bind parameters
-            mysqli_stmt_bind_param($stmt, "s", $user);
-
-            // Execute the statement
-            mysqli_stmt_execute($stmt);
-
-            // Get the result
-            $res = mysqli_stmt_get_result($stmt);
-
-            // Check if a user was found
-            if ($row = mysqli_fetch_assoc($res)) {
-                // User found, now you can verify the password
-                if (password_verify($pass, $row['Password'])) {
-                    // Password is correct, proceed with login
-                    $_SESSION['userid'] = $row['UserID'];
-                    $_SESSION['fname'] = $row['FName'];
-                    $_SESSION['lname'] = $row['LName'];
-                    $_SESSION['pfp'] = $row['Photo'];
-                    $_SESSION['user_type'] = $row['User_type'];
-                    header('location: index');
-                } else {
-                    // Incorrect password
-                    $error_msg = 'invalid password';
-                }
-            } else {
-                // No user found with that email
-                $error_msg = 'invalid password';
-            }
-
-            // Close the statement
-            mysqli_stmt_close($stmt);
-        } else {
-            // Error preparing the statement
-            echo "Error preparing the SQL statement.";
-        }
-    }
 }
 
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
+<?php include 'php/head.php'; ?>
 
-<head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <meta name="description" content="" />
-    <meta name="author" content="" />
-    <title>Login - DocAuto</title>
-    <link href="css/styles.css" rel="stylesheet" />
-    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
-</head>
+<?php
+$stmt = $conn->prepare("SELECT fname FROM users WHERE userid = ?");
+$stmt->bind_param("i", $user);
+$stmt->execute();
+$res = $stmt->get_result();
+$row = mysqli_fetch_assoc($res);
+$username = $row['fname'];
+?>
 
-<body class="bg-dark">
+<body>
     <div id="layoutAuthentication">
         <div id="layoutAuthentication_content">
             <main>
-                <div class="container">
-                    <div class="row justify-content-center">
-                        <div class="col-lg-5">
-                            <div class="mt-3">
-                                <?php
-                                if ($error_msg != '') {
-                                    echo
-                                    '
-                                        <div class="alert alert-danger" role="alert">
-                                            ' . $error_msg . '
+                <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center">
+
+                    <section class=" section register min-vh-md-100 d-flex flex-md-column align-items-center justify-content-center col-6 col-md-5">
+                        <img src="assets/img/choose-user.svg" alt="" style="width: 100%;">
+                    </section>
+
+                    <section class="section register min-vh-md-100 d-flex flex-md-column align-items-center justify-content-center col-12 col-md-6">
+                        <div class="container">
+                            <div class="row justify-content-center">
+                                <div class="col-lg-12 col-md-12 d-flex flex-column align-items-center justify-content-center">
+
+                                    <div class="d-flex justify-content-center py-4">
+                                        <img src="assets/img/icon.png" alt="" style="width: 30px;  height: 50px;">
+                                        <span class="d-flex flex-column justify-content-center align-items-center ms-2">InLaw</span>
+                                    </div><!-- End Logo -->
+
+                                    <div class="card mb-3">
+
+                                        <div class="card-body">
+
+                                            <div class="pt-4 pb-2">
+                                                <h5 class="card-title text-center pb-0 fs-4">Hello, <?= $username ?></h5>
+                                                <p class="text-center small">Enter your account password to login</p>
+                                            </div>
+
+                                            <form class="row g-3" action="processes.php" method="POST">
+                                                <input type="hidden" name="userid" value="<?= $user ?>">
+                                                <div class="col-12">
+                                                    <label for="password" class="form-label">Password</label>
+                                                    <input type="password" name="password" class="form-control" id="password" required>
+                                                </div>
+
+                                                <div class="col-12">
+                                                    <button class="btn btn-primary w-100" type="submit" name="user-login">Login</button>
+                                                </div>
+                                                <div class="col-12 d-flex justify-content-between">
+                                                    <p class="small mb-0"><a href="password">Forgot Password</a></p>
+                                                </div>
+                                            </form>
+
                                         </div>
-                                        ';
-                                }
-
-                                if ($success_msg != '') {
-                                    echo
-                                    '
-                                        <div class="alert alert-success" role="alert">
-                                            ' . $success . '
-                                        </div>
-                                        ';
-                                }
-                                ?>
-
-                            </div>
-
-                            <?php
-                            if ($stmt = mysqli_prepare($conn, "SELECT * FROM users WHERE userid = ?")) {
-                                // Bind parameters
-                                mysqli_stmt_bind_param($stmt, "s", $user);
-
-                                // Execute the statement
-                                mysqli_stmt_execute($stmt);
-
-                                // Get the result
-                                $res = mysqli_stmt_get_result($stmt);
-
-                                $row = mysqli_fetch_assoc($res);
-
-                                $username = $row['FName'] . ' ' . $row['LName'];
-
-                                // Close the statement
-                                mysqli_stmt_close($stmt);
-                            } else {
-                                // Error preparing the statement
-                                echo "Error preparing the SQL statement.";
-                            }
-
-                            ?>
-                            <div class="card shadow-lg border-0 rounded-lg mt-5">
-                                <div class="card-header">
-                                    <h3 class="text-center font-weight-light my-4">Welcome Back <?php echo $username; ?></h3>
-                                    <p class="text-center">Enter Password to sign in</p>
-                                </div>
-                                <div class="card-body">
-                                    <form method="post" action="">
-                                        <div class="form-floating mb-3">
-                                            <input class="form-control" id="inputPassword" type="password" placeholder="Password" name="password" />
-                                            <label for="inputPassword">Password</label>
-                                        </div>
-                                        <!-- <div class="form-check mb-3">
-                                                <input class="form-check-input" id="inputRememberPassword" type="checkbox" value="" />
-                                                <label class="form-check-label" for="inputRememberPassword">Remember Password</label>
-                                            </div> -->
-                                        <div class="d-flex align-items-center justify-content-between mt-4 mb-0">
-                                            <a class="small" href="password.php">Forgot Password?</a>
-                                            <input type="submit" class="btn btn-primary" name="login" value="login">
-                                        </div>
-                                    </form>
-                                </div>
-                                <div class="card-footer text-center py-3">
-                                    <!-- <div class="small"><a href="register.html">Need an account? Sign up!</a></div> -->
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+
+                    </section>
+
                 </div>
             </main>
         </div>
